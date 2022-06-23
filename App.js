@@ -1,4 +1,5 @@
-import { View, Text } from "react-native";
+import React, { useState } from 'react';
+import { View, Text, ScrollView, Image } from "react-native";
 import NavigationBar from 'react-native-navbar';
 
 const styles = {
@@ -9,23 +10,19 @@ const styles = {
 	borderRadius: 32,
     },
     chatComp: {
-	flex: 1,
-	flexDirection: 'column',
-	justifyContent: 'space-between',
 	borderWidth: 1,
 	maxHeight: 64,
 	padding: 4,
     },
-	miniChat: {
-	flex: 1,
+    miniChat: {
 	flexDirection: 'row',
-	justifyContent: 'space-between',
-	maxHeight: 64,
-	paddingLeft: 2,
-    }
-	,userName: {
-    fontWeight: 'bold',
-    fontSize: 16,
+	justifyContent: 'space-around',
+	color: "red"
+	
+    },
+    userName: {
+	fontWeight: 'bold',
+	fontSize: 16,
 	paddingBottom: 4,
   },
 
@@ -47,38 +44,58 @@ const titleConfig = {
 
 function ChatComponent(props){
     return (
-	<View style={styles.chatComp}w>
+	<View style={styles.chatComp}>
+	    <Text>(Chat Image)</Text>
+	    <View style={styles.miniChat}>
 		<Text style={styles.userName}>{props.username}</Text>
-	    <View style = {styles.miniChat}>
-			<Text>{props.message}</Text>
-			<Text>(Chat Image)</Text>
+		<Text>{props.message}</Text>
 	    </View>
 	</View>
     );
 };
 
-
-function ComponentWithNavigationBar() {
+function MainScreenNavBarComponent(){
     return (
-	    <View style={styles.container}>
-	        <NavigationBar
+	    <NavigationBar
                     title={titleConfig}
                     rightButton={rightButtonConfig}
                     leftButton={leftButtonConfig}
 	            containerStyle={styles.navBar}
-	            tintColor="silver"
-	    />
-	    <ChatComponent message="test1" username="Luca"/>
-	    <ChatComponent message="test2" username="Theadora"/>
-	    <ChatComponent message="test3" username="Giuliani"/>
-		<ChatComponent message="test3" username="Parva"/>
-	    </View>
+	            tintColor="silver" />
+    );
+}
+
+function MessagesListComponent(props){
+    const [messages] = useState([
+	{username:"Luca", message:"Test Message 1. Lorem Ipsum"},
+	{username:"Theadora", message:"Test Message 2. Lorem Ipsum"},
+	{username:"Giuliani", message:"Test Message 3. Lorem Ipsum"},
+	{username:"Parva", message:"Test Message 4. Lorem Ipsum"}]);
+    let messageComponents = messages.map((a, i) => {
+	return <ChatComponent
+		   username={a.username}
+		   message={a.message}
+	       />;
+    });
+    return (
+	<ScrollView>
+	    {messageComponents}
+	</ScrollView>
     );
 }
 
 
+function MainScreenComponent(props){
+    return (
+	    <View style={styles.container}>
+	        <MainScreenNavBarComponent/>
+		<MessagesListComponent/>
+	    </View>
+    );
+}
+
 export default function App() {
   return (
-    <ComponentWithNavigationBar />
+    <MainScreenComponent />
   );
 }

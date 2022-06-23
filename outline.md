@@ -1,12 +1,5 @@
 # Project Outline
 ## Next Steps: June 22
-### [ ] TemplateScreenComponent
-#### [ ] NavBarComponent (Thea)
-- [ ] Make extendable
-  - pass components as arguments to standard positions (far left/right, left/right, center) 
-  - ie left=UserIconComponent
-#### [ ] BodyComponent (Thea)
-- [ ] Just a place to put the app body for a particular page
 ### [ ] MainScreenComponent
 #### [ ] MainScreenNavBarComponent (Luca)
 - [ ] Contain username in Center
