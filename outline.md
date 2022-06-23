@@ -1,15 +1,21 @@
 # Project Outline
 ## Next Steps: June 22
-### [ ] Main Screen Component
-#### [ ] NavBar Component
-- [ ] Contain username
+### [ ] TemplateScreenComponent
+#### [ ] NavBarComponent (Thea)
+- [ ] Make extendable
+  - pass components as arguments to standard positions (far left/right, left/right, center) 
+  - ie left=UserIconComponent
+#### [ ] BodyComponent (Thea)
+- [ ] Just a place to put the app body for a particular page
+### [ ] MainScreenComponent
+#### [ ] MainScreenNavBarComponent (Luca)
+- [ ] Contain username in Center
 - [ ] User picture on left
   - Click to change
-- [ ] User settings on right
+- [ ] User settings on right (gear icon)
   - For now, do nothing, 
 - [ ] Styling
-
-#### [ ] Chat Component 
+#### [ ] ChatComponent (Luca)
 - [ ] Contains contact picture of other chat user on left
   - For now, default image until we have real ones set up
 - [ ] Contains username in bold above the last message
@@ -17,38 +23,34 @@
 - [ ] Click to open chat screen.
   - For now just alert, until chat screen component created
 - [ ] Styling
-##### [ ] Chat Service Interface
-- Create interface for eventual chat service. 
-  - We'll implement the juicy bits later, right now have it return lorem ipsum for the latest message
-
-#### [ ] Messages List Component
-- [ ] Show all active chats as Chat Components. 
+#### [ ] MessagesListComponent (Luca)
+- [ ] Show all active chats as ChatComponents. 
 - [ ] Takes up most of page
 - [ ] Background says try contacting someone on first load
 - [ ] Styling
-
-#### [ ] New Chat Button
+#### [ ] NewChatButtonComponent (Giulani)
 - [ ] Big round + sign to start a new chat with a contact in your list
-##### [ ] Contacts Service
+- [ ] Floating at bottom right, click to create alert
+#### [ ] ContactsService (Thea)
 - [ ] Read local contacts
 - [ ] Store contacts within the app itself. 
   - For now just store username and phone number and image.
   - Create a few dummies
-  
-### [ ] Chat Service
+### [ ] ChatService (Thea)
 - [ ] Maintains it's side of the web socket between the two phones
   - SMS Socket?
 - [ ] Integrate signal-encryption protocol
 - [ ] Recieve function:
   - [ ] Write message locally
-  - [ ] Update Relevant Chat Component
-	- [ ] Create Message Component marked unread 
+  - [ ] Update Relevant ChatComponent
+	- [ ] Create MessageComponent marked unread 
 - [ ] Send function:
   - [ ] Write message locally
   - [ ] pass text to send to relevant chat service
-
-### [ ] Chat Screen Component
-#### [ ] NavBar Component
+#### Styling (Parva)
+- [ ] Style all the components for the app so far
+### [ ] ChatScreenComponent
+#### [ ] NavBarComponent
 - [ ] Back button on far left, takes you to main screen
 - [ ] User picture on left
 - [ ] contact's username in middle, 
@@ -58,23 +60,23 @@
 	- Just a list of random alert buttons for now
 - [ ] Styling (this is a rough draft, we need it pretty so we'll have to tweak it alot)
 
-#### [ ] Message Component
+#### [ ] MessageComponent
 - [ ] Bubble surrounding message text, 
 - [ ] Has state of type {unread, read}
 - [ ] Eventually we add emojis and reactions
 - [ ] Can be replied to/a reply to
   - [ ] If a reply, display link to original post
 
-#### [ ] Messages Box Component
+#### [ ] MessagesBoxComponent
 - [ ] Comprises most of screen, shows messages within the chat. 
   - Most recent messages loaded, more called when scrolling
 
-#### [ ] Message Writing Component
+#### [ ] MessageWritingComponent
 - [ ] Textbox to enter messages
 - [ ] Send button 
 - [ ] On send:
   - [ ] Send text via Chat Service
-  - [ ] create Message Component and add to chat with status unread
+  - [ ] create MessageComponent and add to chat with status unread
 
 ## Next Steps: Some Future Date
 ### Flesh out Settings Components
