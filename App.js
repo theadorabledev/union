@@ -146,7 +146,7 @@ const titleConfig = {
     title: username,
 };
 
-function ChatComponent(props){
+const ChatComponent = (props) => {
     return (
 	<TouchableHighlight onPress={()=>{alert("Take user to text chat")}} underlayColor = {highlightcolor}>
 	    <View style={styles.chatComp}>
@@ -160,70 +160,72 @@ function ChatComponent(props){
     );
 };
 
-function MainScreenNavBarComponent(props){
+const MainScreenNavBarComponent = (props) => {
     return (
 	<NavigationBar
 	    title={titleConfig}
-	    rightButton=<SettingsButton/>
-	    leftButton=<ChangeUserIconButton/>
+	    rightButton={<SettingsButton/>}
+	    leftButton={<ChangeUserIconButton/>}
 	    containerStyle={styles.navBar}
 	    tintColor='white'/>
-	    );
-	    }
+    );
+}
 
 	    
-	    const NoContacts =() =>{
-		return (
-		    <View>
-			<Text>It looks like you're all alone.</Text>
-			<Text>Time to Uni/onize!</Text>
-		    </View>
-		);
+const NoContacts = () => {
+    return (
+	<View>
+	    <Text>It looks like you're all alone.</Text>
+	    <Text>Time to Uni/onize!</Text>
+	</View>
+    );
+}
+
+
+const MessagesListComponent = (props) => {
+    const [messages,setMessages] = useState([]);
+    let empty = (messages.length == 0)
+    let messageComponents = messages.map((a, i) => {
+	return <ChatComponent
+		   username={a.username}
+		   message={a.message}
+	       />;
+    });
+    return (
+	<>
+	    <Button title="Reset Messages" color = {styles.highlightcolor} onPress={()=>{
+			setMessages(originalmessages);
+		    }
+										   }/>
+	    <Button title="Clear Messages" color = {styles.highlightcolor} onPress={()=>{
+			setMessages([])
+		    }
+										   }/>
+	    {empty ? 
+	     <NoContacts/> 
+	     :
+	     <ScrollView>
+		 {messageComponents}
+	     </ScrollView>
 	    }
+	</>
+    );	
+}
 
 
-    function MessagesListComponent(props){
-	const [messages,setMessages] = useState([]);
-	let empty = (messages.length == 0)
-	let messageComponents = messages.map((a, i) => {
-	    return <ChatComponent
-		       username={a.username}
-		       message={a.message}
-		   />;
-	});
-	return (
-	    <>
-		<Button title="Reset Messages" color = {styles.highlightcolor} onPress={()=>{
-			    setMessages(originalmessages);
-			}
-										       }/>
-		<Button title="Clear Messages" color = {styles.highlightcolor} onPress={()=>{
-			    setMessages([])
-			}
-										       }/>
-		{empty ? 
-		 <NoContacts/> 
-		 :
-		 <ScrollView>
-		     {messageComponents}
-		 </ScrollView>
-		}
-	    </>
-	);	
-    }
+const MainScreenComponent = (props) => {
+    return (
+	<View style={styles.container}>
+	    <MainScreenNavBarComponent/>
+	    <MessagesListComponent/>
+	</View>
+    );
+};
+
+export default function App() {
+    return (
+	<MainScreenComponent />
+    );
+}
 
 
-    function MainScreenComponent(props){
-	return (
-	    <View style={styles.container}>
-	        <MainScreenNavBarComponent/>
-		<MessagesListComponent/>
-	    </View>
-	);
-    }
-
-    export default function App() {
-	return (
-	    <MainScreenComponent />
-	);
-    }
