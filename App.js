@@ -13,64 +13,64 @@ const defaultprofile = require('./assets/profilepicsquaresmall.png')
 
 const styles = {
     container: {
-		flex: 1,
-		paddingTop: 32,
-		padding: 2,
-		borderRadius: 32,
+	flex: 1,
+	paddingTop: 32,
+	padding: 2,
+	borderRadius: 32,
     },
     chatComp: {
-		flexDirection:'row',
-		flexWrap: "wrap",
-		alignItems:'center',
-		maxHeight: 100,
-		padding: 4,
+	flexDirection:'row',
+	flexWrap: "wrap",
+	alignItems:'center',
+	maxHeight: 100,
+	padding: 4,
     },
     miniChat: {
-		flexDirection: 'column',
-		justifyContent: 'space-around',
-		color: "red",
-		padding: 4,
-		paddingTop: 10,
-		paddingBottom: 10,
+	flexDirection: 'column',
+	justifyContent: 'space-around',
+	color: "red",
+	padding: 4,
+	paddingTop: 10,
+	paddingBottom: 10,
     },
 
-	profileImage: {
-		width: contactProfileSize,
-		height: contactProfileSize,
-		resizeMode: 'stretch',
-		borderRadius: contactProfileSize/2,
-	},
-	profileButton: {
-		width: contactProfileSize, 
-		height:contactProfileSize, 
-		borderRadius: contactProfileSize/2,
-		alignItems:'center',
-		justifyContent:'center',
-	},
-	
-	
-	userProfileImage: {
-		width: userProfileSize,
-		height: userProfileSize,
-		resizeMode: 'stretch',
-		borderRadius: userProfileSize/2,
-	},
-	
-	userProfileButton: {
-		width: userProfileSize, 
-		height:userProfileSize, 
-		borderRadius: userProfileSize/2,
-		alignItems:'center',
-		justifyContent:'center',
-	},
+    profileImage: {
+	width: contactProfileSize,
+	height: contactProfileSize,
+	resizeMode: 'stretch',
+	borderRadius: contactProfileSize/2,
+    },
+    profileButton: {
+	width: contactProfileSize, 
+	height:contactProfileSize, 
+	borderRadius: contactProfileSize/2,
+	alignItems:'center',
+	justifyContent:'center',
+    },
+    
+    
+    userProfileImage: {
+	width: userProfileSize,
+	height: userProfileSize,
+	resizeMode: 'stretch',
+	borderRadius: userProfileSize/2,
+    },
+    
+    userProfileButton: {
+	width: userProfileSize, 
+	height:userProfileSize, 
+	borderRadius: userProfileSize/2,
+	alignItems:'center',
+	justifyContent:'center',
+    },
     userName: {
-		fontWeight: 'bold',
-		fontSize: 16,
-	},
-	navBar: {
-		paddingLeft: 4,
-		paddingRight: 4,
-	},
+	fontWeight: 'bold',
+	fontSize: 16,
+    },
+    navBar: {
+	paddingLeft: 4,
+	paddingRight: 4,
+    },
 
 
 };
@@ -83,7 +83,7 @@ let userprofilepic = defaultprofile
 
 
 const originalmessages=[
-	{username:"The Fool", message:"Test Message 0. Lorem Ipsum"},
+    {username:"The Fool", message:"Test Message 0. Lorem Ipsum"},
     {username:"The Magician", message:"Test Message 1. Lorem Ipsum"},
     {username:"The High Priestess", message:"Test Message 2. Lorem Ipsum"},
     {username:"The Empress", message:"Test Message 3. Lorem Ipsum"},
@@ -94,7 +94,7 @@ const originalmessages=[
     {username:"Strength", message:"Test Message 8. Lorem Ipsum"},
     {username:"The Hermit", message:"Test Message 9. Lorem Ipsum"},
     {username:"The Wheel of Fortune", message:"Test Message 10. Lorem Ipsum"},
-	]
+]
 
 
 
@@ -104,35 +104,35 @@ let currentmessages = originalmessages
 //React components
 
 const SettingsButton = () => {
-	return(
-		<TouchableOpacity style = {styles.userProfileButton} onPress={()=>{alert("Take user to settings")}} >
-			<Ionicons name='settings-outline' size={40} color={highlightcolor}/>
-		</TouchableOpacity>
-	);
+    return(
+	<TouchableOpacity style = {styles.userProfileButton} onPress={()=>{alert("Take user to settings")}} >
+	    <Ionicons name='settings-outline' size={40} color={highlightcolor}/>
+	</TouchableOpacity>
+    );
 }
 
 
 const ChangeUserIconButton = () => {
-	return(
-		<TouchableHighlight style = {styles.userProfileButton} onPress={()=>{alert("let user change profile picture")}}>
-			<Image
-				style ={styles.userProfileImage}
-				source={userprofilepic}
-			/>
-		</TouchableHighlight>
-	);
+    return(
+	<TouchableHighlight style = {styles.userProfileButton} onPress={()=>{alert("let user change profile picture")}}>
+	    <Image
+		style ={styles.userProfileImage}
+		source={userprofilepic}
+	    />
+	</TouchableHighlight>
+    );
 }
 
 
 const ProfileButton = () => {
-	return(
-		<TouchableHighlight style = {styles.profileButton} onPress={()=>{alert("Take user to contact's settings")}}>
-			<Image
-				style ={styles.profileImage}
-				source={defaultprofile}
-			/>
-		</TouchableHighlight>
-	);
+    return(
+	<TouchableHighlight style = {styles.profileButton} onPress={()=>{alert("Take user to contact's settings")}}>
+	    <Image
+		style ={styles.profileImage}
+		source={defaultprofile}
+	    />
+	</TouchableHighlight>
+    );
 }
 
 
@@ -149,81 +149,81 @@ const titleConfig = {
 function ChatComponent(props){
     return (
 	<TouchableHighlight onPress={()=>{alert("Take user to text chat")}} underlayColor = {highlightcolor}>
-		<View style={styles.chatComp}>
-			<ProfileButton/>
-			<View style={styles.miniChat}>
-				<Text style={styles.userName}>{props.username}</Text>
-				<Text>{props.message}</Text>
-			</View>
+	    <View style={styles.chatComp}>
+		<ProfileButton/>
+		<View style={styles.miniChat}>
+		    <Text style={styles.userName}>{props.username}</Text>
+		    <Text>{props.message}</Text>
 		</View>
+	    </View>
 	</TouchableHighlight>
     );
 };
 
 function MainScreenNavBarComponent(props){
     return (
-	    <NavigationBar
-			title={titleConfig}
-			rightButton=<SettingsButton/>
-			leftButton=<ChangeUserIconButton/>
-			containerStyle={styles.navBar}
-			tintColor='white'/>
-    );
-}
+	<NavigationBar
+	    title={titleConfig}
+	    rightButton=<SettingsButton/>
+	    leftButton=<ChangeUserIconButton/>
+	    containerStyle={styles.navBar}
+	    tintColor='white'/>
+	    );
+	    }
 
-	
-const NoContacts =() =>{
-	return (
-		<View>
+	    
+	    const NoContacts =() =>{
+		return (
+		    <View>
 			<Text>It looks like you're all alone.</Text>
 			<Text>Time to Uni/onize!</Text>
-		</View>
-	);
-}
+		    </View>
+		);
+	    }
 
 
-function MessagesListComponent(props){
-    const [messages,setMessages] = useState([]);
+    function MessagesListComponent(props){
+	const [messages,setMessages] = useState([]);
 	let empty = (messages.length == 0)
-    let messageComponents = messages.map((a, i) => {
-	return <ChatComponent
-		   username={a.username}
-		   message={a.message}
-	       />;
-    });
-		return (
-		<>
+	let messageComponents = messages.map((a, i) => {
+	    return <ChatComponent
+		       username={a.username}
+		       message={a.message}
+		   />;
+	});
+	return (
+	    <>
 		<Button title="Reset Messages" color = {styles.highlightcolor} onPress={()=>{
-			setMessages(originalmessages);
+			    setMessages(originalmessages);
 			}
-		}/>
+										       }/>
 		<Button title="Clear Messages" color = {styles.highlightcolor} onPress={()=>{
-			setMessages([])
+			    setMessages([])
 			}
-		}/>
+										       }/>
 		{empty ? 
-			<NoContacts/> 
-		:
-			<ScrollView>
-				{messageComponents}
-			</ScrollView>
+		 <NoContacts/> 
+		 :
+		 <ScrollView>
+		     {messageComponents}
+		 </ScrollView>
 		}
-		</>
-		);	
-}
+	    </>
+	);	
+    }
 
 
-function MainScreenComponent(props){
-    return (
+    function MainScreenComponent(props){
+	return (
 	    <View style={styles.container}>
 	        <MainScreenNavBarComponent/>
-			<MessagesListComponent/>
+		<MessagesListComponent/>
 	    </View>
-    );
-}
+	);
+    }
 
-export default function App() {
-  return (
-    <MainScreenComponent />
-  );
-}
+    export default function App() {
+	return (
+	    <MainScreenComponent />
+	);
+    }
