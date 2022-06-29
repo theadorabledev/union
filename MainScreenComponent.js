@@ -4,6 +4,7 @@ import { View, Text, ScrollView, Button, Image, TouchableOpacity, TouchableHighl
 import NavigationBar from 'react-native-navbar';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
+//import StackNav from './Common.js';
 
 //Global Style Variables
 const userProfileSize = 40
@@ -99,14 +100,25 @@ const originalmessages=[
 let currentmessages = originalmessages
 
 //Settings icon which triggers menu popup
-const SettingsButton = () => {
+const SettingsButton = ({onPress}) => {
     return(
-	<TouchableOpacity style = {styles.userProfileButton} onPress={()=>alert("Take user to settings")} >
+	<TouchableOpacity style = {styles.userProfileButton} onPress={()=>onPress()} >
 	    <Ionicons name='settings-outline' size={40} color={highlightcolor}/>
 	</TouchableOpacity>
     );
 }
 
+// A user's profile image in chat component, can be used to view contact info for person
+const ProfileButton = () => {
+    return(
+	<TouchableHighlight style = {styles.profileButton} onPress={()=>{alert("Take user to contact's settings")}}>
+	    <Image
+		style ={styles.profileImage}
+		source={defaultprofile}
+	    />
+	</TouchableHighlight>
+    );
+} 
 // Button to change user icon / display current one
 const ChangeUserIconButton = () => {
     return(
@@ -115,7 +127,7 @@ const ChangeUserIconButton = () => {
 		style ={styles.userProfileImage}
 		source={userprofilepic}
 	    />
-	</TouchableHighlight>
+p	</TouchableHighlight>
     );
 }
 
@@ -186,13 +198,20 @@ const MessagesListComponent = (props) => {
     );	
 }
 
-const MainScreenComponent = (props) => {
+const MainScreenComponent = ({navigation}) => {
+    React.useLayoutEffect(() => {
+	navigation.setOptions({
+	    headerRight: () => (
+		<SettingsButton onPress={() => navigation.navigate('MainSettings')}/>
+	    ),
+	});
+    }, [navigation]);
     return (
 	<View style={styles.container}>
-	    <MainScreenNavBarComponent/>
 	    <MessagesListComponent/>
 	</View>
     );
+
 };
 
-export default MainScreenComponent;  
+export default MainScreenComponent;
