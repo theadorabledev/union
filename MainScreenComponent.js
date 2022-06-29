@@ -86,17 +86,17 @@ const getUsername = () => {
 }
 
 const originalmessages=[
-    {username:"The Fool", message:"Test Message 0. Lorem Ipsum"},
-    {username:"The Magician", message:"Test Message 1. Lorem Ipsum"},
-    {username:"The High Priestess", message:"Test Message 2. Lorem Ipsum"},
-    {username:"The Empress", message:"Test Message 3. Lorem Ipsum"},
-    {username:"The Emperor", message:"Test Message 4. Lorem Ipsum"},
-    {username:" The Hierophant", message:"Test Message 5. Lorem Ipsum"},
-    {username:"The Lovers", message:"Test Message 6. Lorem Ipsum"},
-    {username:"The Chariot", message:"Test Message 7. Lorem Ipsum"},
-    {username:"Strength", message:"Test Message 8. Lorem Ipsum"},
-    {username:"The Hermit", message:"Test Message 9. Lorem Ipsum"},
-    {username:"The Wheel of Fortune", message:"Test Message 10. Lorem Ipsum"},
+    {username:"The Fool", messages:["Test Message 0. Lorem Ipsum","Test Message 1. Lorem Ipsum"]},
+    {username:"The Magician", messages:["Test Message 0. Lorem Ipsum"]},
+    {username:"The High Priestess", messages:["Test Message 0. Lorem Ipsum"]},
+    {username:"The Empress", messages:["Test Message 0. Lorem Ipsum"]},
+    {username:"The Emperor", messages:["Test Message 0. Lorem Ipsum"]},
+    {username:" The Hierophant", messages:["Test Message 0. Lorem Ipsum"]},
+    {username:"The Lovers", messages:["Test Message 0. Lorem Ipsum"]},
+    {username:"The Chariot", messages:["Test Message 0. Lorem Ipsum"]},
+    {username:"Strength", messages:["Test Message 0. Lorem Ipsum"]},
+    {username:"The Hermit", messages:["Test Message 0. Lorem Ipsum"]},
+    {username:"The Wheel of Fortune", messages:["Test Message 0. Lorem Ipsum"]},
 ]
 
 let currentmessages = originalmessages
@@ -148,12 +148,12 @@ const MainScreenNavBarComponent = (props) => {
 const ChatComponent = (props) => {
 	const navigation = useNavigation();
     return (
-	<TouchableHighlight onPress={() => navigation.navigate('ChatScreen',{username:props.username,message:props.message})} underlayColor = {highlightcolor}>
+	<TouchableHighlight onPress={() => navigation.navigate('ChatScreen',{username:props.username,messages:props.messages})} underlayColor = {highlightcolor}>
 	    <View style={styles.chatComp}>
 		<ProfileButton/>
 		<View style={styles.miniChat}>
 		    <Text style={styles.userName}>{props.username}</Text>
-		    <Text>{props.message}</Text>
+		    <Text>{props.messages[props.messages.length-1]}</Text>
 		</View>
 	    </View>
 	</TouchableHighlight>
@@ -177,7 +177,7 @@ const MessagesListComponent = (props) => {
     let messageComponents = messages.map((a, i) => {
 	return <ChatComponent
 		   username={a.username}
-		   message={a.message}
+		   messages={a.messages}
 	       />;
     });
     return (

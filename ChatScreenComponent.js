@@ -4,13 +4,34 @@ import { View, Text, ScrollView, Button, Image, TouchableOpacity, TouchableHighl
 import NavigationBar from 'react-native-navbar';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
+
+const MessageBoxComponent = (props) => {
+    const [textmessages,setMessages] = useState([props.messages]);
+    let empty = (textmessages.length == 0)
+    let textComponents = textmessages.map((a, i) => {
+	return <Text>
+	{a}
+	       </Text>;
+    });
+    return (
+	<>
+	    {empty ? 
+	    <Text>No new messages</Text>
+	     :
+	     <ScrollView>
+		 {textComponents}
+	     </ScrollView>
+	    }
+	</>
+    );	
+}
+
 // Returns the settings screen displayed on the main page
 const ChatScreenComponent = ({route,navigation}) => {
-	const {username,message} = route.params
-	
+	const {username,messages} = route.params
     return (
 	<View>
-	    <Text>{message}</Text>
+	    <MessageBoxComponent messages={messages}/>
 	</View>
     );
 }

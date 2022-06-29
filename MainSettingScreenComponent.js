@@ -4,6 +4,33 @@ import { View, Text, ScrollView, Button, Image, TouchableOpacity, TouchableHighl
 import NavigationBar from 'react-native-navbar';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
+// A component to display either all of someone's chats or the incoming (no contacts) screen
+
+
+
+
+
+const MessageBoxComponent = (props) => {
+    const [messages,setMessages] = useState([props.message]);
+    let empty = (messages.length == 0)
+    let textComponents = messages.map((a, i) => {
+	return <Text>
+		   {a.message}
+	       </Text>;
+    });
+    return (
+	<>
+	    {empty ? 
+	    <Text>No new messages</Text>
+	     :
+	     <ScrollView>
+		 {textComponents}
+	     </ScrollView>
+	    }
+	</>
+    );	
+}
+
 // Returns the settings screen displayed on the main page
 const MainSettingScreenComponent = () => {
     return (
