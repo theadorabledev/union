@@ -64,3 +64,6 @@ buck-out/
 web-build/
 assets/profilepic.pdn
 *.pdn
+*.bak
+*.bak
+App.js.bak
