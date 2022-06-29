@@ -4,6 +4,7 @@ import { View, Text, ScrollView, Button, Image, TouchableOpacity, TouchableHighl
 
 import MainScreenComponent from './MainScreenComponent';
 import MainSettingScreenComponent from './MainSettingScreenComponent';
+import ChatScreenComponent from './ChatScreenComponent';
 //import * as MainScreen from './MainScreenComponent'; 
 
 import { NavigationContainer } from '@react-navigation/native';
@@ -52,7 +53,11 @@ const App = (props) => {
 		    name="MainSettings"
 		    component={MainSettingScreenComponent}
 		/>
-		
+		<StackNav.Screen 
+		    name="ChatScreen"
+		    component={ChatScreenComponent}
+			options={({ route }) => ({ title: route.params.username })}
+		/>
             </StackNav.Navigator>
 	</NavigationContainer>
     );

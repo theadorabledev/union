@@ -2,6 +2,8 @@
 import React, { useState } from 'react';
 import { View, Text, ScrollView, Button, Image, TouchableOpacity, TouchableHighlight } from "react-native";
 import NavigationBar from 'react-native-navbar';
+import { useNavigation } from '@react-navigation/native';
+
 import Ionicons from '@expo/vector-icons/Ionicons';
 
 //import StackNav from './Common.js';
@@ -127,7 +129,7 @@ const ChangeUserIconButton = () => {
 		style ={styles.userProfileImage}
 		source={userprofilepic}
 	    />
-p	</TouchableHighlight>
+	</TouchableHighlight>
     );
 }
 
@@ -144,8 +146,9 @@ const MainScreenNavBarComponent = (props) => {
 }
 // Component to display a chat log with a user, with the most recent message previewed
 const ChatComponent = (props) => {
+	const navigation = useNavigation();
     return (
-	<TouchableHighlight onPress={()=>{alert("Take user to text chat")}} underlayColor = {highlightcolor}>
+	<TouchableHighlight onPress={() => navigation.navigate('ChatScreen',{username:props.username,message:props.message})} underlayColor = {highlightcolor}>
 	    <View style={styles.chatComp}>
 		<ProfileButton/>
 		<View style={styles.miniChat}>
@@ -204,6 +207,9 @@ const MainScreenComponent = ({navigation}) => {
 	    headerRight: () => (
 		<SettingsButton onPress={() => navigation.navigate('MainSettings')}/>
 	    ),
+		headerLeft: () => (
+		<ChangeUserIconButton/>
+		),
 	});
     }, [navigation]);
     return (
