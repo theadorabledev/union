@@ -7,6 +7,7 @@ import React, { useState } from 'react';
 import { View, Text, ScrollView, Button, Image, TouchableOpacity, TouchableHighlight } from "react-native";
 
 import Ionicons from '@expo/vector-icons/Ionicons';
+import {FontAwesome} from '@expo/vector-icons'; 
 
 const userProfileSize = 40
 const highlightcolor = 'deepskyblue'
@@ -24,10 +25,16 @@ const CommonStyles = {
 export const SettingsButton = ({onPress}) => {
     return(
 	<TouchableOpacity style = {CommonStyles.userProfileButton} onPress={()=>onPress()} >
-	    <Ionicons name='settings-outline' size={40} color={highlightcolor}/>
+	    <Ionicons name='settings-outline' size={24} color={highlightcolor}/>
 	</TouchableOpacity>
     );
 }
-
+export const PhoneButton = (props) => {
+	return(
+	<TouchableOpacity style = {CommonStyles.userProfileButton} onPress={()=>{alert("Calling " + props.username)}} >
+	    <FontAwesome name="phone" size={24} color="black" />
+	</TouchableOpacity>
+    );
+}
 
 
