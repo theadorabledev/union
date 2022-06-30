@@ -5,7 +5,8 @@ import { View, Text, ScrollView, Button, Image, TouchableOpacity, TouchableHighl
 import MainScreenComponent from './MainScreenComponent';
 import MainSettingScreenComponent from './MainSettingScreenComponent';
 import ChatScreenComponent from './ChatScreenComponent';
-//import * as MainScreen from './MainScreenComponent'; 
+import ChatSettingScreenComponent from './ChatSettingScreenComponent';
+
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -30,16 +31,6 @@ const styles = {
 	justifyContent:'center',
     }
 };
-// this.props.navigation.navigate('MainSettings')
-const MainScreenSettingsButton= ({navigation}) => {
-    return(
-	<TouchableOpacity
-	    style = {styles.userProfileButton}
-	    onPress={() => navigation.navigate('MainSettings')} >
-	    <Ionicons name='settings-outline' size={40} color={highlightcolor}/>
-	</TouchableOpacity>
-    );
-};
 
 const App = (props) => {
     return (
@@ -56,7 +47,11 @@ const App = (props) => {
 		<StackNav.Screen 
 		    name="ChatScreen"
 		    component={ChatScreenComponent}
-			options={({ route }) => ({ title: route.params.username })}
+		    options={({ route }) => ({ title: route.params.username })}
+		/>
+		<StackNav.Screen 
+		    name="ChatSettings"
+		    component={ChatSettingScreenComponent}
 		/>
             </StackNav.Navigator>
 	</NavigationContainer>

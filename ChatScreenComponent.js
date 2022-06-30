@@ -4,9 +4,10 @@ import { View, Text, ScrollView, Button, Image, TouchableOpacity, TouchableHighl
 import NavigationBar from 'react-native-navbar';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
+import {SettingsButton} from './Common.js';
 
 const MessageBoxComponent = (props) => {
-    const [textmessages,setMessages] = useState([props.messages]);
+    const [textmessages,setMessages] = useState([props.message]);
     let empty = (textmessages.length == 0)
     let textComponents = textmessages.map((a, i) => {
 	return <Text>
@@ -27,8 +28,17 @@ const MessageBoxComponent = (props) => {
 }
 
 // Returns the settings screen displayed on the main page
-const ChatScreenComponent = ({route,navigation}) => {
-	const {username,messages} = route.params
+const ChatScreenComponent = ({route, navigation}) => {
+    React.useLayoutEffect(() => {
+	navigation.setOptions({
+	    title: route.params.username,
+	    headerRight: () => (
+		<SettingsButton onPress={() => navigation.navigate('ChatSettings')}/>
+	    ),
+	});
+    }, [navigation]);
+    const {username, messages} = route.params;
+    
     return (
 	<View>
 	    <MessageBoxComponent messages={messages}/>

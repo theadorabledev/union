@@ -6,6 +6,8 @@ import { useNavigation } from '@react-navigation/native';
 
 import Ionicons from '@expo/vector-icons/Ionicons';
 
+import {SettingsButton} from './Common.js';
+
 //import StackNav from './Common.js';
 
 //Global Style Variables
@@ -102,13 +104,13 @@ const originalmessages=[
 let currentmessages = originalmessages
 
 //Settings icon which triggers menu popup
-const SettingsButton = ({onPress}) => {
-    return(
-	<TouchableOpacity style = {styles.userProfileButton} onPress={()=>onPress()} >
-	    <Ionicons name='settings-outline' size={40} color={highlightcolor}/>
-	</TouchableOpacity>
-    );
-}
+// const SettingsButton = ({onPress}) => {
+//     return(
+// 	<TouchableOpacity style = {styles.userProfileButton} onPress={()=>onPress()} >
+// 	    <Ionicons name='settings-outline' size={40} color={highlightcolor}/>
+// 	</TouchableOpacity>
+//     );
+// }
 
 // A user's profile image in chat component, can be used to view contact info for person
 const ProfileButton = () => {
@@ -133,22 +135,18 @@ const ChangeUserIconButton = () => {
     );
 }
 
-// Navbar on the main screen
-const MainScreenNavBarComponent = (props) => {
-    return (
-	<NavigationBar
-	    title="username"
-	    rightButton={<SettingsButton/>}
-	    leftButton={<ChangeUserIconButton/>}
-	    containerStyle={styles.navBar}
-	    tintColor='white'/>
-    );
-}
 // Component to display a chat log with a user, with the most recent message previewed
 const ChatComponent = (props) => {
-	const navigation = useNavigation();
+    const navigation = useNavigation();
     return (
-	<TouchableHighlight onPress={() => navigation.navigate('ChatScreen',{username:props.username,messages:props.messages})} underlayColor = {highlightcolor}>
+	<TouchableHighlight onPress={() =>
+				navigation.navigate(
+				    'ChatScreen', {
+					username:props.username,
+					messages:props.messages
+				    })
+			    }
+			    underlayColor = {highlightcolor}>
 	    <View style={styles.chatComp}>
 		<ProfileButton/>
 		<View style={styles.miniChat}>
@@ -204,12 +202,13 @@ const MessagesListComponent = (props) => {
 const MainScreenComponent = ({navigation}) => {
     React.useLayoutEffect(() => {
 	navigation.setOptions({
+	    title: getUsername(),
 	    headerRight: () => (
 		<SettingsButton onPress={() => navigation.navigate('MainSettings')}/>
 	    ),
-		headerLeft: () => (
+	    headerLeft: () => (
 		<ChangeUserIconButton/>
-		),
+	    ),
 	});
     }, [navigation]);
     return (
