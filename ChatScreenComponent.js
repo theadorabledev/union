@@ -38,7 +38,6 @@ const ChatScreenComponent = ({route, navigation}) => {
 	});
     }, [navigation]);
     const {username, messages} = route.params;
-    
     return (
 	<View>
 	    <MessageBoxComponent messages={messages}/>
