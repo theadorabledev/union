@@ -29,6 +29,15 @@ const MessageBoxComponent = (props) => {
 // Returns the settings screen displayed on the main page
 const ChatScreenComponent = ({route,navigation}) => {
 	const {username,messages} = route.params
+	
+	React.useLayoutEffect(() => {
+	navigation.setOptions({
+	    headerRight: () => (
+		<Text>Temp Setting Label</Text>
+	    ),
+	});
+    }, [navigation]);
+	
     return (
 	<View>
 	    <MessageBoxComponent messages={messages}/>
