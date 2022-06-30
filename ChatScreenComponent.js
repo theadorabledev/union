@@ -7,7 +7,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import {SettingsButton} from './Common.js';
 
 const MessageBoxComponent = (props) => {
-    const [textmessages,setMessages] = useState([props.message]);
+    const [textmessages,setMessages] = useState([props.messages]);
     let empty = (textmessages.length == 0)
     let textComponents = textmessages.map((a, i) => {
 	return <Text>
