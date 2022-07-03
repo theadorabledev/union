@@ -6,6 +6,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 
 //Global Style Variables
 const userProfileSize = 40
+const iconSize = 20
 const contactProfileSize = 50
 const highlightcolor = 'deepskyblue'
 
@@ -13,7 +14,7 @@ const style = {
 	userInfoContainer: {
 		display:'flex',
 		flexDirection: 'row',
-		margin: 5,
+		marginLeft: 10,
 		marginTop: 30,
 		borderBottomColor: 'grey',
 		borderBottomWidth: 2,
@@ -24,7 +25,7 @@ const style = {
 		resizeMode: 'stretch',
 		borderRadius: userProfileSize/2,
 		paddingLeft: 5,
-		marginBottom:10,
+		marginBottom:20,
 	},
 	personalInfo: {
 		display:'flex',
@@ -41,17 +42,17 @@ const style = {
 		alignItem:'flex-start',
 	},
 	optionImage:{
-		width: userProfileSize/2,
-		height: userProfileSize/2,
+		width: iconSize,
+		height: iconSize,
 		resizeMode: 'stretch',
-		borderRadius: userProfileSize/4,
+		borderRadius: iconSize/2,
 		paddingLeft: 5,
-		marginBottom:20,
+		marginBottom:30,
 		marginLeft: 10,
-		marginRight: 10,
+		marginRight: 20,
 	},
 	optionText:{
-		color: 'green',
+		color: 'black',
 	},
 }
 
