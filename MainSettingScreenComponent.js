@@ -57,13 +57,20 @@ const style = {
 }
 
 const defaultprofile = require('./assets/profilepicsquaresmall.png');
-const userInfo = {pic:defaultprofile, firstName:"Parva", lastName:"Ganbarian", identify:"she/her", phone:"(123)456-7890"}
+const icons = {
+	account:require('./assets/account.png'),
+	appearance:require('./assets/appearance.png'),
+	notification:require('./assets/notification.png'),
+	privacy:require('./assets/privacy.png'),
+	help:require('./assets/help.png'),
+}
+const userInfo = {pic:icons.account, firstName:"Parva", lastName:"Ganbarian", identify:"she/her", phone:"(123)456-7890"}
 const settingOptions = [
-	{text: "Account", icon:defaultprofile},
-	{text: "Appearance", icon:defaultprofile},
-	{text: "Notifications", icon:defaultprofile},
-	{text: "Privacy", icon:defaultprofile},
-	{text: "Help", icon:defaultprofile},
+	{text: "Account", icon:icons.account},
+	{text: "Appearance", icon:icons.appearance},
+	{text: "Notifications", icon:icons.notification},
+	{text: "Privacy", icon:icons.privacy},
+	{text: "Help", icon:icons.help},
 ]
 
 const User = () => {
