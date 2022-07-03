@@ -15,6 +15,7 @@ const style = {
 		display:'flex',
 		flexDirection: 'row',
 		marginLeft: 10,
+		marginRight: 20,
 		marginTop: 30,
 		borderBottomColor: 'grey',
 		borderBottomWidth: 2,
@@ -31,6 +32,9 @@ const style = {
 		display:'flex',
 		flexDirection:'column',
 		paddingLeft:10,
+	},
+	phone:{
+		marginTop: 5,
 	},
 	optionsContainer:{
 		marginTop: 30,
@@ -56,7 +60,6 @@ const style = {
 	},
 }
 
-const defaultprofile = require('./assets/profilepicsquaresmall.png');
 const icons = {
 	account:require('./assets/account.png'),
 	appearance:require('./assets/appearance.png'),
@@ -79,7 +82,7 @@ const User = () => {
 			<Image source={userInfo.pic} style={style.userProfileImage}/>
 			<View style={style.personalInfo}>
 				<Text>{userInfo.firstName} {userInfo.lastName} {userInfo.identify}</Text>
-				<Text>{userInfo.phone}</Text>
+				<Text style={style.phone}>{userInfo.phone}</Text>
 			</View>
 		</View>
 	);
