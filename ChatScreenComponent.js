@@ -3,9 +3,12 @@ import React, { useState } from 'react';
 import { View, Text, ScrollView, Button, Image, TouchableOpacity, TouchableHighlight } from "react-native";
 import NavigationBar from 'react-native-navbar';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { createStackNavigator } from '@react-navigation/stack';
+import { HeaderBackButton } from '@react-navigation/elements';
+import {SettingsButton,PhoneButton,ProfileButton} from './Common.js';
 
-import { createStackNavigator, HeaderBackButton } from '@react-navigation/stack';
-import {SettingsButton,PhoneButton} from './Common.js';
+const defaultprofile = require('./assets/profilepicsquaresmall.png')
+
 
 const MessageBoxComponent = (props) => {
     const [textmessages,setMessages] = useState([props.messages]);
@@ -37,8 +40,7 @@ const ChatScreenComponent = ({route, navigation}) => {
 	    headerRight: () => (
 		<View style={{
 			flexDirection:'row',
-			flexWrap: "wrap",
-			justifyContent:'space-between',
+			justifyContent:'flex-end',
 			alignItems: 'center',
 			minWidth: 30,
 		}}>
@@ -46,7 +48,21 @@ const ChatScreenComponent = ({route, navigation}) => {
 			<PhoneButton username={route.params.username}/>
 			<Ionicons name="ellipsis-vertical" size={24} color="black" />
 		</View>
+		
 	    ),
+		headerLeft:()=>(
+		<View style={{
+			flexDirection:'row',
+			flexWrap: "wrap",
+			justifyContent:'flex-start',
+			alignItems: 'center',
+			minWidth: 30,
+			paddingRight: 10,
+		}}>
+			<HeaderBackButton onPress={()=>{navigation.goBack()}}/>
+			<ProfileButton profileSize={32} profileSource={defaultprofile} onPress={()=>{alert("let user change contact's picture")}}/>
+		</View>
+			),
 	});
     }, [navigation]);
     const {username, messages} = route.params;
