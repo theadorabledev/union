@@ -6,7 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 
 import Ionicons from '@expo/vector-icons/Ionicons';
 
-import {SettingsButton} from './Common.js';
+import {SettingsButton,ProfileButton} from './Common.js';
 
 //import StackNav from './Common.js';
 
@@ -39,20 +39,7 @@ const styles = {
 	paddingBottom: 10,
     },
 
-    profileImage: {
-	width: contactProfileSize,
-	height: contactProfileSize,
-	resizeMode: 'stretch',
-	borderRadius: contactProfileSize/2,
-    },
-    profileButton: {
-	width: contactProfileSize, 
-	height:contactProfileSize, 
-	borderRadius: contactProfileSize/2,
-	alignItems:'center',
-	justifyContent:'center',
-    },
-    
+
     
     userProfileImage: {
 	width: userProfileSize,
@@ -113,27 +100,8 @@ let currentmessages = originalmessages
 // }
 
 // A user's profile image in chat component, can be used to view contact info for person
-const ProfileButton = () => {
-    return(
-	<TouchableHighlight style = {styles.profileButton} onPress={()=>{alert("Take user to contact's settings")}}>
-	    <Image
-		style ={styles.profileImage}
-		source={defaultprofile}
-	    />
-	</TouchableHighlight>
-    );
-} 
+
 // Button to change user icon / display current one
-const ChangeUserIconButton = () => {
-    return(
-	<TouchableHighlight style = {styles.userProfileButton} onPress={()=>{alert("let user change profile picture")}}>
-	    <Image
-		style ={styles.userProfileImage}
-		source={userprofilepic}
-	    />
-	</TouchableHighlight>
-    );
-}
 
 // Component to display a chat log with a user, with the most recent message previewed
 const ChatComponent = (props) => {
@@ -148,7 +116,7 @@ const ChatComponent = (props) => {
 			    }
 			    underlayColor = {highlightcolor}>
 	    <View style={styles.chatComp}>
-		<ProfileButton/>
+		<ProfileButton profileSize={50} profileSource={defaultprofile} onPress={()=>{alert("Take user to contact's settings")}}/>
 		<View style={styles.miniChat}>
 		    <Text style={styles.userName}>{props.username}</Text>
 		    <Text>{props.messages[props.messages.length-1]}</Text>
@@ -207,7 +175,7 @@ const MainScreenComponent = ({navigation}) => {
 		<SettingsButton onPress={() => navigation.navigate('MainSettings')}/>
 	    ),
 	    headerLeft: () => (
-		<ChangeUserIconButton/>
+		<ProfileButton profileSize={40} profileSource={userprofilepic} onPress={()=>{alert("let user change profile picture")}}/>
 	    ),
 	});
     }, [navigation]);
