@@ -75,17 +75,17 @@ const getUsername = () => {
 }
 
 const originalmessages=[
-    {username:"The Fool", messages:["Test Message 0. Lorem Ipsum","Test Message 1. Lorem Ipsum"]},
-    {username:"The Magician", messages:["Test Message 0. Lorem Ipsum"]},
-    {username:"The High Priestess", messages:["Test Message 0. Lorem Ipsum"]},
-    {username:"The Empress", messages:["Test Message 0. Lorem Ipsum"]},
-    {username:"The Emperor", messages:["Test Message 0. Lorem Ipsum"]},
-    {username:" The Hierophant", messages:["Test Message 0. Lorem Ipsum"]},
-    {username:"The Lovers", messages:["Test Message 0. Lorem Ipsum"]},
-    {username:"The Chariot", messages:["Test Message 0. Lorem Ipsum"]},
-    {username:"Strength", messages:["Test Message 0. Lorem Ipsum"]},
-    {username:"The Hermit", messages:["Test Message 0. Lorem Ipsum"]},
-    {username:"The Wheel of Fortune", messages:["Test Message 0. Lorem Ipsum"]},
+    {id:0,username:"The Fool", messages:["Test Message 0. Lorem Ipsum","Test Message 1. Lorem Ipsum"]},
+    {id:1,username:"The Magician", messages:["Test Message 0. Lorem Ipsum"]},
+    {id:2,username:"The High Priestess", messages:["Test Message 0. Lorem Ipsum"]},
+    {id:3,username:"The Empress", messages:["Test Message 0. Lorem Ipsum"]},
+    {id:4,username:"The Emperor", messages:["Test Message 0. Lorem Ipsum"]},
+    {id:5,username:" The Hierophant", messages:["Test Message 0. Lorem Ipsum"]},
+    {id:6,username:"The Lovers", messages:["Test Message 0. Lorem Ipsum"]},
+    {id:7,username:"The Chariot", messages:["Test Message 0. Lorem Ipsum"]},
+    {id:8,username:"Strength", messages:["Test Message 0. Lorem Ipsum"]},
+    {id:9,username:"The Hermit", messages:["Test Message 0. Lorem Ipsum"]},
+    {id:10,username:"The Wheel of Fortune", messages:["Test Message 0. Lorem Ipsum"]},
 ]
 
 let currentmessages = originalmessages
@@ -142,6 +142,7 @@ const MessagesListComponent = (props) => {
     let empty = (messages.length == 0)
     let messageComponents = messages.map((a, i) => {
 	return <ChatComponent
+		   key={a.id}	
 		   username={a.username}
 		   messages={a.messages}
 	       />;

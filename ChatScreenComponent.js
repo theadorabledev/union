@@ -14,7 +14,7 @@ const MessageBoxComponent = (props) => {
     const [textmessages,setMessages] = useState([props.messages]);
     let empty = (textmessages.length == 0)
     let textComponents = textmessages.map((a, i) => {
-	return <Text>
+	return <Text key={i}>
 	{a}
 	       </Text>;
     });
