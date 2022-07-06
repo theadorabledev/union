@@ -5,7 +5,7 @@ import NavigationBar from 'react-native-navbar';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { createStackNavigator } from '@react-navigation/stack';
 import { HeaderBackButton } from '@react-navigation/elements';
-import {SettingsButton,PhoneButton,ProfileButton} from './Common.js';
+import {SettingsButton,PhoneButton,ProfileButton,ContextMenu} from './Common.js';
 
 const defaultprofile = require('./assets/profilepicsquaresmall.png')
 
@@ -32,21 +32,32 @@ const MessageBoxComponent = (props) => {
 }
 
 
+
 // Returns the settings screen displayed on the main page
 const ChatScreenComponent = ({route, navigation}) => {
+	
+	const titlename = route.params.username.length > 15 ?  route.params.username.substring(0,14) + "..." : route.params.username
+	const chatOptions = [
+	{text:"Settings", handler:() => navigation.navigate('ChatSettings')},
+	{text:"Search", handler:()=> {alert("Search conversation function")}},
+	{text:"Add to friends", handler:()=> {alert("Add contact to friends list")}},
+	]
     React.useLayoutEffect(() => {
 	navigation.setOptions({
-	    title: route.params.username,
+	    title: titlename,
 	    headerRight: () => (
 		<View style={{
 			flexDirection:'row',
-			justifyContent:'flex-end',
+			justifyContent:'space-between',
 			alignItems: 'center',
-			minWidth: 30,
+			minWidth: 80,
 		}}>
 			<SettingsButton onPress={() => navigation.navigate('ChatSettings')}/>
 			<PhoneButton username={route.params.username}/>
-			<Ionicons name="ellipsis-vertical" size={24} color="black" />
+			
+			
+			
+			<ContextMenu options={chatOptions}ionicon="menu"/>
 		</View>
 		
 	    ),
