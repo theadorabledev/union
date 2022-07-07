@@ -14,14 +14,13 @@ const MessageBoxComponent = (props) => {
     const [textmessages,setMessages] = useState([props.messages]);
     let empty = (textmessages.length == 0)
     let textComponents = textmessages.map((a, i) => {
-	return <Text key={i}>
-	{a}
-	       </Text>;
+		return <Text key={i}>{a}</Text>;
     });
+	
     return (
 	<>
 	    {empty ? 
-	    <Text>No new messages</Text>
+	    <Text>No messages</Text>
 	     :
 	     <ScrollView>
 		 {textComponents}
@@ -33,7 +32,7 @@ const MessageBoxComponent = (props) => {
 
 
 
-// Returns the settings screen displayed on the main page
+
 const ChatScreenComponent = ({route, navigation}) => {
 	
 	const titlename = route.params.username.length > 15 ?  route.params.username.substring(0,14) + "..." : route.params.username
@@ -46,34 +45,30 @@ const ChatScreenComponent = ({route, navigation}) => {
 	navigation.setOptions({
 	    title: titlename,
 	    headerRight: () => (
-		<View style={{
-			flexDirection:'row',
-			justifyContent:'space-between',
-			alignItems: 'center',
-			minWidth: 80,
-		}}>
-			<SettingsButton onPress={() => navigation.navigate('ChatSettings')}/>
-			<PhoneButton username={route.params.username}/>
-			
-			
-			
-			<ContextMenu options={chatOptions}ionicon="menu"/>
-		</View>
-		
+			<View style={{
+				flexDirection:'row',
+				justifyContent:'space-between',
+				alignItems: 'center',
+				minWidth: 80,
+			}}>
+				<SettingsButton onPress={() => navigation.navigate('ChatSettings')}/>
+				<PhoneButton username={route.params.username}/>
+				<ContextMenu options={chatOptions}ionicon="menu"/>
+			</View>
 	    ),
 		headerLeft:()=>(
-		<View style={{
-			flexDirection:'row',
-			flexWrap: "wrap",
-			justifyContent:'flex-start',
-			alignItems: 'center',
-			minWidth: 30,
-			paddingRight: 10,
-		}}>
-			<HeaderBackButton onPress={()=>{navigation.goBack()}}/>
-			<ProfileButton profileSize={32} profileSource={defaultprofile} onPress={()=>{alert("let user change contact's picture")}}/>
-		</View>
-			),
+			<View style={{
+				flexDirection:'row',
+				flexWrap: "wrap",
+				justifyContent:'flex-start',
+				alignItems: 'center',
+				minWidth: 30,
+				paddingRight: 10,
+			}}>
+				<HeaderBackButton onPress={()=>{navigation.goBack()}}/>
+				<ProfileButton profileSize={32} profileSource={defaultprofile} onPress={()=>{alert("let user change contact's picture")}}/>
+			</View>
+		),
 	});
     }, [navigation]);
     const {username, messages} = route.params;

@@ -26,9 +26,13 @@ const CommonStyles = {
     },
     
 	bottom: {
-		flex: 1,
+		width: 56,
+		height: 56,
+		alignItems:'flex-end',
 		justifyContent: 'flex-end',
-		marginBottom: 36
+		bottom: 20,                                                    
+		right: 20, 
+		position: 'absolute',
 	  },
 	
 }
@@ -44,7 +48,7 @@ export const SettingsButton = ({onPress}) => {
 export const NewChatButton = ({onPress}) => {
     return(
 	<TouchableOpacity style = {CommonStyles.bottom} onPress={()=>onPress()} >
-	    <Ionicons name='add-circle' size={40} color={highlightcolor}/>
+	    <Ionicons name='add-circle' size={56} color={highlightcolor}/>
 	</TouchableOpacity>
     );
 }
