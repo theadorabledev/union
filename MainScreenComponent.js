@@ -6,7 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 
 import Ionicons from '@expo/vector-icons/Ionicons';
 
-import {SettingsButton,ProfileButton} from './Common.js';
+import {SettingsButton,ProfileButton,NewChatButton} from './Common.js';
 
 //import StackNav from './Common.js';
 
@@ -55,6 +55,7 @@ const styles = {
 	alignItems:'center',
 	justifyContent:'center',
     },
+	
     userName: {
 	fontWeight: 'bold',
 	fontSize: 16,
@@ -183,6 +184,7 @@ const MainScreenComponent = ({navigation}) => {
     return (
 	<View style={styles.container}>
 	    <MessagesListComponent/>
+		<NewChatButton onPress={()=>{alert("merge to contacts list")}}/>
 	</View>
     );
 

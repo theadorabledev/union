@@ -25,6 +25,11 @@ const CommonStyles = {
 	justifyContent:'center',
     },
     
+	bottom: {
+		flex: 1,
+		justifyContent: 'flex-end',
+		marginBottom: 36
+	  },
 	
 }
 //Settings icon which triggers menu popup
@@ -35,6 +40,15 @@ export const SettingsButton = ({onPress}) => {
 	</TouchableOpacity>
     );
 }
+
+export const NewChatButton = ({onPress}) => {
+    return(
+	<TouchableOpacity style = {CommonStyles.bottom} onPress={()=>onPress()} >
+	    <Ionicons name='add-circle' size={40} color={highlightcolor}/>
+	</TouchableOpacity>
+    );
+}
+
 export const PhoneButton = (props) => {
 	return(
 	<TouchableOpacity style = {CommonStyles.profileButton} onPress={()=>{alert("Calling " + props.username)}} >
