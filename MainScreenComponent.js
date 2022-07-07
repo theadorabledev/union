@@ -6,7 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 
 import Ionicons from '@expo/vector-icons/Ionicons';
 
-import {SettingsButton,ProfileButton,NewChatButton} from './Common.js';
+import {SettingsButton,ProfileButton} from './Common.js';
 
 //import StackNav from './Common.js';
 
@@ -38,9 +38,6 @@ const styles = {
 	paddingTop: 10,
 	paddingBottom: 10,
     },
-
-
-    
     userProfileImage: {
 	width: userProfileSize,
 	height: userProfileSize,
@@ -64,7 +61,16 @@ const styles = {
 	paddingLeft: 4,
 	paddingRight: 4,
     },
-
+    
+    newChat: {
+	width: 56,
+	height: 56,
+	alignItems:'flex-end',
+	justifyContent: 'flex-end',
+	bottom: 20,                                                    
+	right: 20, 
+	position: 'absolute',
+    },
 };
 
 //Placeholder variables for debugging
@@ -167,6 +173,14 @@ const MessagesListComponent = (props) => {
 	    }
 	</>
     );	
+}
+
+export const NewChatButton = ({onPress}) => {
+    return(
+	<TouchableOpacity style = {styles.newChat} onPress={()=>onPress()} >
+	    <Ionicons name='add-circle' size={56} color={highlightcolor}/>
+	</TouchableOpacity>
+    );
 }
 
 const MainScreenComponent = ({navigation}) => {
