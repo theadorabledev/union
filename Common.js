@@ -13,6 +13,8 @@ import {FontAwesome} from '@expo/vector-icons';
 const userProfileSize = 40
 const highlightcolor = 'deepskyblue'
 
+const highlightcolor = '#4CDBFF'
+const pinklightcolor = '#FF60C5'
 
 
 const CommonStyles = {
@@ -35,6 +37,16 @@ export const SettingsButton = ({onPress}) => {
     );
 }
 
+=======
+export const NewChatButton = ({onPress}) => {
+    return(
+	<TouchableOpacity style = {CommonStyles.bottom} onPress={()=>onPress()} >
+	    <Ionicons name='add-circle' size={56} color={pinklightcolor}/>
+	</TouchableOpacity>
+    );
+}
+
+>>>>>>> Stashed changes
 export const PhoneButton = (props) => {
 	return(
 	<TouchableOpacity style = {CommonStyles.profileButton} onPress={()=>{alert("Calling " + props.username)}} >

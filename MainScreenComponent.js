@@ -13,7 +13,7 @@ import {SettingsButton,ProfileButton} from './Common.js';
 //Global Style Variables
 const userProfileSize = 40
 const contactProfileSize = 50
-const highlightcolor = 'deepskyblue'
+const highlightcolor = '#4CDBFF'
 const defaultprofile = require('./assets/profilepicsquaresmall.png')
 
 const styles = {
@@ -156,11 +156,11 @@ const MessagesListComponent = (props) => {
     });
     return (
 	<>
-	    <Button title="Reset Messages" color = {styles.highlightcolor} onPress={()=>{
+	    <Button title="Reset Messages" color = {highlightcolor} onPress={()=>{
 			setMessages(originalmessages);
 		    }
 										   }/>
-	    <Button title="Clear Messages" color = {styles.highlightcolor} onPress={()=>{
+	    <Button title="Clear Messages" color = {highlightcolor} onPress={()=>{
 			setMessages([])
 		    }
 										   }/>

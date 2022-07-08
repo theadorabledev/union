@@ -8,7 +8,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 const userProfileSize = 40
 const iconSize = 20
 const contactProfileSize = 50
-const highlightcolor = 'deepskyblue'
+const highlightcolor = '#4CDBFF'
 
 const style = {
 	userInfoContainer: {
@@ -67,7 +67,13 @@ const icons = {
 	privacy:require('./assets/privacy.png'),
 	help:require('./assets/help.png'),
 }
-const userInfo = {pic:icons.account, firstName:"Parva", lastName:"Ganbarian", identify:"she/her", phone:"(123)456-7890"}
+const userInfo = {
+	pic:icons.account, 
+	firstName:"Parva", 
+	lastName:"Ganbarian", 
+	identify:"she/her", 
+	phone:"(123)456-7890"
+}
 const settingOptions = [
 	{text: "Account", icon:icons.account},
 	{text: "Appearance", icon:icons.appearance},

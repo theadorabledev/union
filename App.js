@@ -19,7 +19,7 @@ const StackNav = createNativeStackNavigator();
 
 const userProfileSize = 40
 const contactProfileSize = 50
-const highlightcolor = 'deepskyblue'
+const highlightcolor = '#4CDBFF'
 const defaultprofile = require('./assets/profilepicsquaresmall.png')
 
 const styles = {
