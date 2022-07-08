@@ -14,6 +14,7 @@ import {SettingsButton,ProfileButton} from './Common.js';
 const userProfileSize = 40
 const contactProfileSize = 50
 const highlightcolor = '#4CDBFF'
+const pinklightcolor = '#FF60C5'
 const defaultprofile = require('./assets/profilepicsquaresmall.png')
 
 const styles = {
@@ -178,7 +179,7 @@ const MessagesListComponent = (props) => {
 export const NewChatButton = ({onPress}) => {
     return(
 	<TouchableOpacity style = {styles.newChat} onPress={()=>onPress()} >
-	    <Ionicons name='add-circle' size={56} color={highlightcolor}/>
+	    <Ionicons name='add-circle' size={56} color={pinklightcolor}/>
 	</TouchableOpacity>
     );
 }
