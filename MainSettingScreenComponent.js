@@ -5,9 +5,6 @@ import { useNavigation } from '@react-navigation/native';
 import NavigationBar from 'react-native-navbar';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-
 //Global Style Variables
 const userProfileSize = 40
 const iconSize = 20
@@ -60,7 +57,7 @@ const style = {
 		marginRight: 20,
 	},
 	optionText:{
-		color: 'green',
+		color: 'black',
 	},
 }
 
