@@ -175,9 +175,9 @@ const MessagesListComponent = (props) => {
     );	
 }
 
-export const NewChatButton = ({onPress}) => {
+export const NewChatButton = ( ) => {
     return(
-	<TouchableOpacity style = {styles.newChat} onPress={()=>onPress()} >
+	<TouchableOpacity style = {styles.newChat} onPress={() => navigation.navigate('NewChatScreen')} >
 	    <Ionicons name='add-circle' size={56} color={highlightcolor}/>
 	</TouchableOpacity>
     );
@@ -198,7 +198,7 @@ const MainScreenComponent = ({navigation}) => {
     return (
 	<View style={styles.container}>
 	    <MessagesListComponent/>
-		<NewChatButton onPress={()=>{alert("merge to contacts list")}}/>
+		<NewChatButton/>
 	</View>
     );
 
