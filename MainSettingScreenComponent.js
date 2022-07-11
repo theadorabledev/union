@@ -5,6 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import NavigationBar from 'react-native-navbar';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { MaterialCommunityIcons } from '@expo/vector-icons'; 
+import {ProfileButton} from './Common.js';
 import {GlobalStyle} from './Styles.js';
 
 const settingsIconSize=35;
@@ -18,14 +19,6 @@ const style = {
 		marginTop: 30,
 		borderBottomColor: GlobalStyle.pinklightcolor,
 		borderBottomWidth: 2,
-	},
-	userProfileImage: {
-		width: GlobalStyle.userProfileSize,
-		height: GlobalStyle.userProfileSize,
-		resizeMode: 'stretch',
-		borderRadius: GlobalStyle.userProfileSize/2,
-		paddingLeft: 5,
-		marginBottom:20,
 	},
 	personalInfo: {
 		display:'flex',
@@ -50,7 +43,6 @@ const style = {
 		fontSize: settingsIconSize,
 		color: GlobalStyle.highlightcolor,
 		marginRight: 20,
-
 	},
 }
 
@@ -73,7 +65,7 @@ const userInfo = {
 const User = () => {
 	return(
 		<View style={style.userInfoContainer}>
-			<Image source={userInfo.pic} style={style.userProfileImage}/>
+			<ProfileButton profileSize={GlobalStyle.userProfileSize} profileSource={userInfo.pic} onPress={()=>{alert("let user change profile picture")}}/>
 			<View style={style.personalInfo}>
 				<Text style={GlobalStyle.textTypes.H2}>{userInfo.firstName} {userInfo.lastName} {userInfo.identify}</Text>
 				<Text style={style.phone}>{userInfo.phone}</Text>
@@ -138,8 +130,8 @@ const Option = (props) => {
 				})
 			}>
 			<View style={style.optionContainer}>
-            <MaterialCommunityIcons name={props.option.icon}style={style.optionVector}/>
-            <Text style={GlobalStyle.textTypes.H3}>{props.option.text}</Text>
+				<MaterialCommunityIcons name={props.option.icon}style={style.optionVector}/>
+				<Text style={GlobalStyle.textTypes.H3}>{props.option.text}</Text>
 			</View>
 		</TouchableOpacity>
 	);

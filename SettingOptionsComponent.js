@@ -20,7 +20,6 @@ const SettingOptionsComponent = ({route, navigation}) => {
 				flexDirection:'row',
 				justifyContent:'space-between',
 				alignItems: 'center',
-				minWidth: 80,
 			}}>
 				<SettingsButton onPress={() => navigation.navigate('Home')}/>
 			</View>
