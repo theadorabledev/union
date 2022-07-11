@@ -17,20 +17,6 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 
 const StackNav = createNativeStackNavigator();
 
-const userProfileSize = 40
-const contactProfileSize = 50
-const highlightcolor = '#4CDBFF'
-const defaultprofile = require('./assets/profilepicsquaresmall.png')
-
-const styles = {
-    userProfileButton: {
-	width: userProfileSize, 
-	height:userProfileSize, 
-	borderRadius: userProfileSize/2,
-	alignItems:'center',
-	justifyContent:'center',
-    }
-};
 
 const App = (props) => {
     return (

@@ -6,8 +6,8 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { createStackNavigator } from '@react-navigation/stack';
 import { HeaderBackButton } from '@react-navigation/elements';
 import {SettingsButton,PhoneButton,ProfileButton,ContextMenu} from './Common.js';
+import {GlobalStyle} from './Styles.js';
 
-const defaultprofile = require('./assets/profilepicsquaresmall.png')
 
 
 const MessageBoxComponent = (props) => {
@@ -63,10 +63,10 @@ const ChatScreenComponent = ({route, navigation}) => {
 				justifyContent:'flex-start',
 				alignItems: 'center',
 				minWidth: 30,
-				paddingRight: 10,
+				paddingRight: 5,
 			}}>
 				<HeaderBackButton onPress={()=>{navigation.goBack()}}/>
-				<ProfileButton profileSize={32} profileSource={defaultprofile} onPress={()=>{alert("let user change contact's picture")}}/>
+				<ProfileButton profileSize={GlobalStyle.userProfileSize} profileSource={GlobalStyle.defaultprofile} onPress={()=>{alert("let user change contact's picture")}}/>
 			</View>
 		),
 	});

@@ -8,57 +8,48 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 
 import {SettingsButton,ProfileButton} from './Common.js';
 
-//import StackNav from './Common.js';
+import {GlobalStyle} from './Styles.js';
 
-//Global Style Variables
-const userProfileSize = 40
-const contactProfileSize = 50
-const highlightcolor = '#4CDBFF'
-const pinklightcolor = '#FF60C5'
-const defaultprofile = require('./assets/profilepicsquaresmall.png')
+
+
 
 const styles = {
-    container: {
-	flex: 1,
-	paddingTop: 32,
-	padding: 2,
-	borderRadius: 32,
-    },
     chatComp: {
 	flexDirection:'row',
-	flexWrap: "wrap",
 	alignItems:'center',
-	maxHeight: 100,
 	padding: 4,
     },
-    miniChat: {
+    
+	miniChat: {
+	flex: 1,
 	flexDirection: 'column',
-	justifyContent: 'space-around',
-	color: "red",
-	padding: 4,
+	height:60,
+    flexWrap: 'wrap',
+	justifyContent: 'flex-start',
+	alignContent: 'space-between',
 	paddingTop: 10,
-	paddingBottom: 10,
+	paddingLeft: 5,
+	paddingRight:5,
     },
+	
     userProfileImage: {
-	width: userProfileSize,
-	height: userProfileSize,
+	width: GlobalStyle.userProfileSize,
+	height: GlobalStyle.userProfileSize,
 	resizeMode: 'stretch',
-	borderRadius: userProfileSize/2,
+	borderRadius: GlobalStyle.userProfileSize/2,
     },
     
     userProfileButton: {
-	width: userProfileSize, 
-	height:userProfileSize, 
-	borderRadius: userProfileSize/2,
+	width: GlobalStyle.userProfileSize, 
+	height:GlobalStyle.userProfileSize, 
+	borderRadius: GlobalStyle.userProfileSize/2,
 	alignItems:'center',
 	justifyContent:'center',
     },
 	
-    userName: {
-	fontWeight: 'bold',
-	fontSize: 16,
-    },
-    navBar: {
+    userName: GlobalStyle.textTypes.H3,
+    
+	navBar: {
 	paddingLeft: 4,
 	paddingRight: 4,
     },
@@ -76,7 +67,7 @@ const styles = {
 
 //Placeholder variables for debugging
 const username = "Test User";
-let userprofilepic = defaultprofile;
+let userprofilepic = GlobalStyle.defaultprofile;
 
 const getUsername = () => {
     return "Test User";
@@ -88,7 +79,7 @@ const originalmessages=[
     {id:2,username:"The High Priestess", messages:["Test Message 0. Lorem Ipsum"]},
     {id:3,username:"The Empress", messages:["Test Message 0. Lorem Ipsum"]},
     {id:4,username:"The Emperor", messages:["Test Message 0. Lorem Ipsum"]},
-    {id:5,username:" The Hierophant", messages:["Test Message 0. Lorem Ipsum"]},
+    {id:5,username:"The Hierophant", messages:["Test Message 0. Lorem Ipsum"]},
     {id:6,username:"The Lovers", messages:["Test Message 0. Lorem Ipsum"]},
     {id:7,username:"The Chariot", messages:["Test Message 0. Lorem Ipsum"]},
     {id:8,username:"Strength", messages:["Test Message 0. Lorem Ipsum"]},
@@ -116,20 +107,23 @@ const ChatComponent = (props) => {
     const navigation = useNavigation();
     return (
 	<TouchableHighlight onPress={() =>
-				navigation.navigate(
-				    'ChatScreen', {
-					username:props.username,
-					messages:props.messages
-				    })
-			    }
-			    underlayColor = {highlightcolor}>
+		navigation.navigate(
+			'ChatScreen', {
+			username:props.username,
+			messages:props.messages
+			})
+		}
+	underlayColor = {GlobalStyle.highlightcolor}>
+	
 	    <View style={styles.chatComp}>
-		<ProfileButton profileSize={50} profileSource={defaultprofile} onPress={()=>{alert("Take user to contact's settings")}}/>
-		<View style={styles.miniChat}>
-		    <Text style={styles.userName}>{props.username}</Text>
-		    <Text>{props.messages[props.messages.length-1]}</Text>
-		</View>
+			<ProfileButton profileSize={GlobalStyle.contactProfileSize} profileSource={GlobalStyle.defaultprofile} onPress={()=>{alert("Take user to contact's settings")}}/>
+			<View style={styles.miniChat}>
+				<Text style={styles.userName}>{props.username}</Text>
+				<Text>{props.messages[props.messages.length-1]}</Text>
+				<Text>"Date"</Text>
+			</View>
 	    </View>
+		
 	</TouchableHighlight>
     );
 };
@@ -157,11 +151,11 @@ const MessagesListComponent = (props) => {
     });
     return (
 	<>
-	    <Button title="Reset Messages" color = {highlightcolor} onPress={()=>{
+	    <Button title="Reset Messages" color = {GlobalStyle.highlightcolor} onPress={()=>{
 			setMessages(originalmessages);
 		    }
 										   }/>
-	    <Button title="Clear Messages" color = {highlightcolor} onPress={()=>{
+	    <Button title="Clear Messages" color = {GlobalStyle.highlightcolor} onPress={()=>{
 			setMessages([])
 		    }
 										   }/>
@@ -179,7 +173,7 @@ const MessagesListComponent = (props) => {
 export const NewChatButton = ({onPress}) => {
     return(
 	<TouchableOpacity style = {styles.newChat} onPress={()=>onPress()} >
-	    <Ionicons name='add-circle' size={56} color={pinklightcolor}/>
+	    <Ionicons name='add-circle' size={56} color={GlobalStyle.pinklightcolor}/>
 	</TouchableOpacity>
     );
 }
@@ -192,12 +186,12 @@ const MainScreenComponent = ({navigation}) => {
 		<SettingsButton onPress={() => navigation.navigate('MainSettings')}/>
 	    ),
 	    headerLeft: () => (
-		<ProfileButton profileSize={40} profileSource={userprofilepic} onPress={()=>{alert("let user change profile picture")}}/>
+		<ProfileButton profileSize={GlobalStyle.userProfileSize} profileSource={userprofilepic} onPress={()=>{alert("let user change profile picture")}}/>
 	    ),
 	});
     }, [navigation]);
     return (
-	<View style={styles.container}>
+	<View>
 	    <MessagesListComponent/>
 		<NewChatButton onPress={()=>{alert("merge to contacts list")}}/>
 	</View>
