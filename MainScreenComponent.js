@@ -191,10 +191,13 @@ const MainScreenComponent = ({navigation}) => {
 	});
     }, [navigation]);
     return (
+	<>
 	<View>
 	    <MessagesListComponent/>
-		<NewChatButton onPress={()=>{alert("merge to contacts list")}}/>
+		
 	</View>
+		<NewChatButton onPress={()=>{alert("merge to contacts list")}}/>
+	</>
     );
 
 };
