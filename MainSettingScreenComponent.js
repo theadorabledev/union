@@ -1,6 +1,7 @@
 /* A file to hold components used within the main settings screen. */
 import React, { useState } from 'react';
 import { View, Text, ScrollView, Button, Image, TouchableOpacity, TouchableHighlight } from "react-native";
+import { useNavigation } from '@react-navigation/native';
 import NavigationBar from 'react-native-navbar';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { MaterialCommunityIcons } from '@expo/vector-icons'; 
@@ -67,13 +68,7 @@ const userInfo = {
 	identify:"she/her", 
 	phone:"(123)456-7890"
 }
-const settingOptions = [
-	{text: "Account", icon:icons.account},
-	{text: "Appearance", icon:icons.appearance},
-	{text: "Notifications", icon:icons.notification},
-	{text: "Privacy", icon:icons.privacy},
-	{text: "Help", icon:icons.help},
-]
+
 
 const User = () => {
 	return(
@@ -87,23 +82,79 @@ const User = () => {
 	);
 }
 
-
-const Options = () => {
+const Account = () => {
 	return (
-		<View style={style.optionsContainer}>
-			<ScrollView>
-			<View>
-				{settingOptions.map(option => {
-					return (
-						<View key={option.text} style={style.optionContainer}>
-							<MaterialCommunityIcons name={option.icon}style={style.optionVector}/>
-							<Text style={GlobalStyle.textTypes.H3}>{option.text}</Text>
-						</View>
-					);
-				})}
-			</View>
-			</ScrollView>
+		<View>
+			<Text> This is the Acount inner component</Text>
 		</View>
+	)
+}
+const Appearance = () => {
+	return (
+		<View>
+			<Text> This is the Appearance inner component</Text>
+		</View>
+	)
+}
+const Notifications = () => {
+	return (
+		<View>
+			<Text> This is the Notifications inner component</Text>
+		</View>
+	)
+}
+const Privacy = () => {
+	return (
+		<View>
+			<Text> This is the Privacy inner component</Text>
+		</View>
+	)
+}
+const Help = () => {
+	return (
+		<View>
+			<Text> This is the Help inner component</Text>
+		</View>
+	)
+}
+
+const settingOptions = [
+	{text: "Account", icon:icons.account, component:Account()},
+	{text: "Appearance", icon:icons.appearance, component:Appearance()},
+	{text: "Notifications", icon:icons.notification, component:Notifications()},
+	{text: "Privacy", icon:icons.privacy, component:Privacy()},
+	{text: "Help", icon:icons.help, component:Help()},
+]
+
+
+const Option = (props) => {
+	const navigation = useNavigation();
+	return (
+		<TouchableOpacity  onPress={() =>
+			navigation.navigate(
+				'SettingOptions', {
+					title:props.option.text,
+					component:props.option.component
+				})
+			}>
+			<View style={style.optionContainer}>
+            <MaterialCommunityIcons name={props.option.icon}style={style.optionVector}/>
+            <Text style={GlobalStyle.textTypes.H3}>{props.option.text}</Text>
+			</View>
+		</TouchableOpacity>
+	);
+}
+
+const OptionList = () => {
+	const options = settingOptions.map((option, i )=> {
+		return (
+			<Option option={option} key={i}/>
+		);
+	});
+	return (
+		<ScrollView style={style.optionsContainer}>
+			{options}
+		</ScrollView>
 	);
 }
 
@@ -117,7 +168,7 @@ const MainSettingScreenComponent = ({navigation}) => {
     return (
 	<View>
 		<User/>
-		<Options/>
+		<OptionList/> 
 	</View>
     );
 }
