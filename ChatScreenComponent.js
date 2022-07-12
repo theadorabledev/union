@@ -55,10 +55,14 @@ class MessageBubble extends React.Component{
 
 
 const MessageBoxComponent = (props) => {
-    const [textmessages,setMessages] = useState([props.messages]);
+    const [textmessages,setMessages] = useState(props.messages);
     let empty = (textmessages.length == 0)
     let textComponents = textmessages.map((a, i) => {
-		return <Text key={i}>{a}</Text>;
+		return <MessageBubble
+			 				send
+							key={i}
+			 				text = {a}
+			 			/>;
     });
 	
     return (
@@ -66,12 +70,7 @@ const MessageBoxComponent = (props) => {
 	    {empty ? 
 	    <Text>No messages</Text>
 	     :
-		 
 	     <ScrollView>
-		 <MessageBubble
-			 				send
-			 				text = "Hi!"
-			 			/>
 		 {textComponents}
 	     </ScrollView>
 	    }
