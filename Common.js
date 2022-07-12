@@ -12,7 +12,23 @@ import {FontAwesome} from '@expo/vector-icons';
 
 import {GlobalStyle} from './Styles.js';
 
+// Home button to navigate to MainScreenComponent
+export const HomeButton = ({onPress}) => {
+  return(
+    <TouchableOpacity onPress={()=>onPress()}>
+      <Ionicons name="home" size={GlobalStyle.iconSize} color="black" />
+    </TouchableOpacity>
+  )
+}
 
+// User icon
+export const UserButton = ({onPress}) => {
+	return(
+	<TouchableOpacity onPress={()=>onPress()} >
+	    <FontAwesome name="user" size={GlobalStyle.userProfileSize} color="black" />
+	</TouchableOpacity>
+    );
+}
 
 //Settings icon which triggers menu popup
 export const SettingsButton = ({onPress}) => {
@@ -74,3 +90,4 @@ export const ContextMenu =(props)=> {
     </View>
   );
 }
+
