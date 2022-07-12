@@ -129,7 +129,10 @@ export const ChatComponent = (props) => {
 				    'ChatScreen', {
 					username:props.username,
 					messages:props.messages,
-					newChat:props.isNewChat
+					newChat:props.isNewChat,
+					contactlist:props.contactlist,
+					setContactList:props.setContactList,
+					index:props.index,
 				    })
 			    }
 			    underlayColor = {GlobalStyle.highlightcolor}>
@@ -167,7 +170,10 @@ export const NewChatComponent = (props) => {
 						'ChatScreen', {
 						username:props.username,
 						messages:props.messages,
-						newChat:props.isNewChat
+						newChat:props.isNewChat,
+						contactlist:props.contactlist,
+						setContactList:props.setContactList,
+						index:props.contactlist.length
 						})
 					}
 				}

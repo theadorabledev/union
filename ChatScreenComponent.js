@@ -52,7 +52,7 @@ const MessageBoxComponent = (props) => {
     let empty = (textmessages.length == 0)
     let textComponents = textmessages.map((a, i) => {
 		return <MessageBubble
-			   send
+			   recieve
 			   key={i}
 			   text = {a}
 		       />;
@@ -147,13 +147,14 @@ const keyboardStyle = StyleSheet.create({
 
 const tempContainerStyle ={
 	flex:1,
-	flexDirection: "column",
+	flexDirection: "column-reverse",
 }
 
 
 const ChatScreenComponent = ({route, navigation}) => {
 	
-	const titlename = route.params.username.length > 15 ?  route.params.username.substring(0,14) + "..." : route.params.username
+	const {username, messages,newChat,contactlist,setContactList,index} = route.params;
+	const titlename = username.length > 15 ?  username.substring(0,14) + "..." : username
 	const chatOptions = [
 	{text:"Settings", handler:() => navigation.navigate('ChatSettings')},
 	{text:"Search", handler:()=> {alert("Search conversation function")}},
@@ -188,11 +189,22 @@ const ChatScreenComponent = ({route, navigation}) => {
 		),
 	});
     }, [navigation]);
-    const {username, messages} = route.params;
+    
 		return (
 		<View style={tempContainerStyle}>
-	    <MessageBoxComponent messages={messages}/>
+	    
 		<KeyboardComponent />
+		<Button title="Add message" color = {GlobalStyle.highlightcolor} onPress={()=>{
+			
+			setContactList((contactlist) => {
+                const newContactList = [...contactlist];
+                newContactList[index].messages.push("Test Message.");
+				navigation.setParams({messages:newContactList[index].messages})
+                return newContactList;
+              });
+		}}
+		/>
+		<MessageBoxComponent messages={messages}/>
 		</View>
     	);
 

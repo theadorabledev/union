@@ -142,6 +142,9 @@ const MessagesListComponent = (props) => {
 		   key={a.id}	
 		   username={a.username}
 		   messages={a.messages}
+		   contactlist={props.contactlist}
+		   setContactList={props.setContactList}
+		   index={i}
 	       />;
     });
     return (
@@ -154,13 +157,14 @@ const MessagesListComponent = (props) => {
 			props.setContactList([])
 		    }
 										   }/>
-
-	    <Button title="Test Add contact" color = {GlobalStyle.highlightcolor} onPress={()=>{
-				const templist = [...props.contactlist];
-				templist.push({id:12,username:"The Aeon", messages:["Test Message 0. Lorem Ipsum"]})
-				props.setContactList(templist)
-		    }
-	   }/>
+										   
+		<Button title="New Contact Test" color = {GlobalStyle.highlightcolor} onPress={()=>{
+			
+					const templist = [...props.contactlist];
+					templist.push({id:props.contactlist.length,username:"Aeon", messages:["Test Message 0. Lorem Ipsum"]})
+					props.setContactList(templist)
+					}
+										   }/>		
 
 	    {empty ? 
 	     <NoContactsComponent/> 
@@ -195,6 +199,8 @@ const MainScreenComponent = ({navigation}) => {
 	});
     }, [navigation]);
 	const [contactlist,setContactList] = useState([]);
+	const [userdata,setUserData] = useState([]);
+	
     return (
 	<>
 	<View>
