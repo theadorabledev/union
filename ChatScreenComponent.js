@@ -13,44 +13,37 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 
 
+const MessageBubble = (props) => {
+    return(
+	<View style={[
+		  ChatStyles.message,
+		  props.send ? ChatStyles.send : ChatStyles.recieve
+	      ]}>
+	    <View
+		style= {[
+		    ChatStyles.cloud,
+		    {backgroundColor: props.send ? '#dddddd' : '#007aff'}
+		]}>
+		{
+		    props.text
+			?
+			<Text
+			    style={[
+				ChatStyles.text,
+				{color: props.send ? 'black': 'white'}
+			    ]}
+			>
+			    {props.text}
 
-class MessageBubble extends React.Component{
-	render(){
-		return(
-			<View style={[
-				ChatStyles.message,
-				this.props.send ? ChatStyles.send : ChatStyles.recieve
-			]}>
-				<View
-				style= {[
-					ChatStyles.cloud,
-					{
-						backgroundColor: this.props.send ? '#dddddd' : '#007aff'
-					}
-				]}>
-					{
-						this.props.text
-						?
-						<Text
-							style={[
-								ChatStyles.text,
-								{
-									color: this.props.send ? 'black': 'white'
-								}
-							]}
-						>
-							{this.props.text}
+			</Text>
+		    :
+		    null
+		}
 
-						</Text>
-						:
-						null
-					}
+	    </View>
 
-				</View>
-
-			</View>
-		)
-	}
+	</View>
+    )
 }
 
 
@@ -59,10 +52,10 @@ const MessageBoxComponent = (props) => {
     let empty = (textmessages.length == 0)
     let textComponents = textmessages.map((a, i) => {
 		return <MessageBubble
-			 				send
-							key={i}
-			 				text = {a}
-			 			/>;
+			   send
+			   key={i}
+			   text = {a}
+		       />;
     });
 	
     return (
