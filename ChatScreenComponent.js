@@ -1,6 +1,6 @@
 /* A file to hold components used within the chat screen. */
 import React, { useState } from 'react';
-import { View, Text, ScrollView, Button, Image, TouchableOpacity, TouchableHighlight } from "react-native";
+import { View, Text, ScrollView, Button, Image, TouchableOpacity, TouchableHighlight,StyleSheet } from "react-native";
 import NavigationBar from 'react-native-navbar';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -9,35 +9,16 @@ import {SettingsButton,PhoneButton,ProfileButton,ContextMenu} from './Common.js'
 import {GlobalStyle} from './Styles.js';
 import { render } from 'react-dom';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 
 
-
-const MessageBoxComponent = (props) => {
-    const [textmessages,setMessages] = useState([props.messages]);
-    let empty = (textmessages.length == 0)
-    let textComponents = textmessages.map((a, i) => {
-		return <Text key={i}>{a}</Text>;
-    });
-	
-    return (
-	<>
-	    {empty ? 
-	    <Text>No messages</Text>
-	     :
-	     <ScrollView>
-		 {textComponents}
-	     </ScrollView>
-	    }
-	</>
-    );	
-}
 
 class MessageBubble extends React.Component{
 	render(){
 		return(
 			<View style={[
 				ChatStyles.message,
-				this.props.send ? CHatStyles.send : ChatStyles.recieve
+				this.props.send ? ChatStyles.send : ChatStyles.recieve
 			]}>
 				<View
 				style= {[
@@ -70,6 +51,33 @@ class MessageBubble extends React.Component{
 		)
 	}
 }
+
+
+const MessageBoxComponent = (props) => {
+    const [textmessages,setMessages] = useState([props.messages]);
+    let empty = (textmessages.length == 0)
+    let textComponents = textmessages.map((a, i) => {
+		return <Text key={i}>{a}</Text>;
+    });
+	
+    return (
+	<>
+	    {empty ? 
+	    <Text>No messages</Text>
+	     :
+		 
+	     <ScrollView>
+		 <MessageBubble
+			 				send
+			 				text = "Hi!"
+			 			/>
+		 {textComponents}
+	     </ScrollView>
+	    }
+	</>
+    );	
+}
+
 
 const ChatStyles = StyleSheet.create({
 	message: {
