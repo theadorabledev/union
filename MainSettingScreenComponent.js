@@ -54,13 +54,6 @@ const icons = {
 	privacy:"lock",
 	help:"help-circle-outline",
 }
-const userInfo = {
-	pic:GlobalStyle.defaultprofile, 
-	firstName:"Union", 
-	lastName:"People", 
-	identify:"They/Them", 
-	phone:"(123)456-7890"
-}
 
 const UserScreen = () => {
 	return (
@@ -70,19 +63,19 @@ const UserScreen = () => {
 	)
 }
 
-const User = () => {
+const User = (props) => {
 	const navigation = useNavigation();
 	return(
 		<View style={style.userInfoContainer}>
-			<UserButton onPress={()=>{alert("Change user profile picture")}}/>
+			<ProfileButton profileSize={GlobalStyle.userProfileSize} profileSource={props.picture} onPress={()=>{alert("let user change profile picture")}}/>
 			<TouchableOpacity style={style.personalInfo} onPress={() => navigation.navigate(
 				'SettingOptions', {
-					title:userInfo.firstName,
+					title:props.userInfo.firstName,
 					component:UserScreen()
 				})
 			}>
-				<Text style={GlobalStyle.textTypes.H2}>{userInfo.firstName} {userInfo.lastName} {userInfo.identify}</Text>
-				<Text style={style.phone}>{userInfo.phone}</Text>
+				<Text style={GlobalStyle.textTypes.H2}>{props.userInfo.firstName} {props.userInfo.lastName} {props.userInfo.identify}</Text>
+				<Text style={style.phone}>{props.userInfo.phone}</Text>
 			</TouchableOpacity>
 		</View>
 	);
@@ -165,7 +158,8 @@ const OptionList = () => {
 }
 
 // Returns the settings screen displayed on the main page
-const MainSettingScreenComponent = ({navigation}) => {
+const MainSettingScreenComponent = ({route, navigation}) => {
+	const {userInfo, profilepic} = route.params;
     React.useLayoutEffect(() => {
 	navigation.setOptions({
 	    title: "Settings"
@@ -173,7 +167,7 @@ const MainSettingScreenComponent = ({navigation}) => {
     }, [navigation]);
     return (
 	<View>
-		<User/>
+		<User userInfo={userInfo} picture={profilepic}/>
 		<OptionList/> 
 	</View>
     );

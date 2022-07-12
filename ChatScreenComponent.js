@@ -47,12 +47,11 @@ const ChatScreenComponent = ({route, navigation}) => {
 	    headerRight: () => (
 			<View style={{
 				flexDirection:'row',
-				justifyContent:'space-between',
+				justifyContent:'space-evenly',
 				alignItems: 'center',
 				minWidth: 80,
 			}}>
 				<SettingsButton onPress={() => navigation.navigate('ChatSettings')}/>
-				<PhoneButton username={route.params.username}/>
 				<ContextMenu options={chatOptions}ionicon="menu"/>
 			</View>
 	    ),

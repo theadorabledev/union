@@ -16,7 +16,7 @@ import {GlobalStyle} from './Styles.js';
 export const HomeButton = ({onPress}) => {
   return(
     <TouchableOpacity onPress={()=>onPress()}>
-      <Ionicons name="home" size={GlobalStyle.iconSize} color="black" />
+      <Ionicons name="home" size={GlobalStyle.iconSize} color={GlobalStyle.pinklightcolor} />
     </TouchableOpacity>
   )
 }
@@ -82,7 +82,7 @@ export const ContextMenu =(props)=> {
     <View>
       <Menu
         visible={visible}
-        anchor={<Ionicons name={props.ionicon} size={GlobalStyle.iconSize} onPress={showMenu} color="black" />}
+        anchor={<Ionicons name={props.ionicon} size={GlobalStyle.iconSize} onPress={showMenu} color={GlobalStyle.highlightcolor} />}
         onRequestClose={hideMenu}
       >
 	  {menuOptions}
