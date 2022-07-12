@@ -123,27 +123,24 @@ const KeyboardComponent = () => {
 	}, []);
   
 	return (
-	  <View style={keyboardStyle.container}>
 		<TextInput
 		  style={keyboardStyle.input}
-		  placeholder='Click here…'
+		  placeholder='Press here…'
 		  onSubmitEditing={Keyboard.dismiss}
 		/>
-		<Text style={keyboardStyle.status}>{keyboardStatus}</Text>
-	  </View>
 	);
   }
 
 const keyboardStyle = StyleSheet.create({
 	container: {
 	  flex: 1,
-	  padding: 36,
 	  justifyContent: 'flex-end',
 	  marginBottom: 10
 	},
 	input: {
 	  padding: 10,
 	  borderWidth: 0.5,
+	  height:50,
 	  borderRadius: 4
 	},
 	status: {
@@ -151,6 +148,15 @@ const keyboardStyle = StyleSheet.create({
 	  textAlign: "center"
 	}
 });
+
+
+
+
+const tempContainerStyle ={
+	flex:1,
+	flexDirection: "column",
+}
+
 
 const ChatScreenComponent = ({route, navigation}) => {
 	
@@ -190,22 +196,10 @@ const ChatScreenComponent = ({route, navigation}) => {
 	});
     }, [navigation]);
     const {username, messages} = route.params;
-			// render(){
-			// 	return(
-			// 		<>
-			// 		<SafeAreaView>
-			// 			<MessageBubble
-			// 				send
-			// 				text = "Hi!"
-			// 			/>
-			// 		</SafeAreaView>
-			// 		</>
-			// 	)
-			// };
 		return (
-		<View>
+		<View style={tempContainerStyle}>
 	    <MessageBoxComponent messages={messages}/>
-		<KeyboardComponent/>
+		<KeyboardComponent />
 		</View>
     	);
 

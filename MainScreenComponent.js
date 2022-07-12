@@ -80,7 +80,21 @@ const getUsername = () => {
 }
 
 const originalmessages=[
-    {id:0,username:"The Fool", messages:["Test Message 0. Lorem Ipsum","Test Message 1. Lorem Ipsum"]},
+    {id:0,username:"The Fool", messages:["Test Message 0. Lorem Ipsum",
+	"Test Message 1. Lorem Ipsum",
+	"Test Message 2. Lorem Ipsum",
+	"Test Message 3. Lorem Ipsum",
+	"Test Message 4. Lorem Ipsum",
+	"Test Message 5. Lorem Ipsum",
+	"Test Message 6. Lorem Ipsum",
+	"Test Message 7. Lorem Ipsum",	
+	"Test Message 1. Lorem Ipsum",
+	"Test Message 2. Lorem Ipsum",
+	"Test Message 3. Lorem Ipsum",
+	"Test Message 4. Lorem Ipsum",
+	"Test Message 5. Lorem Ipsum",
+	"Test Message 6. Lorem Ipsum",
+	"Test Message 7. Lorem Ipsum",]},
     {id:1,username:"The Magician", messages:["Test Message 0. Lorem Ipsum"]},
     {id:2,username:"The High Priestess", messages:["Test Message 0. Lorem Ipsum"]},
     {id:3,username:"The Empress", messages:["Test Message 0. Lorem Ipsum"]},
