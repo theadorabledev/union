@@ -10,39 +10,30 @@ import { Menu, MenuItem, MenuDivider } from 'react-native-material-menu';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import {FontAwesome} from '@expo/vector-icons'; 
 
-const userProfileSize = 40
-const highlightcolor = 'deepskyblue'
+import {GlobalStyle} from './Styles.js';
 
 
 
-const CommonStyles = {
-	profileImage: {
-	resizeMode: 'stretch',
-    },
-    profileButton: {
-
-	alignItems:'center',
-	justifyContent:'center',
-    },
-	
-}
 //Settings icon which triggers menu popup
 export const SettingsButton = ({onPress}) => {
     return(
-	<TouchableOpacity style = {CommonStyles.profileButton} onPress={()=>onPress()} >
-	    <Ionicons name='settings-outline' size={24} color={highlightcolor}/>
+	<TouchableOpacity onPress={()=>onPress()} >
+	    <Ionicons name='settings-outline' size={GlobalStyle.iconSize} color={GlobalStyle.highlightcolor}/>
 	</TouchableOpacity>
     );
 }
 
+
+//call button (should this really be common?)
 export const PhoneButton = (props) => {
 	return(
-	<TouchableOpacity style = {CommonStyles.profileButton} onPress={()=>{alert("Calling " + props.username)}} >
-	    <FontAwesome name="phone" size={24} color="black" />
+	<TouchableOpacity onPress={()=>{alert("Calling " + props.username)}} >
+	    <FontAwesome name="phone" size={GlobalStyle.iconSize} color="black" />
 	</TouchableOpacity>
     );
 }
 
+//Image Button Wrapper
 export const ProfileButton = (props) => {
     return(
 	<TouchableHighlight style ={{width: props.profileSize,
@@ -62,6 +53,7 @@ export const ProfileButton = (props) => {
 } 
 
 
+//context menu wrapper
 export const ContextMenu =(props)=> {
   const [visible, setVisible] = useState(false);
   const hideMenu = () => setVisible(false);
@@ -74,7 +66,7 @@ export const ContextMenu =(props)=> {
     <View>
       <Menu
         visible={visible}
-        anchor={<Ionicons name={props.ionicon} size={24} onPress={showMenu} color="black" />}
+        anchor={<Ionicons name={props.ionicon} size={GlobalStyle.iconSize} onPress={showMenu} color="black" />}
         onRequestClose={hideMenu}
       >
 	  {menuOptions}
