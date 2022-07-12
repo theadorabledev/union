@@ -7,6 +7,7 @@ import MainSettingScreenComponent from './MainSettingScreenComponent';
 import ChatScreenComponent from './ChatScreenComponent';
 import ChatSettingScreenComponent from './ChatSettingScreenComponent';
 import NewChatScreenComponent from './NewChatScreenComponent';
+import SettingOptionsComponent from './SettingOptionsComponent'
 
 
 import { NavigationContainer } from '@react-navigation/native';
@@ -43,6 +44,10 @@ const App = (props) => {
 		<StackNav.Screen 
 		    name="NewChatScreen"
 		    component={NewChatScreenComponent}
+		/>
+		<StackNav.Screen 
+		    name="SettingOptions"
+		    component={SettingOptionsComponent}
 		/>
             </StackNav.Navigator>
 	</NavigationContainer>
