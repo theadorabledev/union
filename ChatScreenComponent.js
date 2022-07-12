@@ -1,6 +1,6 @@
 /* A file to hold components used within the chat screen. */
-import React, { useState } from 'react';
-import { View, Text, ScrollView, Button, Image, TouchableOpacity, TouchableHighlight } from "react-native";
+import React, { useState,useEffect } from 'react';
+import { View, Text, ScrollView, Button, Image, TouchableOpacity, TouchableHighlight, Keyboard, TextInput, StyleSheet } from "react-native";
 import NavigationBar from 'react-native-navbar';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -97,6 +97,52 @@ const ChatStyles = StyleSheet.create({
 	}
 })
 
+const keyboardComponent = () => {
+	const [keyboardStatus, setKeyboardStatus] = useState(undefined);
+  
+	useEffect(() => {
+	  const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
+		setKeyboardStatus("Keyboard Shown");
+	  });
+	  const hideSubscription = Keyboard.addListener("keyboardDidHide", () => {
+		setKeyboardStatus("Keyboard Hidden");
+	  });
+  
+	  return () => {
+		showSubscription.remove();
+		hideSubscription.remove();
+	  };
+	}, []);
+  
+	return (
+	  <View style={keyboardStyle.container}>
+		<TextInput
+		  style={keyboardStyle.input}
+		  placeholder='Click here…'
+		  onSubmitEditing={Keyboard.dismiss}
+		/>
+		<Text style={keyboardStyle.status}>{keyboardStatus}</Text>
+	  </View>
+	);
+  }
+
+const keyboardStyle = StyleSheet.create({
+	container: {
+	  flex: 1,
+	  padding: 36,
+	  justifyContent: 'flex-end',
+	  marginBottom: 10
+	},
+	input: {
+	  padding: 10,
+	  borderWidth: 0.5,
+	  borderRadius: 4
+	},
+	status: {
+	  padding: 10,
+	  textAlign: "center"
+	}
+});
 
 const ChatScreenComponent = ({route, navigation}) => {
 	
