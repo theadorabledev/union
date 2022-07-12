@@ -12,7 +12,23 @@ import {FontAwesome} from '@expo/vector-icons';
 
 import {GlobalStyle} from './Styles.js';
 
+// Home button to navigate to MainScreenComponent
+export const HomeButton = ({onPress}) => {
+  return(
+    <TouchableOpacity onPress={()=>onPress()}>
+      <Ionicons name="home" size={GlobalStyle.iconSize} color={GlobalStyle.pinklightcolor} />
+    </TouchableOpacity>
+  )
+}
 
+// User icon
+export const UserButton = ({onPress}) => {
+	return(
+	<TouchableOpacity onPress={()=>onPress()} >
+	    <FontAwesome name="user" size={GlobalStyle.userProfileSize} color="black" />
+	</TouchableOpacity>
+    );
+}
 
 //Settings icon which triggers menu popup
 export const SettingsButton = ({onPress}) => {
@@ -66,7 +82,7 @@ export const ContextMenu =(props)=> {
     <View>
       <Menu
         visible={visible}
-        anchor={<Ionicons name={props.ionicon} size={GlobalStyle.iconSize} onPress={showMenu} color="black" />}
+        anchor={<Ionicons name={props.ionicon} size={GlobalStyle.iconSize} onPress={showMenu} color={GlobalStyle.highlightcolor} />}
         onRequestClose={hideMenu}
       >
 	  {menuOptions}
@@ -74,3 +90,4 @@ export const ContextMenu =(props)=> {
     </View>
   );
 }
+
