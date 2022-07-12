@@ -114,7 +114,7 @@ const ChatComponentStyles = {
 export const ChatComponent = (props) => {
     const navigation = useNavigation();
     const lastMessage = () => {
-	if(props.messages){
+	if(props.messages.length){
 	    return (
 		<>
 		    <Text>{props.messages[props.messages.length-1]}</Text>
