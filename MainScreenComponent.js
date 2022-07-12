@@ -65,15 +65,35 @@ const styles = {
 };
 
 //Placeholder variables for debugging
-const username = "Test User";
+const userInfo = {
+	pic:GlobalStyle.defaultprofile, 
+	firstName:"Test", 
+	lastName:"Profile", 
+	identify:"They/Them", 
+	phone:"(123)456-7890"
+}
 let userprofilepic = GlobalStyle.defaultprofile;
 
 const getUsername = () => {
-    return "Test User";
+    return userInfo.firstName+" "+userInfo.lastName;
 }
 
 const originalmessages=[
-    {id:0,username:"The Fool", messages:["Test Message 0. Lorem Ipsum","Test Message 1. Lorem Ipsum"]},
+    {id:0,username:"The Fool", messages:["Test Message 0. Lorem Ipsum",
+	"Test Message 1. Lorem Ipsum",
+	"Test Message 2. Lorem Ipsum",
+	"Test Message 3. Lorem Ipsum",
+	"Test Message 4. Lorem Ipsum",
+	"Test Message 5. Lorem Ipsum",
+	"Test Message 6. Lorem Ipsum",
+	"Test Message 7. Lorem Ipsum",	
+	"Test Message 1. Lorem Ipsum",
+	"Test Message 2. Lorem Ipsum",
+	"Test Message 3. Lorem Ipsum",
+	"Test Message 4. Lorem Ipsum",
+	"Test Message 5. Lorem Ipsum",
+	"Test Message 6. Lorem Ipsum",
+	"Test Message 7. Lorem Ipsum",]},
     {id:1,username:"The Magician", messages:["Test Message 0. Lorem Ipsum"]},
     {id:2,username:"The High Priestess", messages:["Test Message 0. Lorem Ipsum"]},
     {id:3,username:"The Empress", messages:["Test Message 0. Lorem Ipsum"]},
@@ -159,7 +179,7 @@ const MainScreenComponent = ({navigation}) => {
 	navigation.setOptions({
 	    title: getUsername(),
 	    headerRight: () => (
-		<SettingsButton onPress={() => navigation.navigate('MainSettings')}/>
+		<SettingsButton onPress={() => navigation.navigate('MainSettings',{userInfo:userInfo, profilepic:userprofilepic})}/>
 	    ),
 	    headerLeft: () => (
 		<ProfileButton profileSize={GlobalStyle.userProfileSize} profileSource={userprofilepic} onPress={()=>{alert("let user change profile picture")}}/>
