@@ -5,7 +5,7 @@ import NavigationBar from 'react-native-navbar';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { createStackNavigator } from '@react-navigation/stack';
 import { HeaderBackButton } from '@react-navigation/elements';
-import {SettingsButton,PhoneButton,ProfileButton,ContextMenu} from './Common.js';  // in Common.js create Homebutton
+import {HomeButton, SettingsButton,PhoneButton,ProfileButton,ContextMenu} from './Common.js';  // in Common.js create Homebutton
 const defaultprofile = require('./assets/profilepicsquaresmall.png')  // should be Homebutton
 
 
@@ -21,7 +21,7 @@ const SettingOptionsComponent = ({route, navigation}) => {
 				justifyContent:'space-between',
 				alignItems: 'center',
 			}}>
-				<SettingsButton onPress={() => navigation.navigate('Home')}/>
+				<HomeButton onPress={() => navigation.navigate('Home')}/>
 			</View>
 	    ),
 		headerLeft:()=>(

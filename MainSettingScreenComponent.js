@@ -5,7 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import NavigationBar from 'react-native-navbar';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { MaterialCommunityIcons } from '@expo/vector-icons'; 
-import {ProfileButton} from './Common.js';
+import {UserButton, ProfileButton} from './Common.js';
 import {GlobalStyle} from './Styles.js';
 
 const settingsIconSize=35;
@@ -23,10 +23,11 @@ const style = {
 	personalInfo: {
 		display:'flex',
 		flexDirection:'column',
-		paddingLeft:10,
+		paddingLeft:20,
 	},
 	phone:{
 		marginTop: 5,
+		marginBottom:10,
 	},
 	optionsContainer:{
 		marginTop: 30,
@@ -53,23 +54,29 @@ const icons = {
 	privacy:"lock",
 	help:"help-circle-outline",
 }
-const userInfo = {
-	pic:GlobalStyle.defaultprofile, 
-	firstName:"Parva", 
-	lastName:"Ganbarian", 
-	identify:"she/her", 
-	phone:"(123)456-7890"
+
+const UserScreen = () => {
+	return (
+		<View>
+			<Text> Form for User to update information</Text>
+		</View>
+	)
 }
 
-
-const User = () => {
+const User = (props) => {
+	const navigation = useNavigation();
 	return(
 		<View style={style.userInfoContainer}>
-			<ProfileButton profileSize={GlobalStyle.userProfileSize} profileSource={userInfo.pic} onPress={()=>{alert("let user change profile picture")}}/>
-			<View style={style.personalInfo}>
-				<Text style={GlobalStyle.textTypes.H2}>{userInfo.firstName} {userInfo.lastName} {userInfo.identify}</Text>
-				<Text style={style.phone}>{userInfo.phone}</Text>
-			</View>
+			<ProfileButton profileSize={GlobalStyle.userProfileSize} profileSource={props.picture} onPress={()=>{alert("let user change profile picture")}}/>
+			<TouchableOpacity style={style.personalInfo} onPress={() => navigation.navigate(
+				'SettingOptions', {
+					title:props.userInfo.firstName,
+					component:UserScreen()
+				})
+			}>
+				<Text style={GlobalStyle.textTypes.H2}>{props.userInfo.firstName} {props.userInfo.lastName} {props.userInfo.identify}</Text>
+				<Text style={style.phone}>{props.userInfo.phone}</Text>
+			</TouchableOpacity>
 		</View>
 	);
 }
@@ -130,7 +137,7 @@ const Option = (props) => {
 				})
 			}>
 			<View style={style.optionContainer}>
-				<MaterialCommunityIcons name={props.option.icon}style={style.optionVector}/>
+				<MaterialCommunityIcons name={props.option.icon} style={style.optionVector}/>
 				<Text style={GlobalStyle.textTypes.H3}>{props.option.text}</Text>
 			</View>
 		</TouchableOpacity>
@@ -151,7 +158,8 @@ const OptionList = () => {
 }
 
 // Returns the settings screen displayed on the main page
-const MainSettingScreenComponent = ({navigation}) => {
+const MainSettingScreenComponent = ({route, navigation}) => {
+	const {userInfo, profilepic} = route.params;
     React.useLayoutEffect(() => {
 	navigation.setOptions({
 	    title: "Settings"
@@ -159,7 +167,7 @@ const MainSettingScreenComponent = ({navigation}) => {
     }, [navigation]);
     return (
 	<View>
-		<User/>
+		<User userInfo={userInfo} picture={profilepic}/>
 		<OptionList/> 
 	</View>
     );
