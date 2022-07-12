@@ -7,6 +7,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { HeaderBackButton } from '@react-navigation/elements';
 import {SettingsButton,PhoneButton,ProfileButton,ContextMenu} from './Common.js';
 import {GlobalStyle} from './Styles.js';
+import { render } from 'react-dom';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 
 
@@ -30,7 +32,70 @@ const MessageBoxComponent = (props) => {
     );	
 }
 
+class MessageBubble extends React.Component{
+	render(){
+		return(
+			<View style={[
+				ChatStyles.message,
+				this.props.send ? CHatStyles.send : ChatStyles.recieve
+			]}>
+				<View
+				style= {[
+					ChatStyles.cloud,
+					{
+						backgroundColor: this.props.send ? '#dddddd' : '#007aff'
+					}
+				]}>
+					{
+						this.props.text
+						?
+						<Text
+							style={[
+								ChatStyles.text,
+								{
+									color: this.props.send ? 'black': 'white'
+								}
+							]}
+						>
+							{this.props.text}
 
+						</Text>
+						:
+						null
+					}
+
+				</View>
+
+			</View>
+		)
+	}
+}
+
+const ChatStyles = StyleSheet.create({
+	message: {
+		flexDirection: 'row',
+		marginVertical: moderateScale(7,2)
+	},
+	send: {
+		marginLeft: 20,
+	},
+	recieve: {
+		alignSelf: 'flex-end',
+		marginRight: 20
+	},
+	cloud: {
+		maxWidth: moderateScale(250,2),
+		paddingHorizontal: moderateScale(10,2),
+		paddingTop: moderateScale(5,2),
+		paddingBottom: moderateScale(7,2),
+		borderRadius: 20
+	},
+	text: {
+		paddingTop: 3,
+		fontSize: 17,
+		lineHeight: 22
+	}
+})
 
 
 const ChatScreenComponent = ({route, navigation}) => {
@@ -72,9 +137,24 @@ const ChatScreenComponent = ({route, navigation}) => {
 	});
     }, [navigation]);
     const {username, messages} = route.params;
-    return (
+			// render(){
+			// 	return(
+			// 		<>
+			// 		<SafeAreaView>
+			// 			<MessageBubble
+			// 				send
+			// 				text = "Hi!"
+			// 			/>
+			// 		</SafeAreaView>
+			// 		</>
+			// 	)
+			// };
+		return (
+		<View>
 	    <MessageBoxComponent messages={messages}/>
-    );
+		</View>
+    	);
+
 }
 
 export default ChatScreenComponent;
