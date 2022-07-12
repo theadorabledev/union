@@ -6,7 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 
 import Ionicons from '@expo/vector-icons/Ionicons';
 
-import {SettingsButton,ProfileButton} from './Common.js';
+import {SettingsButton, ProfileButton, ChatComponent} from './Common.js';
 
 import {GlobalStyle} from './Styles.js';
 
@@ -19,12 +19,11 @@ const styles = {
 	alignItems:'center',
 	padding: 4,
     },
-    
-	miniChat: {
+    miniChat: {
 	flex: 1,
 	flexDirection: 'column',
 	height:60,
-    flexWrap: 'wrap',
+	flexWrap: 'wrap',
 	justifyContent: 'flex-start',
 	alignContent: 'space-between',
 	paddingTop: 10,
@@ -49,7 +48,7 @@ const styles = {
 	
     userName: GlobalStyle.textTypes.H3,
     
-	navBar: {
+    navBar: {
 	paddingLeft: 4,
 	paddingRight: 4,
     },
@@ -102,31 +101,7 @@ let currentmessages = originalmessages
 
 // Button to change user icon / display current one
 
-// Component to display a chat log with a user, with the most recent message previewed
-const ChatComponent = (props) => {
-    const navigation = useNavigation();
-    return (
-	<TouchableHighlight onPress={() =>
-		navigation.navigate(
-			'ChatScreen', {
-			username:props.username,
-			messages:props.messages
-			})
-		}
-	underlayColor = {GlobalStyle.highlightcolor}>
-	
-	    <View style={styles.chatComp}>
-			<ProfileButton profileSize={GlobalStyle.contactProfileSize} profileSource={GlobalStyle.defaultprofile} onPress={()=>{alert("Take user to contact's settings")}}/>
-			<View style={styles.miniChat}>
-				<Text style={styles.userName}>{props.username}</Text>
-				<Text>{props.messages[props.messages.length-1]}</Text>
-				<Text>"Date"</Text>
-			</View>
-	    </View>
-		
-	</TouchableHighlight>
-    );
-};
+
 
 // A View to Dispay a default message for incoming users
 const NoContactsComponent = () => {
@@ -170,7 +145,8 @@ const MessagesListComponent = (props) => {
     );	
 }
 
-export const NewChatButton = ( ) => {
+export const NewChatButton = (props) => {
+    const navigation = useNavigation();
     return(
 	<TouchableOpacity style = {styles.newChat} onPress={() => navigation.navigate('NewChatScreen')} >
 	    <Ionicons name='add-circle' size={56} color={GlobalStyle.pinklightcolor}/>

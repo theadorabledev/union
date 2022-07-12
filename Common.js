@@ -6,6 +6,7 @@
 import React, { useState } from 'react';
 import { View, Text, ScrollView, Button, Image, TouchableOpacity, TouchableHighlight } from "react-native";
 import { Menu, MenuItem, MenuDivider } from 'react-native-material-menu';
+import { useNavigation } from '@react-navigation/native';
 
 import Ionicons from '@expo/vector-icons/Ionicons';
 import {FontAwesome} from '@expo/vector-icons'; 
@@ -74,3 +75,55 @@ export const ContextMenu =(props)=> {
     </View>
   );
 }
+const ChatComponentStyles = {
+    chatComp: {
+	flexDirection:'row',
+	alignItems:'center',
+	padding: 4,
+    },
+    miniChat: {
+	flex: 1,
+	flexDirection: 'column',
+	height:60,
+	flexWrap: 'wrap',
+	justifyContent: 'flex-start',
+	alignContent: 'space-between',
+	paddingTop: 10,
+	paddingLeft: 5,
+	paddingRight:5,
+    },
+    userName: GlobalStyle.textTypes.H3
+}
+// Component to display a chat log with a user, with the most recent message previewed
+export const ChatComponent = (props) => {
+    const navigation = useNavigation();
+    const lastMessage = () => {
+	if(props.messages){
+	    return (
+		<>
+		    <Text>{props.messages[props.messages.length-1]}</Text>
+		    <Text>"Date"</Text>
+		</>
+	    );
+	}
+    }
+    return (
+	<TouchableHighlight onPress={() =>
+				navigation.navigate(
+				    'ChatScreen', {
+					username:props.username,
+					messages:props.messages,
+					newChat:props.isNewChat
+				    })
+			    }
+			    underlayColor = {GlobalStyle.highlightcolor}>
+	    <View style={ChatComponentStyles.chatComp}>
+		<ProfileButton profileSize={GlobalStyle.contactProfileSize} profileSource={GlobalStyle.defaultprofile} onPress={()=>{alert("Take user to contact's settings")}}/>
+		<View style={ChatComponentStyles.miniChat}>
+		    <Text style={ChatComponentStyles.userName}>{props.username}</Text>
+		    {lastMessage()}
+		</View>
+	    </View>
+	</TouchableHighlight>
+    );
+};
