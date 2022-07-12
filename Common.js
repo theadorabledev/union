@@ -143,3 +143,42 @@ export const ChatComponent = (props) => {
 	</TouchableHighlight>
     );
 };
+
+// Component to display a chat log with a user, with the most recent message previewed
+export const NewChatComponent = (props) => {
+    const navigation = useNavigation();
+    const lastMessage = () => {
+	if(props.messages.length){
+	    return (
+		<>
+		    <Text>{props.messages[props.messages.length-1]}</Text>
+		    <Text>"Date"</Text>
+		</>
+	    );
+	}
+    }
+    return (
+	<TouchableHighlight onPress={() =>{
+					const templist = [...props.contactlist];
+					templist.push({id:props.contactlist.length,username:props.username, messages:props.messages})
+					props.setContactList(templist)
+					
+					navigation.navigate(
+						'ChatScreen', {
+						username:props.username,
+						messages:props.messages,
+						newChat:props.isNewChat
+						})
+					}
+				}
+			    underlayColor = {GlobalStyle.highlightcolor}>
+	    <View style={ChatComponentStyles.chatComp}>
+		<ProfileButton profileSize={GlobalStyle.contactProfileSize} profileSource={GlobalStyle.defaultprofile} onPress={()=>{alert("Take user to contact's settings")}}/>
+		<View style={ChatComponentStyles.miniChat}>
+		    <Text style={ChatComponentStyles.userName}>{props.username}</Text>
+		    {lastMessage()}
+		</View>
+	    </View>
+	</TouchableHighlight>
+    );
+};

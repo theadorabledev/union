@@ -4,28 +4,33 @@ import { FlatList, View, Text, ScrollView, Button, Image, TouchableOpacity, Touc
 import NavigationBar from 'react-native-navbar';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
-import {ChatComponent} from './Common.js';
+import {NewChatComponent} from './Common.js';
 
 //import Contacts from 'react-native-contacts';
 import * as Contacts from "expo-contacts";
 
 
-const Contact = ({contact}) => {
+const Contact = (props) => {
     return (
-	    <ChatComponent
-		username={contact?.name}
+	    <NewChatComponent
+		username={props.contact?.name}
 		messages={[]}
+		contactlist={props.contactlist}
+		setContactList={props.setContactList}
 	    />
     );
 };
 
 // Returns the settings screen displayed on the main page
-const NewChatScreenComponent = ({navigation}) => {
+const NewChatScreenComponent = ({route,navigation}) => {
     React.useLayoutEffect(() => {
 	navigation.setOptions({
 	    title: "Start a New Chat"
 	});
     }, [navigation]);
+	
+	const {contactlist, setContactList} = route.params;
+	
     const [contacts, setContacts] = useState([]);
     useEffect(() => {
 	(async () => {
@@ -45,7 +50,7 @@ const NewChatScreenComponent = ({navigation}) => {
 	return item?.id?.toString() || idx.toString();
     };
     const renderItem = ({ item, index }) => {
-	return <Contact contact={item} />;
+	return <Contact contact={item} contactlist={contactlist} setContactList={setContactList} />;
     };
     return (
 	<FlatList

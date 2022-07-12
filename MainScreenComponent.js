@@ -78,7 +78,7 @@ const getUsername = () => {
     return userInfo.firstName+" "+userInfo.lastName;
 }
 
-const originalmessages=[
+const originalcontactlist=[
     {id:0,username:"The Fool", messages:["Test Message 0. Lorem Ipsum",
 	"Test Message 1. Lorem Ipsum",
 	"Test Message 2. Lorem Ipsum",
@@ -106,7 +106,7 @@ const originalmessages=[
     {id:10,username:"The Wheel of Fortune", messages:["Test Message 0. Lorem Ipsum"]},
 ]
 
-let currentmessages = originalmessages
+let currentcontactlist = originalcontactlist
 
 //Settings icon which triggers menu popup
 // const SettingsButton = ({onPress}) => {
@@ -135,9 +135,9 @@ const NoContactsComponent = () => {
 
 // A component to display either all of someone's chats or the incoming (no contacts) screen
 const MessagesListComponent = (props) => {
-    const [messages,setMessages] = useState([]);
-    let empty = (messages.length == 0)
-    let messageComponents = messages.map((a, i) => {
+    
+    let empty = (props.contactlist.length == 0)
+    let messageComponents = props.contactlist.map((a, i) => {
 	return <ChatComponent
 		   key={a.id}	
 		   username={a.username}
@@ -147,13 +147,21 @@ const MessagesListComponent = (props) => {
     return (
 	<>
 	    <Button title="Reset Messages" color = {GlobalStyle.highlightcolor} onPress={()=>{
-			setMessages(originalmessages);
+			props.setContactList(originalcontactlist);
 		    }
 										   }/>
 	    <Button title="Clear Messages" color = {GlobalStyle.highlightcolor} onPress={()=>{
-			setMessages([])
+			props.setContactList([])
 		    }
 										   }/>
+
+	    <Button title="Test Add contact" color = {GlobalStyle.highlightcolor} onPress={()=>{
+				const templist = [...props.contactlist];
+				templist.push({id:12,username:"The Aeon", messages:["Test Message 0. Lorem Ipsum"]})
+				props.setContactList(templist)
+		    }
+	   }/>
+
 	    {empty ? 
 	     <NoContactsComponent/> 
 	     :
@@ -168,7 +176,7 @@ const MessagesListComponent = (props) => {
 export const NewChatButton = (props) => {
     const navigation = useNavigation();
     return(
-	<TouchableOpacity style = {styles.newChat} onPress={() => navigation.navigate('NewChatScreen')} >
+	<TouchableOpacity style = {styles.newChat} onPress={() => navigation.navigate('NewChatScreen',{contactlist:props.contactlist,setContactList:props.setContactList})} >
 	    <Ionicons name='add-circle' size={56} color={GlobalStyle.pinklightcolor}/>
 	</TouchableOpacity>
     );
@@ -186,12 +194,13 @@ const MainScreenComponent = ({navigation}) => {
 	    ),
 	});
     }, [navigation]);
+	const [contactlist,setContactList] = useState([]);
     return (
 	<>
 	<View>
-	    <MessagesListComponent/>
+	    <MessagesListComponent setContactList={setContactList} contactlist={contactlist}/>
 	</View>
-	    <NewChatButton/>
+	    <NewChatButton setContactList={setContactList} contactlist={contactlist}/>
 	</>
     );
 
