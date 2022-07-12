@@ -105,7 +105,7 @@ const ChatStyles = StyleSheet.create({
 	}
 })
 
-const keyboardComponent = () => {
+const KeyboardComponent = () => {
 	const [keyboardStatus, setKeyboardStatus] = useState(undefined);
   
 	useEffect(() => {
@@ -205,6 +205,7 @@ const ChatScreenComponent = ({route, navigation}) => {
 		return (
 		<View>
 	    <MessageBoxComponent messages={messages}/>
+		<KeyboardComponent/>
 		</View>
     	);
 
