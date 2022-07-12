@@ -14,6 +14,7 @@ const Contact = ({contact}) => {
     return (
 	    <ChatComponent
 		username={contact?.name}
+		messages={[]}
 	    />
     );
 };
