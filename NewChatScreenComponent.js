@@ -9,6 +9,7 @@ import {ChatComponent} from './Common.js';
 //import Contacts from 'react-native-contacts';
 import * as Contacts from "expo-contacts";
 
+
 // Wrapper for ChatComponent that appears as a possilbe contact in the NewChatScreen
 const Contact = ({contact}) => {
     return (
@@ -20,6 +21,7 @@ const Contact = ({contact}) => {
 };
 
 // Gets the contacts with phone numbers and displays them in a screen, loads only visible ones for performance
+
 const NewChatScreenComponent = ({navigation}) => {
     React.useLayoutEffect(() => {
 	navigation.setOptions({
@@ -48,7 +50,11 @@ const NewChatScreenComponent = ({navigation}) => {
     };
     // Renders the contact with the item and index
     const renderItem = ({ item, index }) => {
-	return <Contact contact={item} />;
+	// Wrapper for ChatComponent that appears as a possilbe contact in the NewChatScreen
+	return <ChatComponent
+		username={item.name}
+		messages={[]}
+	    />;
     };
     return (
 	<FlatList
