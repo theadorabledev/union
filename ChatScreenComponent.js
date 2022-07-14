@@ -50,7 +50,7 @@ const MessageBubble = (props) => {
 	    <View
 		style= {[
 		    ChatStyles.cloud,
-		    {backgroundColor: props.send ? '#dddddd' : '#007aff'}
+		    {backgroundColor: props.send ? GlobalStyle.highlightcolor : GlobalStyle.pinklightcolor}
 		]}>
 		{
 		    props.text
@@ -58,7 +58,7 @@ const MessageBubble = (props) => {
 			<Text
 			    style={[
 				ChatStyles.text,
-				{color: props.send ? 'black': 'white'}
+				{color: props.send ? 'white': 'white'}
 			    ]}
 			>
 			    {props.text}
