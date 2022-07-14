@@ -19,7 +19,7 @@ const Contact = ({contact}) => {
     );
 };
 
-// Gets the contacts and displays them in a screen, loads only visible ones for performance
+// Gets the contacts with phone numbers and displays them in a screen, loads only visible ones for performance
 const NewChatScreenComponent = ({navigation}) => {
     React.useLayoutEffect(() => {
 	navigation.setOptions({
