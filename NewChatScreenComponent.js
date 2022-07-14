@@ -10,16 +10,6 @@ import {ChatComponent} from './Common.js';
 import * as Contacts from "expo-contacts";
 
 
-// Wrapper for ChatComponent that appears as a possilbe contact in the NewChatScreen
-const Contact = ({contact}) => {
-    return (
-	    <ChatComponent
-		username={contact?.name}
-		messages={[]}
-	    />
-    );
-};
-
 // Gets the contacts with phone numbers and displays them in a screen, loads only visible ones for performance
 
 const NewChatScreenComponent = ({navigation}) => {
