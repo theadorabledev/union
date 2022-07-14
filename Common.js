@@ -9,22 +9,22 @@ import { Menu, MenuItem, MenuDivider } from 'react-native-material-menu';
 import { useNavigation } from '@react-navigation/native';
 
 import Ionicons from '@expo/vector-icons/Ionicons';
-import {FontAwesome} from '@expo/vector-icons'; 
+import {FontAwesome} from '@expo/vector-icons';
 
 import {GlobalStyle} from './Styles.js';
 
 // Home button to navigate to MainScreenComponent
 export const HomeButton = ({onPress}) => {
-  return(
-    <TouchableOpacity onPress={()=>onPress()}>
-      <Ionicons name="home" size={GlobalStyle.iconSize} color={GlobalStyle.pinklightcolor} />
-    </TouchableOpacity>
-  )
+    return(
+	<TouchableOpacity onPress={()=>onPress()}>
+	    <Ionicons name="home" size={GlobalStyle.iconSize} color={GlobalStyle.pinklightcolor} />
+	</TouchableOpacity>
+    )
 }
 
 // User icon
 export const UserButton = ({onPress}) => {
-	return(
+    return(
 	<TouchableOpacity onPress={()=>onPress()} >
 	    <FontAwesome name="user" size={GlobalStyle.userProfileSize} color="black" />
 	</TouchableOpacity>
@@ -43,7 +43,7 @@ export const SettingsButton = ({onPress}) => {
 
 //call button (should this really be common?)
 export const PhoneButton = (props) => {
-	return(
+    return(
 	<TouchableOpacity onPress={()=>{alert("Calling " + props.username)}} >
 	    <FontAwesome name="phone" size={GlobalStyle.iconSize} color="black" />
 	</TouchableOpacity>
@@ -54,42 +54,42 @@ export const PhoneButton = (props) => {
 export const ProfileButton = (props) => {
     return(
 	<TouchableHighlight style ={{width: props.profileSize,
-				height: props.profileSize,
-				borderRadius: props.profileSize/2
-		}}
-	onPress={props.onPress}>
+				     height: props.profileSize,
+				     borderRadius: props.profileSize/2
+				    }}
+			    onPress={props.onPress}>
 	    <Image
 		style ={{width: props.profileSize,
-				height: props.profileSize,
-				borderRadius: props.profileSize/2
-		}}
+			 height: props.profileSize,
+			 borderRadius: props.profileSize/2
+			}}
 		source={props.profileSource}
 	    />
 	</TouchableHighlight>
     );
-} 
+}
 
 
 //context menu wrapper
 export const ContextMenu =(props)=> {
-  const [visible, setVisible] = useState(false);
-  const hideMenu = () => setVisible(false);
-  const showMenu = () => setVisible(true);
-  const menuOptions = props.options.map((a,i) => {
-	 return <MenuItem key={i} onPress={a.handler}>{a.text}</MenuItem>
-  });
-  
-  return (
-    <View>
-      <Menu
-        visible={visible}
-        anchor={<Ionicons name={props.ionicon} size={GlobalStyle.iconSize} onPress={showMenu} color={GlobalStyle.highlightcolor} />}
-        onRequestClose={hideMenu}
-      >
-	  {menuOptions}
-      </Menu>
-    </View>
-  );
+    const [visible, setVisible] = useState(false);
+    const hideMenu = () => setVisible(false);
+    const showMenu = () => setVisible(true);
+    const menuOptions = props.options.map((a,i) => {
+	return <MenuItem key={i} onPress={a.handler}>{a.text}</MenuItem>
+    });
+
+    return (
+	<View>
+	    <Menu
+		visible={visible}
+		anchor={<Ionicons name={props.ionicon} size={GlobalStyle.iconSize} onPress={showMenu} color={GlobalStyle.highlightcolor} />}
+		onRequestClose={hideMenu}
+	    >
+		{menuOptions}
+	    </Menu>
+	</View>
+    );
 }
 const ChatComponentStyles = {
     chatComp: {
@@ -110,7 +110,9 @@ const ChatComponentStyles = {
     },
     userName: GlobalStyle.textTypes.H3
 }
+
 // Component to display a chat log with a user, with the most recent message previewed
+// Used on main page and new chat page
 export const ChatComponent = (props) => {
     const navigation = useNavigation();
     const lastMessage = () => {
