@@ -9,7 +9,7 @@ import {ChatComponent} from './Common.js';
 //import Contacts from 'react-native-contacts';
 import * as Contacts from "expo-contacts";
 
-
+// Wrapper for ChatComponent that appears as a possilbe contact in the NewChatScreen
 const Contact = ({contact}) => {
     return (
 	    <ChatComponent
@@ -19,7 +19,7 @@ const Contact = ({contact}) => {
     );
 };
 
-// Returns the settings screen displayed on the main page
+// Gets the contacts and displays them in a screen, loads only visible ones for performance
 const NewChatScreenComponent = ({navigation}) => {
     React.useLayoutEffect(() => {
 	navigation.setOptions({
@@ -27,6 +27,7 @@ const NewChatScreenComponent = ({navigation}) => {
 	});
     }, [navigation]);
     const [contacts, setContacts] = useState([]);
+    // Get contacts data
     useEffect(() => {
 	(async () => {
 	    const { status } = await Contacts.requestPermissionsAsync();
@@ -41,9 +42,11 @@ const NewChatScreenComponent = ({navigation}) => {
 	    }
 	})();
     }, []);
+    // Gets the key from each item
     const keyExtractor = (item, idx) => {
 	return item?.id?.toString() || idx.toString();
     };
+    // Renders the contact with the item and index
     const renderItem = ({ item, index }) => {
 	return <Contact contact={item} />;
     };
