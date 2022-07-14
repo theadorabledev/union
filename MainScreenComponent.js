@@ -13,7 +13,7 @@ import {GlobalStyle} from './Styles.js';
 
 
 
-const styles = {
+const MainScreenStyles = {
     chatComp: {
 	flexDirection:'row',
 	alignItems:'center',
@@ -30,47 +30,47 @@ const styles = {
 	paddingLeft: 5,
 	paddingRight:5,
     },
-	
+
     userProfileImage: {
 	width: GlobalStyle.userProfileSize,
 	height: GlobalStyle.userProfileSize,
 	resizeMode: 'stretch',
 	borderRadius: GlobalStyle.userProfileSize/2,
     },
-    
+
     userProfileButton: {
-	width: GlobalStyle.userProfileSize, 
-	height:GlobalStyle.userProfileSize, 
+	width: GlobalStyle.userProfileSize,
+	height:GlobalStyle.userProfileSize,
 	borderRadius: GlobalStyle.userProfileSize/2,
 	alignItems:'center',
 	justifyContent:'center',
     },
-	
+
     userName: GlobalStyle.textTypes.H3,
-    
+
     navBar: {
 	paddingLeft: 4,
 	paddingRight: 4,
     },
-    
+
     newChat: {
 	width: 56,
 	height: 56,
 	alignItems:'flex-end',
 	justifyContent: 'flex-end',
-	bottom: 20,                                                    
-	right: 20, 
+	bottom: 20,
+	right: 20,
 	position: 'absolute',
     },
 };
 
 //Placeholder variables for debugging
 const userInfo = {
-	pic:GlobalStyle.defaultprofile, 
-	firstName:"Test", 
-	lastName:"Profile", 
-	identify:"They/Them", 
-	phone:"(123)456-7890"
+    pic:GlobalStyle.defaultprofile,
+    firstName:"Test",
+    lastName:"Profile",
+    identify:"They/Them",
+    phone:"(123)456-7890"
 }
 let userprofilepic = GlobalStyle.defaultprofile;
 
@@ -79,14 +79,15 @@ const getUsername = () => {
 }
 
 const originalmessages=[
-    {id:0,username:"The Fool", messages:["Test Message 0. Lorem Ipsum",
+    {id:0,username:"The Fool", messages:[
+	"Test Message 0. Lorem Ipsum",
 	"Test Message 1. Lorem Ipsum",
 	"Test Message 2. Lorem Ipsum",
 	"Test Message 3. Lorem Ipsum",
 	"Test Message 4. Lorem Ipsum",
 	"Test Message 5. Lorem Ipsum",
 	"Test Message 6. Lorem Ipsum",
-	"Test Message 7. Lorem Ipsum",	
+	"Test Message 7. Lorem Ipsum",
 	"Test Message 1. Lorem Ipsum",
 	"Test Message 2. Lorem Ipsum",
 	"Test Message 3. Lorem Ipsum",
@@ -108,20 +109,6 @@ const originalmessages=[
 
 let currentmessages = originalmessages
 
-//Settings icon which triggers menu popup
-// const SettingsButton = ({onPress}) => {
-//     return(
-// 	<TouchableOpacity style = {styles.userProfileButton} onPress={()=>onPress()} >
-// 	    <Ionicons name='settings-outline' size={40} color={highlightcolor}/>
-// 	</TouchableOpacity>
-//     );
-// }
-
-// A user's profile image in chat component, can be used to view contact info for person
-
-// Button to change user icon / display current one
-
-
 
 // A View to Dispay a default message for incoming users
 const NoContactsComponent = () => {
@@ -139,7 +126,7 @@ const MessagesListComponent = (props) => {
     let empty = (messages.length == 0)
     let messageComponents = messages.map((a, i) => {
 	return <ChatComponent
-		   key={a.id}	
+		   key={a.id}
 		   username={a.username}
 		   messages={a.messages}
 	       />;
@@ -149,31 +136,33 @@ const MessagesListComponent = (props) => {
 	    <Button title="Reset Messages" color = {GlobalStyle.highlightcolor} onPress={()=>{
 			setMessages(originalmessages);
 		    }
-										   }/>
+											}/>
 	    <Button title="Clear Messages" color = {GlobalStyle.highlightcolor} onPress={()=>{
 			setMessages([])
 		    }
-										   }/>
-	    {empty ? 
-	     <NoContactsComponent/> 
+											}/>
+	    {empty ?
+	     <NoContactsComponent/>
 	     :
 	     <ScrollView>
 		 {messageComponents}
 	     </ScrollView>
 	    }
 	</>
-    );	
+    );
 }
 
+// Button in the lower right corner which directs users to the NewChatScreen
 export const NewChatButton = (props) => {
     const navigation = useNavigation();
     return(
-	<TouchableOpacity style = {styles.newChat} onPress={() => navigation.navigate('NewChatScreen')} >
+	<TouchableOpacity style = {MainScreenStyles.newChat} onPress={() => navigation.navigate('NewChatScreen')} >
 	    <Ionicons name='add-circle' size={56} color={GlobalStyle.pinklightcolor}/>
 	</TouchableOpacity>
     );
 }
 
+// Displays the main screen, all the chats the user is engaged in
 const MainScreenComponent = ({navigation}) => {
     React.useLayoutEffect(() => {
 	navigation.setOptions({
@@ -188,9 +177,9 @@ const MainScreenComponent = ({navigation}) => {
     }, [navigation]);
     return (
 	<>
-	<View>
-	    <MessagesListComponent/>
-	</View>
+	    <View>
+		<MessagesListComponent/>
+	    </View>
 	    <NewChatButton/>
 	</>
     );
