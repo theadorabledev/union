@@ -10,156 +10,158 @@ import {GlobalStyle} from './Styles.js';
 
 const settingsIconSize=35;
 
-const style = {
-	userInfoContainer: {
-		display:'flex',
-		flexDirection: 'row',
-		marginLeft: 10,
-		marginRight: 20,
-		marginTop: 30,
-		borderBottomColor: GlobalStyle.pinklightcolor,
-		borderBottomWidth: 2,
-	},
-	personalInfo: {
-		display:'flex',
-		flexDirection:'column',
-		paddingLeft:20,
-	},
-	phone:{
-		marginTop: 5,
-		marginBottom:10,
-	},
-	optionsContainer:{
-		marginTop: 30,
-		marginLeft: 5,
-	},
-	optionContainer:{
-		display:'flex',
-		flexDirection:'row',
-		alignItems:'center',
-		paddingLeft: 5,
-		marginBottom:20,
-	},
-	optionVector:{
-		fontSize: settingsIconSize,
-		color: GlobalStyle.highlightcolor,
-		marginRight: 20,
-	},
+const MainSettingStyles = {
+    userInfoContainer: {
+	display:'flex',
+	flexDirection: 'row',
+	marginLeft: 10,
+	marginRight: 20,
+	marginTop: 30,
+	borderBottomColor: GlobalStyle.pinklightcolor,
+	borderBottomWidth: 2,
+    },
+    personalInfo: {
+	display:'flex',
+	flexDirection:'column',
+	paddingLeft:20,
+    },
+    phone:{
+	marginTop: 5,
+	marginBottom:10,
+    },
+    optionsContainer:{
+	marginTop: 30,
+	marginLeft: 5,
+    },
+    optionContainer:{
+	display:'flex',
+	flexDirection:'row',
+	alignItems:'center',
+	paddingLeft: 5,
+	marginBottom:20,
+    },
+    optionVector:{
+	fontSize: settingsIconSize,
+	color: GlobalStyle.highlightcolor,
+	marginRight: 20,
+    },
 }
 
 const icons = {
-	account:"hammer-sickle",
-	appearance:"star-half-full",
-	notification:"bell",
-	privacy:"lock",
-	help:"help-circle-outline",
+    account:"hammer-sickle",
+    appearance:"star-half-full",
+    notification:"bell",
+    privacy:"lock",
+    help:"help-circle-outline",
 }
 
+// A screen which allows the user to edit personal information
 const UserScreen = () => {
-	return (
-		<View>
-			<Text> Form for User to update information</Text>
-		</View>
-	)
+    return (
+	<View>
+	    <Text> Form for User to update information</Text>
+	</View>
+    )
 }
 
+// A section which contains information about the user
 const User = (props) => {
-	const navigation = useNavigation();
-	return(
-		<View style={style.userInfoContainer}>
-			<ProfileButton profileSize={GlobalStyle.userProfileSize} profileSource={props.picture} onPress={()=>{alert("let user change profile picture")}}/>
-			<TouchableOpacity style={style.personalInfo} onPress={() => navigation.navigate(
-				'SettingOptions', {
-					title:props.userInfo.firstName,
-					component:UserScreen()
-				})
-			}>
-				<Text style={GlobalStyle.textTypes.H2}>{props.userInfo.firstName} {props.userInfo.lastName} {props.userInfo.identify}</Text>
-				<Text style={style.phone}>{props.userInfo.phone}</Text>
-			</TouchableOpacity>
-		</View>
-	);
+    const navigation = useNavigation();
+    return(
+	<View style={MainSettingStyles.userInfoContainer}>
+	    <ProfileButton profileSize={GlobalStyle.userProfileSize} profileSource={props.picture} onPress={()=>{alert("let user change profile picture")}}/>
+	    <TouchableOpacity style={MainSettingStyles.personalInfo} onPress={() => navigation.navigate(
+				  'SettingOptions', {
+				      title:props.userInfo.firstName,
+				      component:UserScreen()
+				  })
+								 }>
+		<Text style={GlobalStyle.textTypes.H2}>{props.userInfo.firstName} {props.userInfo.lastName} {props.userInfo.identify}</Text>
+		<Text style={MainSettingStyles.phone}>{props.userInfo.phone}</Text>
+	    </TouchableOpacity>
+	</View>
+    );
 }
 
 const Account = () => {
-	return (
-		<View>
-			<Text> This is the Acount inner component</Text>
-		</View>
-	)
+    return (
+	<View>
+	    <Text> This is the Acount inner component</Text>
+	</View>
+    )
 }
 const Appearance = () => {
-	return (
-		<View>
-			<Text> This is the Appearance inner component</Text>
-		</View>
-	)
+    return (
+	<View>
+	    <Text> This is the Appearance inner component</Text>
+	</View>
+    )
 }
 const Notifications = () => {
-	return (
-		<View>
-			<Text> This is the Notifications inner component</Text>
-		</View>
-	)
+    return (
+	<View>
+	    <Text> This is the Notifications inner component</Text>
+	</View>
+    )
 }
 const Privacy = () => {
-	return (
-		<View>
-			<Text> This is the Privacy inner component</Text>
-		</View>
-	)
+    return (
+	<View>
+	    <Text> This is the Privacy inner component</Text>
+	</View>
+    )
 }
 const Help = () => {
-	return (
-		<View>
-			<Text> This is the Help inner component</Text>
-		</View>
-	)
+    return (
+	<View>
+	    <Text> This is the Help inner component</Text>
+	</View>
+    )
 }
 
 const settingOptions = [
-	{text: "Account", icon:icons.account, component:Account()},
-	{text: "Appearance", icon:icons.appearance, component:Appearance()},
-	{text: "Notifications", icon:icons.notification, component:Notifications()},
-	{text: "Privacy", icon:icons.privacy, component:Privacy()},
-	{text: "Help", icon:icons.help, component:Help()},
+    {text: "Account", icon:icons.account, component:Account()},
+    {text: "Appearance", icon:icons.appearance, component:Appearance()},
+    {text: "Notifications", icon:icons.notification, component:Notifications()},
+    {text: "Privacy", icon:icons.privacy, component:Privacy()},
+    {text: "Help", icon:icons.help, component:Help()},
 ]
 
-
+// Wrapper for settings options
 const Option = (props) => {
-	const navigation = useNavigation();
-	return (
-		<TouchableOpacity  onPress={() =>
-			navigation.navigate(
-				'SettingOptions', {
-					title:props.option.text,
-					component:props.option.component
-				})
-			}>
-			<View style={style.optionContainer}>
-				<MaterialCommunityIcons name={props.option.icon} style={style.optionVector}/>
-				<Text style={GlobalStyle.textTypes.H3}>{props.option.text}</Text>
-			</View>
-		</TouchableOpacity>
-	);
+    const navigation = useNavigation();
+    return (
+	<TouchableOpacity  onPress={() =>
+			       navigation.navigate(
+				   'SettingOptions', {
+				       title:props.option.text,
+				       component:props.option.component
+				   })
+			   }>
+	    <View style={MainSettingStyles.optionContainer}>
+		<MaterialCommunityIcons name={props.option.icon} style={MainSettingStyles.optionVector}/>
+		<Text style={GlobalStyle.textTypes.H3}>{props.option.text}</Text>
+	    </View>
+	</TouchableOpacity>
+    );
 }
-
+// Displays the various settings options
 const OptionList = () => {
-	const options = settingOptions.map((option, i )=> {
-		return (
-			<Option option={option} key={i}/>
-		);
-	});
+    const options = settingOptions.map((option, i )=> {
 	return (
-		<ScrollView style={style.optionsContainer}>
-			{options}
-		</ScrollView>
+	    <Option option={option} key={i}/>
 	);
+    });
+    return (
+	<ScrollView style={MainSettingStyles.optionsContainer}>
+	    {options}
+	</ScrollView>
+    );
 }
 
 // Returns the settings screen displayed on the main page
 const MainSettingScreenComponent = ({route, navigation}) => {
-	const {userInfo, profilepic} = route.params;
+    const {userInfo, profilepic} = route.params;
     React.useLayoutEffect(() => {
 	navigation.setOptions({
 	    title: "Settings"
@@ -167,8 +169,8 @@ const MainSettingScreenComponent = ({route, navigation}) => {
     }, [navigation]);
     return (
 	<View>
-		<User userInfo={userInfo} picture={profilepic}/>
-		<OptionList/> 
+	    <User userInfo={userInfo} picture={profilepic}/>
+	    <OptionList/> 
 	</View>
     );
 }
