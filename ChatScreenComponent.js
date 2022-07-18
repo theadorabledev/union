@@ -7,6 +7,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { createStackNavigator } from '@react-navigation/stack';
 import { HeaderBackButton } from '@react-navigation/elements';
 import {SettingsButton,PhoneButton,ProfileButton,ContextMenu} from './Common.js';
+import {returnContact} from './MainScreenComponent.js';
 import {GlobalStyle} from './Styles.js';
 import { render } from 'react-dom';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -53,17 +54,32 @@ const MessageBubble = (props) => {
 		    {backgroundColor: props.send ? GlobalStyle.highlightcolor : GlobalStyle.pinklightcolor}
 		]}>
 		{
+			
+			props.showname
+			?
+				<Text
+					style={[
+					ChatStyles.text,
+					{color: props.send ? 'white': 'white'}
+					]}
+				>
+					{props.senderId}
+
+				</Text>
+		    :
+		    null
+		}{
 		    props.text
 			?
-			<Text
-			    style={[
-				ChatStyles.text,
-				{color: props.send ? 'white': 'white'}
-			    ]}
-			>
-			    {props.text}
+				<Text
+					style={[
+					ChatStyles.text,
+					{color: props.send ? 'white': 'white'}
+					]}
+				>
+					{props.text}
 
-			</Text>
+				</Text>
 		    :
 		    null
 		}
@@ -79,12 +95,32 @@ const MessageBoxComponent = (props) => {
     const [textmessages,setMessages] = useState(props.messages);
     let empty = (textmessages.length == 0)
     let textComponents = textmessages.map((a, i) => {
+	//track the most recent recieverId
+	let showname = true
+	if ( i > 0) {
+		if (a.senderId == textmessages[i-1].senderId){
+			showname = false
+		}
+	}
+	let username = returnContact(a.senderId).name
+	if (a.senderId ==999){	
 	return <MessageBubble
 		   send
 		   key={i}
-		   text = {a}
+		   text = {a.message}
+		   showname ={showname}
+		   senderId={username}
 	       />;
-    });
+    }else{
+	return <MessageBubble
+		   recieve
+		   key={i}
+		   text = {a.message}
+		   showname ={showname}
+		   senderId={username}
+	       />;		
+	}
+	});
     return (
 	<>
 	    {empty ?

@@ -119,8 +119,8 @@ export const ChatComponent = (props) => {
 	if(props.messages.length){
 	    return (
 		<>
-		    <Text>{props.messages[props.messages.length-1]}</Text>
-		    <Text>"Date"</Text>
+		    <Text>{props.messages[props.messages.length-1].message}</Text>
+		    <Text>{props.messages[props.messages.length-1].date.toString()}</Text>
 		</>
 	    );
 	}

@@ -10,7 +10,9 @@ import {SettingsButton, ProfileButton, ChatComponent} from './Common.js';
 
 import {GlobalStyle} from './Styles.js';
 
+import * as Contacts from "expo-contacts";
 
+import uuid from 'react-native-uuid';
 
 
 const MainScreenStyles = {
@@ -74,12 +76,64 @@ const userInfo = {
 }
 let userprofilepic = GlobalStyle.defaultprofile;
 
+
+const userContact = {
+	userId: 999,
+	[Contacts.Fields.Name]: "Test Profile",
+	[Contacts.Fields.FirstName]: 'Test',
+	[Contacts.Fields.LastName]: 'Profile',
+	Prounouns:'They/Them',
+}
+
+
 const getUsername = () => {
     return userInfo.firstName+" "+userInfo.lastName;
 }
 
-const originalmessages=[
-    {id:0,username:"The Fool", messages:[
+function ContactCreator(name,id){
+	return {
+	  userId: id,
+	  [Contacts.Fields.Name]: name,
+	};
+}
+
+function MessageCreator(message,senderid,recieverid){
+	return{
+		messageId:uuid.v4(),
+		message:message,
+		senderId:senderid,
+		recieverId:recieverid,
+		date:new Date(),
+	}
+}
+
+
+const contactList = [
+	ContactCreator("The Fool",0),
+	ContactCreator("The Magician",1),
+	ContactCreator("The High Priestess",2),
+	ContactCreator("The Empress",3),
+	ContactCreator("The Emperor",4),
+	ContactCreator("The Hierophant",5),
+	ContactCreator("The Lovers",6),
+	ContactCreator("The Chariot",7),
+	ContactCreator("Strength",8),
+	ContactCreator("The Hermit",9),
+	ContactCreator("The Wheel of Fortune",10),
+	userContact
+]
+
+export function returnContact(id){
+	let myContact= contactList.find(function(contact){
+		return contact.userId === id;	
+	});
+	return myContact
+}
+
+
+
+const originalmessagesold=[
+    {ids:[0], messages:[
 	"Test Message 0. Lorem Ipsum",
 	"Test Message 1. Lorem Ipsum",
 	"Test Message 2. Lorem Ipsum",
@@ -107,6 +161,28 @@ const originalmessages=[
     {id:10,username:"The Wheel of Fortune", messages:["Test Message 0. Lorem Ipsum"]},
 ]
 
+
+
+const originalmessages=[
+    {chatId:0,ids:[0], chatName:"", messages:[
+		MessageCreator("Test Message 0. Lorem Ipsum",0,999),
+		MessageCreator("Test Message 1. Lorem Ipsum",999,0),
+		MessageCreator("Test Message 0. Lorem Ipsum",0,999),
+		MessageCreator("Test Message 2. Lorem Ipsum",999,0),
+		MessageCreator("Test Message 0. Lorem Ipsum",0,999),
+		MessageCreator("Test Message 0. Lorem Ipsum",0,999),
+		MessageCreator("Test Message 3. Lorem Ipsum",999,0),
+		MessageCreator("Test Message 0. Lorem Ipsum",0,999),
+	]},
+    {chatId:1,ids:[1,2], chatName:"Test Group chat", messages:[
+		MessageCreator("Test Message 0. Lorem Ipsum",1,999),
+		MessageCreator("Test Message 1. Lorem Ipsum",1,999),
+		MessageCreator("Test Message 2. Lorem Ipsum",999,1),
+	]},
+]
+
+
+
 let currentmessages = originalmessages
 
 
@@ -125,9 +201,15 @@ const MessagesListComponent = (props) => {
     const [messages,setMessages] = useState([]);
     let empty = (messages.length == 0)
     let messageComponents = messages.map((a, i) => {
+		let groupchatname = a.chatName
+		if (a.chatName == ""){
+			groupchatname = returnContact(a.ids[0]).name
+		}else{
+			groupchatname = a.chatName
+		}
 	return <ChatComponent
-		   key={a.id}
-		   username={a.username}
+		   key={a.chatId}
+		   username={groupchatname}
 		   messages={a.messages}
 	       />;
     });
