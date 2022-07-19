@@ -176,7 +176,7 @@ const originalchats=[
 	]},
     {chatId:1,ids:[1,2], chatName:"Test Group chat", messages:[
 		MessageCreator("Test Message 0. Lorem Ipsum",1,999),
-		MessageCreator("Test Message 1. Lorem Ipsum",1,999),
+		MessageCreator("Test Message 1. Lorem Ipsum",4,999),
 		MessageCreator("Test Message 2. Lorem Ipsum",999,1),
 	]},
 ]

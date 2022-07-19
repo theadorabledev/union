@@ -79,7 +79,7 @@ const MessageBubble = (props) => {
 					{color: props.send ? 'white': 'white'}
 					]}
 				>
-					{props.senderId}
+					{props.name}
 
 				</Text>
 		    :
@@ -125,7 +125,7 @@ const MessageBoxComponent = (props) => {
 		   key={i}
 		   text = {a.message}
 		   showname ={showname}
-		   senderId={username}
+		   name={username}
 	       />;
     }else{
 	return <MessageBubble
@@ -133,7 +133,7 @@ const MessageBoxComponent = (props) => {
 		   key={i}
 		   text = {a.message}
 		   showname ={showname}
-		   senderId={username}
+		   name={username}
 	       />;		
 	}
 	});
