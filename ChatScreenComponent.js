@@ -5,6 +5,8 @@ import { View, Text, ScrollView, Button, Image, TouchableOpacity, TouchableHighl
 import NavigationBar from 'react-native-navbar';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { createStackNavigator } from '@react-navigation/stack';
+import { useNavigation } from '@react-navigation/native';
+
 import { HeaderBackButton } from '@react-navigation/elements';
 import {SettingsButton,PhoneButton,ProfileButton,ContextMenu} from './Common.js';
 import {returnContact} from './MainScreenComponent.js';
@@ -12,7 +14,7 @@ import {GlobalStyle} from './Styles.js';
 import { render } from 'react-dom';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
-
+import uuid from 'react-native-uuid';
 //Styles for the chats
 const ChatStyles = StyleSheet.create({
     message: {
@@ -40,6 +42,20 @@ const ChatStyles = StyleSheet.create({
     }
 })
 
+
+
+//wip, fix this later
+function addMessage(messagecontents){
+	return {
+		messageId:uuid.v4(),
+		message:messagecontents,
+		senderId:999,
+		recieverId:0,
+		date:new Date(),
+	}
+}
+
+
 // Message bubble which displays the text of a message
 // TODO: Add reactions as a state variable.
 const MessageBubble = (props) => {
@@ -63,7 +79,7 @@ const MessageBubble = (props) => {
 					{color: props.send ? 'white': 'white'}
 					]}
 				>
-					{props.senderId}
+					{props.name}
 
 				</Text>
 		    :
@@ -109,7 +125,7 @@ const MessageBoxComponent = (props) => {
 		   key={i}
 		   text = {a.message}
 		   showname ={showname}
-		   senderId={username}
+		   name={username}
 	       />;
     }else{
 	return <MessageBubble
@@ -117,7 +133,7 @@ const MessageBoxComponent = (props) => {
 		   key={i}
 		   text = {a.message}
 		   showname ={showname}
-		   senderId={username}
+		   name={username}
 	       />;		
 	}
 	});
@@ -155,8 +171,9 @@ const keyboardStyle = StyleSheet.create({
 
 // Displays a keyboard which allows the user to write messages
 // TODO: Connect to messaging API
-const KeyboardComponent = () => {
+const KeyboardComponent = (props) => {
     const [keyboardStatus, setKeyboardStatus] = useState(undefined);
+	const [text,setText] = useState('');
 
     useEffect(() => {
 	const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
@@ -166,17 +183,33 @@ const KeyboardComponent = () => {
 	    setKeyboardStatus("Keyboard Hidden");
 	});
 
+	 
+	
+	 
 	return () => {
 	    showSubscription.remove();
 	    hideSubscription.remove();
 	};
     }, []);
 
+
     return (
-	<TextInput
+	 <TextInput
 	    style={keyboardStyle.input}
 	    placeholder='Press here…'
-	    onSubmitEditing={Keyboard.dismiss}
+		onChangeText={newText=>setText(newText)}
+	    onSubmitEditing={ a=>{
+			console.log(text),
+			props.chatHandler((chats) =>{
+				const newChats = [...chats]
+				newChats[props.chatIndex].messages.push(addMessage(text))
+				return newChats
+			})
+			props.updateNav({messages:props.chats[props.chatIndex].messages})
+			
+			Keyboard.dismiss
+			}
+		}
 	/>
     );
 }
@@ -226,11 +259,11 @@ const ChatScreenComponent = ({route, navigation}) => {
 	    ),
 	});
     }, [navigation]);
-    const {username, messages} = route.params;
+    const {username, messages,chats,chatHandler,chatIndex} = route.params;
     return (
 	<View style={ChatScreenContainerStyle}>
 	    <MessageBoxComponent messages={messages}/>
-	    <KeyboardComponent />
+	    <KeyboardComponent chatHandler={chatHandler}chats={chats}chatIndex={chatIndex} updateNav={navigation.setParams}/>
 	</View>
     );
 

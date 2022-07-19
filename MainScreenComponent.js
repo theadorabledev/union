@@ -163,7 +163,7 @@ const originalmessagesold=[
 
 
 
-const originalmessages=[
+const originalchats=[
     {chatId:0,ids:[0], chatName:"", messages:[
 		MessageCreator("Test Message 0. Lorem Ipsum",0,999),
 		MessageCreator("Test Message 1. Lorem Ipsum",999,0),
@@ -176,14 +176,12 @@ const originalmessages=[
 	]},
     {chatId:1,ids:[1,2], chatName:"Test Group chat", messages:[
 		MessageCreator("Test Message 0. Lorem Ipsum",1,999),
-		MessageCreator("Test Message 1. Lorem Ipsum",1,999),
+		MessageCreator("Test Message 1. Lorem Ipsum",4,999),
 		MessageCreator("Test Message 2. Lorem Ipsum",999,1),
 	]},
 ]
 
 
-
-let currentmessages = originalmessages
 
 
 // A View to Dispay a default message for incoming users
@@ -198,9 +196,9 @@ const NoContactsComponent = () => {
 
 // A component to display either all of someone's chats or the incoming (no contacts) screen
 const MessagesListComponent = (props) => {
-    const [messages,setMessages] = useState([]);
-    let empty = (messages.length == 0)
-    let messageComponents = messages.map((a, i) => {
+    const [chats,setChats] = useState([]);
+    let empty = (chats.length == 0)
+    let chatComponents = chats.map((a, i) => {
 		let groupchatname = a.chatName
 		if (a.chatName == ""){
 			groupchatname = returnContact(a.ids[0]).name
@@ -211,23 +209,26 @@ const MessagesListComponent = (props) => {
 		   key={a.chatId}
 		   username={groupchatname}
 		   messages={a.messages}
+		   chats={chats}
+		   chatHandler={setChats}
+		   chatIndex={i}
 	       />;
     });
     return (
 	<>
 	    <Button title="Reset Messages" color = {GlobalStyle.highlightcolor} onPress={()=>{
-			setMessages(originalmessages);
+			setChats(originalchats);
 		    }
 											}/>
 	    <Button title="Clear Messages" color = {GlobalStyle.highlightcolor} onPress={()=>{
-			setMessages([])
+			setChats([])
 		    }
 											}/>
 	    {empty ?
 	     <NoContactsComponent/>
 	     :
 	     <ScrollView>
-		 {messageComponents}
+		 {chatComponents}
 	     </ScrollView>
 	    }
 	</>
