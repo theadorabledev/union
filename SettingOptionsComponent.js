@@ -172,13 +172,6 @@ export const Account = () => {
 			  />
 				<Image style={stylesAccount.image} source={defaultprofile} />
 			
-				<View style={stylesAccount.inputView}>
-					<TextInput
-						style={stylesAccount.TextInput}
-						placeholder="Email."
-						placeholderTextColor="#003f5c"
-					/>
-				</View>
 			
 				<View style={stylesAccount.inputView}>
 					<TextInput
@@ -196,7 +189,7 @@ export const Account = () => {
 				</TouchableOpacity>
 			
 				<TouchableOpacity style={stylesAccount.loginBtn}>
-					<Text style={stylesAccount.loginText}>LOGIN</Text>
+					<Text style={stylesAccount.loginText}>Set Password Lock</Text>
 				</TouchableOpacity>
 			</View>
 	);
