@@ -1,12 +1,13 @@
 /* A file to hold components used within the main settings screen. */
 import React, { useState } from 'react';
-import { View, Text, ScrollView, Button, Image, TouchableOpacity, TouchableHighlight } from "react-native";
+import { View, Text, TextInput, ScrollView, Button, Image, TouchableOpacity, TouchableHighlight, StyleSheet } from "react-native";
 import { useNavigation } from '@react-navigation/native';
 import NavigationBar from 'react-native-navbar';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { MaterialCommunityIcons } from '@expo/vector-icons'; 
 import {UserButton, ProfileButton} from './Common.js';
 import {GlobalStyle} from './Styles.js';
+import { UserScreen, Account, Appearance, Notifications, Privacy, Help } from './SettingOptionsComponent.js'
 
 const settingsIconSize=35;
 
@@ -55,15 +56,6 @@ const icons = {
     help:"help-circle-outline",
 }
 
-// A screen which allows the user to edit personal information
-const UserScreen = () => {
-    return (
-	<View>
-	    <Text> Form for User to update information</Text>
-	</View>
-    )
-}
-
 // A section which contains information about the user
 const User = (props) => {
     const navigation = useNavigation();
@@ -81,42 +73,6 @@ const User = (props) => {
 	    </TouchableOpacity>
 	</View>
     );
-}
-
-const Account = () => {
-    return (
-	<View>
-	    <Text> This is the Acount inner component</Text>
-	</View>
-    )
-}
-const Appearance = () => {
-    return (
-	<View>
-	    <Text> This is the Appearance inner component</Text>
-	</View>
-    )
-}
-const Notifications = () => {
-    return (
-	<View>
-	    <Text> This is the Notifications inner component</Text>
-	</View>
-    )
-}
-const Privacy = () => {
-    return (
-	<View>
-	    <Text> This is the Privacy inner component</Text>
-	</View>
-    )
-}
-const Help = () => {
-    return (
-	<View>
-	    <Text> This is the Help inner component</Text>
-	</View>
-    )
 }
 
 const settingOptions = [
