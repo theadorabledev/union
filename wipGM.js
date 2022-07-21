@@ -198,3 +198,78 @@ const styles = StyleSheet.create({
         
         keyExtractor={(item,index)=>index.toString()}
         />
+
+
+		const MessageBubble = (props) => {
+			_onLongPressButton() {
+				alert('React or Reply')
+			  }
+			return(
+			<View style={[
+				  ChatStyles.message,
+				  props.send ? ChatStyles.send : ChatStyles.recieve
+				  ]}>
+				<View
+				style= {[
+					ChatStyles.cloud,
+					{backgroundColor: props.send ? GlobalStyle.highlightcolor : GlobalStyle.pinklightcolor}
+				]}>
+					<TouchableHighlight onPress={this._onPressButton} onLongPress={this._onLongPressButton} underlayColor="white">
+          			<View style={styles.button}>
+         		 	</View>
+        			</TouchableHighlight>
+				{	
+					props.showname
+					?
+						<Text
+							style={[
+							ChatStyles.text,
+							{color: props.send ? 'white': 'white'}
+							]}
+						>
+							{props.name}
+		
+						</Text>
+					:
+					null
+				}{
+					props.text
+					?
+						<Text
+							style={[
+							ChatStyles.text,
+							{color: props.send ? 'white': 'white'}
+							]}
+						>
+							{props.text}
+		
+						</Text>
+					:
+					null
+				}
+		
+				</View>
+		
+			</View>
+			)
+			renderSend;
+		}
+
+
+		function renderSend(props) {
+			return (
+			  <Send {...props}>
+				<View style={styles.sendingContainer}>
+				  <IconButton icon='send-circle' size={32} color='#6646ee' />
+				</View>
+			  </Send>
+			);
+		  }
+
+		  const styles = StyleSheet.create({
+			sendingContainer: {
+			  justifyContent: 'center',
+			  alignItems: 'center'
+			}
+		  });
+
