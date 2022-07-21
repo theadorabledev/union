@@ -6,16 +6,25 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { createStackNavigator } from '@react-navigation/stack';
 import { HeaderBackButton } from '@react-navigation/elements';
 import {HomeButton, SettingsButton,PhoneButton,ProfileButton,ContextMenu} from './Common.js';  // in Common.js create Homebutton
+
 const defaultprofile = require('./assets/profilepicsquaresmall.png')  // should be Homebutton
 import {GlobalStyle} from './Styles.js';
 
 import { LinearGradient } from 'expo-linear-gradient';
 
 
+
 const stylesUser = StyleSheet.create({
 	outerContainer: {
 	  backgroundColor: '#0e101c',
 	  marginLeft: 200,
+	},
+	background: {
+		position: 'absolute',
+		left: 0,
+		right: 0,
+		top: 0,
+		height: 700,
 	},
 	innerContainer: {
 	  display:'flex',
@@ -47,14 +56,21 @@ const stylesUser = StyleSheet.create({
 	  marginTop: 60,
 	  alignItems: "center",
 	  justifyContent: "center",
-	  color: 'black',
-	  backgroundColor: GlobalStyle.pinklightcolor,
+	  color: GlobalStyle.highlightcolor,
+	  backgroundColor: 'white',
 	},
   });
 // A screen which allows the user to edit personal information
 export const UserScreen = () => {
     return (
 			<View>
+					<LinearGradient
+				// Background Linear Gradient
+				colors={[GlobalStyle.highlightcolor, GlobalStyle.pinklightcolor]}
+				start={{ x: 1.0, y: 0.0 }}
+				end={{ x: 0.0, y: 1.0 }}
+				style={stylesUser.background}
+			  />
 				<Text style={stylesUser.label}>First name</Text>
 				<TextInput
 					style={stylesUser.input} 
@@ -65,14 +81,16 @@ export const UserScreen = () => {
 					style={stylesUser.input}
 					placeholder='DiCaprio'
 				/>
-				<Text style={stylesUser.label}>Phone number</Text>
+				<Text style={stylesUser.label}>Pronouns</Text>
 				<TextInput
 					style={stylesUser.input}
-					placeholder='(123)-456-7890'
+					placeholder='They/Them'
 				/>
+				<TouchableOpacity>
 				<View style={stylesUser.button}>
-					<Button title='Submit' color={"#000"}/>
+					<Text>Update</Text>
 				</View>
+				</TouchableOpacity>
 			</View>
     )
 }
@@ -101,8 +119,10 @@ const stylesAccount = StyleSheet.create({
 	  marginBottom: 20,
 	  alignItems: "center",
 	  justifyContent: "center",
-	  backgroundColor: "#FFC0CB",
+	  backgroundColor: "white",
 	},
+	
+	
    
 	TextInput: {
 	  height: 50,
@@ -111,10 +131,18 @@ const stylesAccount = StyleSheet.create({
 	  marginLeft: 20,
 	},
    
+   
+	
+   
 	forgot_button: {
-	  height: 30,
+	  height: 40,
+	  width: 200,
 	  marginTop: 20,
 	  marginBottom: 30,
+	  borderRadius: 30,
+	  alignItems: "center",
+	  justifyContent: "center",
+	  backgroundColor: "white",
 	},
    
 	loginBtn: {
@@ -125,7 +153,7 @@ const stylesAccount = StyleSheet.create({
 	  marginBottom: 20,
 	  alignItems: "center",
 	  justifyContent: "center",
-	  backgroundColor: GlobalStyle.pinklightcolor,
+	  backgroundColor: "white"
 	},
 	loginText: {
 		color: "#000000",
@@ -134,8 +162,14 @@ const stylesAccount = StyleSheet.create({
 // A screen which allows the user to edit Username & Password
 export const Account = () => {
 	return (
-		<ScrollView style={stylesAccount.outerContainer}>
 			<View style={stylesAccount.innerContainer}>
+			<LinearGradient
+				// Background Linear Gradient
+				colors={[GlobalStyle.highlightcolor, GlobalStyle.pinklightcolor]}
+				start={{ x: 1.0, y: 0.0 }}
+				end={{ x: 0.0, y: 1.0 }}
+				style={stylesUser.background}
+			  />
 				<Image style={stylesAccount.image} source={defaultprofile} />
 			
 				<View style={stylesAccount.inputView}>
@@ -156,14 +190,15 @@ export const Account = () => {
 				</View>
 			
 				<TouchableOpacity>
-					<Text style={stylesAccount.forgot_button}>Forgot Password?</Text>
+					<View style={stylesAccount.forgot_button}>
+						<Text>Forgot Password?</Text>
+					</View>
 				</TouchableOpacity>
 			
 				<TouchableOpacity style={stylesAccount.loginBtn}>
 					<Text style={stylesAccount.loginText}>LOGIN</Text>
 				</TouchableOpacity>
 			</View>
-		</ScrollView>
 	);
 }
 
