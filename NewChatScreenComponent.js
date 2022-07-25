@@ -12,6 +12,37 @@ import * as Contacts from "expo-contacts";
 
 // Gets the contacts with phone numbers and displays them in a screen, loads only visible ones for performance
 
+
+
+
+const NewChatComponent = (props) => {
+    const navigation = useNavigation();
+    return (
+	<TouchableHighlight onPress={() =>
+				navigation.navigate(
+				    'ChatScreen', {
+					username:props.username,
+					messages:props.messages,
+					newChat:props.isNewChat,
+					chatIndex:props.chatIndex
+					
+				    })
+			    }
+			    underlayColor = {GlobalStyle.highlightcolor}>
+	    <View style={ChatComponentStyles.chatComp}>
+		<ProfileButton profileSize={GlobalStyle.contactProfileSize} profileSource={GlobalStyle.defaultprofile} onPress={()=>{alert("Take user to contact's settings")}}/>
+		<View style={ChatComponentStyles.miniChat}>
+		    <Text style={ChatComponentStyles.userName}>{props.username}</Text>
+		</View>
+	    </View>
+	</TouchableHighlight>
+    );
+};
+
+
+
+
+
 const NewChatScreenComponent = ({navigation}) => {
     React.useLayoutEffect(() => {
 	navigation.setOptions({

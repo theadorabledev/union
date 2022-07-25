@@ -1,5 +1,5 @@
 /* A file to hold components used within the main screen */
-import React, { useState } from 'react';
+import React, { useState,useContext } from 'react';
 import { View, Text, ScrollView, Button, Image, TouchableOpacity, TouchableHighlight } from "react-native";
 import NavigationBar from 'react-native-navbar';
 import { useNavigation } from '@react-navigation/native';
@@ -14,6 +14,7 @@ import * as Contacts from "expo-contacts";
 
 import uuid from 'react-native-uuid';
 
+import {ChatContext} from './Context.js';
 
 const MainScreenStyles = {
     chatComp: {
@@ -97,12 +98,12 @@ function ContactCreator(name,id){
 	};
 }
 
-function MessageCreator(message,senderid,recieverid){
+function MessageCreator(message,senderid,chatId){
 	return{
 		messageId:uuid.v4(),
 		message:message,
 		senderId:senderid,
-		recieverId:recieverid,
+		chatId:chatId,
 		date:new Date(),
 	}
 }
@@ -165,18 +166,18 @@ const originalmessagesold=[
 
 const originalchats=[
     {chatId:0,ids:[0], chatName:"", messages:[
-		MessageCreator("Test Message 0. Lorem Ipsum",0,999),
+		MessageCreator("Test Message 0. Lorem Ipsum",0,0),
 		MessageCreator("Test Message 1. Lorem Ipsum",999,0),
-		MessageCreator("Test Message 0. Lorem Ipsum",0,999),
+		MessageCreator("Test Message 0. Lorem Ipsum",0,0),
 		MessageCreator("Test Message 2. Lorem Ipsum",999,0),
-		MessageCreator("Test Message 0. Lorem Ipsum",0,999),
-		MessageCreator("Test Message 0. Lorem Ipsum",0,999),
+		MessageCreator("Test Message 0. Lorem Ipsum",0,0),
+		MessageCreator("Test Message 0. Lorem Ipsum",0,0),
 		MessageCreator("Test Message 3. Lorem Ipsum",999,0),
-		MessageCreator("Test Message 0. Lorem Ipsum",0,999),
+		MessageCreator("Test Message 0. Lorem Ipsum",0,0),
 	]},
     {chatId:1,ids:[1,2], chatName:"Test Group chat", messages:[
-		MessageCreator("Test Message 0. Lorem Ipsum",1,999),
-		MessageCreator("Test Message 1. Lorem Ipsum",4,999),
+		MessageCreator("Test Message 0. Lorem Ipsum",1,1),
+		MessageCreator("Test Message 1. Lorem Ipsum",4,1),
 		MessageCreator("Test Message 2. Lorem Ipsum",999,1),
 	]},
 ]
@@ -196,7 +197,7 @@ const NoContactsComponent = () => {
 
 // A component to display either all of someone's chats or the incoming (no contacts) screen
 const MessagesListComponent = (props) => {
-    const [chats,setChats] = useState([]);
+    const {chats,setChats} = useContext(ChatContext)
     let empty = (chats.length == 0)
     let chatComponents = chats.map((a, i) => {
 		let groupchatname = a.chatName
@@ -209,8 +210,6 @@ const MessagesListComponent = (props) => {
 		   key={a.chatId}
 		   username={groupchatname}
 		   messages={a.messages}
-		   chats={chats}
-		   chatHandler={setChats}
 		   chatIndex={i}
 	       />;
     });
