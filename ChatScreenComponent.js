@@ -108,6 +108,7 @@ const MessageBubble = (props) => {
 
 // Container for the messages, updated with state variable, displays "No messages" if so
 const MessageBoxComponent = (props) => {
+	backgroundColor : '#e5e5e5'
     const [textmessages,setMessages] = useState(props.messages);
     let empty = (textmessages.length == 0)
     let textComponents = textmessages.map((a, i) => {
@@ -152,21 +153,29 @@ const MessageBoxComponent = (props) => {
 
 // Styles for the keyboard
 const keyboardStyle = StyleSheet.create({
+	outer: {
+	flexDirection: 'row',
+	margin: 5,
+	},
     container: {
+	backgroundColor: 'white',
+	flexDirection: 'row',
 	flex: 1,
-	justifyContent: 'flex-end',
-	marginBottom: 10
+	marginRight:10,
+	padding: 10,
+	borderRadius: 50,
     },
     input: {
-	padding: 10,
-	borderWidth: 0.5,
-	height:50,
-	borderRadius: 4
+	flex: 1,
+	marginHorizontal:10,
     },
     status: {
 	padding: 10,
 	textAlign: "center"
-    }
+    },
+	icon: {
+	marginHorizontal: 5,
+	}
 });
 
 // Displays a keyboard which allows the user to write messages
@@ -192,25 +201,36 @@ const KeyboardComponent = (props) => {
 	};
     }, []);
 
-
+	const onPress = () => {
+		alert
+	}
     return (
-	 <TextInput
-	    style={keyboardStyle.input}
-	    placeholder='Press here…'
-		onChangeText={newText=>setText(newText)}
-	    onSubmitEditing={ a=>{
-			console.log(text),
-			props.chatHandler((chats) =>{
-				const newChats = [...chats]
-				newChats[props.chatIndex].messages.push(addMessage(text))
-				return newChats
-			})
-			props.updateNav({messages:props.chats[props.chatIndex].messages})
-			
-			Keyboard.dismiss
-			}
-		}
-	/>
+		<View style ={keyboardStyle.outer}>
+			<View style={keyboardStyle.container}> 
+			<TextInput
+				style={keyboardStyle.input}
+				placeholder='Press here…'
+				onChangeText={newText=>setText(newText)}
+				onSubmitEditing={ a=>{
+					console.log(text),
+					props.chatHandler((chats) =>{
+						const newChats = [...chats]
+						newChats[props.chatIndex].messages.push(addMessage(text))
+						return newChats
+					})
+					props.updateNav({messages:props.chats[props.chatIndex].messages})
+					
+					Keyboard.dismiss
+					}
+				}
+				
+			/>
+			<TouchableOpacity onPress={onPress}>
+				<Ionicons name='paper-plane' size={24} color={GlobalStyle.pinklightcolor} style={keyboardStyle.icon}/>
+			</TouchableOpacity>
+
+		</View>
+	</View>
     );
 }
 
