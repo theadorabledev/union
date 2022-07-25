@@ -49,12 +49,12 @@ const ChatStyles = StyleSheet.create({
 
 
 //wip, fix this later
-function addMessage(messagecontents){
+function addMessage(messagecontents,chatid){
 	return {
 		messageId:uuid.v4(),
 		message:messagecontents,
 		senderId:999,
-		recieverId:0,
+		chatId:chatid,
 		date:new Date(),
 	}
 }
@@ -177,7 +177,7 @@ const keyboardStyle = StyleSheet.create({
 // TODO: Connect to messaging API
 const KeyboardComponent = (props) => {
     const [keyboardStatus, setKeyboardStatus] = useState(undefined);
-	const {chats,setChats} = useContext(ChatContext)
+	const {chats,setChats,ws} = useContext(ChatContext)
 	const [text,setText] = useState('');
 
     useEffect(() => {
@@ -207,9 +207,12 @@ const KeyboardComponent = (props) => {
 			console.log(text),
 			setChats((chats) =>{
 				const newChats = [...chats]
-				newChats[props.chatIndex].messages.push(addMessage(text))
-				return newChats
+				const message = addMessage(text,newChats[props.chatIndex].chatId)
+				newChats[props.chatIndex].messages.push(message)
+				ws.send(JSON.stringify(message))
+				return newChats;
 			})
+
 			Keyboard.dismiss
 			}
 		}

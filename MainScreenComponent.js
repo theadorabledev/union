@@ -98,12 +98,12 @@ function ContactCreator(name,id){
 	};
 }
 
-function MessageCreator(message,senderid,recieverid){
+function MessageCreator(message,senderid,chatId){
 	return{
 		messageId:uuid.v4(),
 		message:message,
 		senderId:senderid,
-		recieverId:recieverid,
+		chatId:chatId,
 		date:new Date(),
 	}
 }
@@ -166,18 +166,18 @@ const originalmessagesold=[
 
 const originalchats=[
     {chatId:0,ids:[0], chatName:"", messages:[
-		MessageCreator("Test Message 0. Lorem Ipsum",0,999),
+		MessageCreator("Test Message 0. Lorem Ipsum",0,0),
 		MessageCreator("Test Message 1. Lorem Ipsum",999,0),
-		MessageCreator("Test Message 0. Lorem Ipsum",0,999),
+		MessageCreator("Test Message 0. Lorem Ipsum",0,0),
 		MessageCreator("Test Message 2. Lorem Ipsum",999,0),
-		MessageCreator("Test Message 0. Lorem Ipsum",0,999),
-		MessageCreator("Test Message 0. Lorem Ipsum",0,999),
+		MessageCreator("Test Message 0. Lorem Ipsum",0,0),
+		MessageCreator("Test Message 0. Lorem Ipsum",0,0),
 		MessageCreator("Test Message 3. Lorem Ipsum",999,0),
-		MessageCreator("Test Message 0. Lorem Ipsum",0,999),
+		MessageCreator("Test Message 0. Lorem Ipsum",0,0),
 	]},
     {chatId:1,ids:[1,2], chatName:"Test Group chat", messages:[
-		MessageCreator("Test Message 0. Lorem Ipsum",1,999),
-		MessageCreator("Test Message 1. Lorem Ipsum",4,999),
+		MessageCreator("Test Message 0. Lorem Ipsum",1,1),
+		MessageCreator("Test Message 1. Lorem Ipsum",4,1),
 		MessageCreator("Test Message 2. Lorem Ipsum",999,1),
 	]},
 ]

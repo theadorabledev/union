@@ -20,11 +20,48 @@ const StackNav = createNativeStackNavigator();
 
 import {ChatContext} from './Context.js';
 
+function ReturnChat(chats,id){
+	let myChatData= chats.findIndex(function(chat){
+		return chat.chatId === id;
+	});
+	return myChatData;
+}
+
+
+//setChats((chats) =>{
+//	const newChats = [...chats]
+//	newChats[props.chatIndex].messages.push(addMessage(text))
+//	return newChats
+//})
+
+
+var ws = new WebSocket('ws://192.168.1.4:8000/55');
 const App = (props) => {
-	var ws = new WebSocket('ws://192.168.1.4:8000/');
+	
 	console.log("New Web Socket Connection: ",ws);
+	
+
+	
 	const [chats,setChats] = useState([]);
-	const chatState = {chats,setChats};
+	const [recentmessageId,setRecentMessageId] = useState(-1)
+	const chatState = {chats,setChats,ws};
+	
+	ws.onmessage = (e) => {
+		let msgData = JSON.parse(e.data);
+		console.log("Recieved: ", msgData);
+		let chatIndex = ReturnChat(chats,msgData.chatId)
+		console.log(chatIndex)
+		if(chatIndex != -1){
+			setChats((chats) =>{
+					const newChats = [...chats]
+					newChats[chatIndex].messages.push(msgData)
+					console.log(chatIndex)
+					return newChats
+			})
+		}
+	};
+	
+	
     return (
 	<NavigationContainer>
 		<ChatContext.Provider value={chatState}>
