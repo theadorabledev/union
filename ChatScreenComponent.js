@@ -1,6 +1,6 @@
 /* A file to hold components used within the chat screen. */
 
-import React, { useState,useEffect,useContext } from 'react';
+import React, { useState,useEffect,useContext,useRef} from 'react';
 import { View, Text, ScrollView, Button, Image, TouchableOpacity, TouchableHighlight, Keyboard, TextInput, StyleSheet } from "react-native";
 import NavigationBar from 'react-native-navbar';
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -112,6 +112,7 @@ const MessageBubble = (props) => {
 
 // Container for the messages, updated with state variable, displays "No messages" if so
 const MessageBoxComponent = (props) => {
+	
 	const {chats,setChats} = useContext(ChatContext)
     let empty = (chats[props.chatIndex].messages.length == 0)
     let textComponents = chats[props.chatIndex].messages.map((a, i) => {
@@ -146,7 +147,7 @@ const MessageBoxComponent = (props) => {
 	    {empty ?
 	     <Text>No messages</Text>
 	     :
-	     <ScrollView>
+	     <ScrollView ref ={props.scrollref}>
 		 {textComponents}
 	     </ScrollView>
 	    }
@@ -212,7 +213,7 @@ const KeyboardComponent = (props) => {
 				ws.send(JSON.stringify(message))
 				return newChats;
 			})
-
+			props.scrollref.current.scrollToEnd({ animated: true })
 			Keyboard.dismiss
 			}
 		}
@@ -266,11 +267,11 @@ const ChatScreenComponent = ({route, navigation}) => {
 	});
     }, [navigation]);
     const {chatIndex} = route.params;
-	
+	const scrollViewRef = React.useRef();
     return (
 	<View style={ChatScreenContainerStyle}>
-	    <MessageBoxComponent chatIndex={chatIndex}/>
-	    <KeyboardComponent chatIndex={chatIndex}/>
+	    <MessageBoxComponent scrollref={scrollViewRef} chatIndex={chatIndex}/>
+	    <KeyboardComponent scrollref={scrollViewRef} chatIndex={chatIndex}/>
 	</View>
     );
 
