@@ -203,6 +203,7 @@ const KeyboardComponent = (props) => {
 	 <TextInput
 	    style={keyboardStyle.input}
 	    placeholder='Press here…'
+		value={text}
 		onChangeText={newText=>setText(newText)}
 	    onSubmitEditing={ a=>{
 			console.log(text),
@@ -213,7 +214,8 @@ const KeyboardComponent = (props) => {
 				ws.send(JSON.stringify(message))
 				return newChats;
 			})
-			props.scrollref.current.scrollToEnd({ animated: true })
+			props.scrollref.current.scrollToEnd({ animated: true }),
+			setText('')
 			Keyboard.dismiss
 			}
 		}
