@@ -1,7 +1,7 @@
 /* A file to hold components used within the chat screen. */
 
 import React, { useState,useEffect } from 'react';
-import { View, Text, ScrollView, Button, Image, TouchableOpacity, TouchableHighlight, Keyboard, TextInput, StyleSheet } from "react-native";
+import { View, Text, ScrollView, Button, Image, TouchableOpacity, TouchableHighlight, Keyboard, TextInput, StyleSheet, Alert } from "react-native";
 import NavigationBar from 'react-native-navbar';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -202,7 +202,15 @@ const KeyboardComponent = (props) => {
     }, []);
 
 	const onPress = () => {
-		alert
+		//console.warn("send", text);
+		console.log(text),
+					props.chatHandler((chats) =>{
+						const newChats = [...chats]
+						newChats[props.chatIndex].messages.push(addMessage(text))
+						return newChats
+					})
+					props.updateNav({messages:props.chats[props.chatIndex].messages})
+					Keyboard.dismiss
 	}
     return (
 		<View style ={keyboardStyle.outer}>
@@ -219,11 +227,10 @@ const KeyboardComponent = (props) => {
 						return newChats
 					})
 					props.updateNav({messages:props.chats[props.chatIndex].messages})
-					
 					Keyboard.dismiss
 					}
 				}
-				
+				multiline
 			/>
 			<TouchableOpacity onPress={onPress}>
 				<Ionicons name='paper-plane' size={24} color={GlobalStyle.pinklightcolor} style={keyboardStyle.icon}/>
