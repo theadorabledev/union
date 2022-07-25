@@ -1,6 +1,6 @@
 /* A file to hold components used within the main settings screen. */
 import React, { useState } from 'react';
-import { View, Text, TextInput, ScrollView, Button, Image, TouchableOpacity, TouchableHighlight, StyleSheet } from "react-native";
+import { View, Text, TextInput, ScrollView, Button, Image, TouchableOpacity, TouchableHighlight, StyleSheet,useWindowDimensions } from "react-native";
 import { useNavigation } from '@react-navigation/native';
 import NavigationBar from 'react-native-navbar';
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -64,7 +64,7 @@ const User = (props) => {
 	    <ProfileButton profileSize={GlobalStyle.userProfileSize} profileSource={props.picture} onPress={()=>{alert("let user change profile picture")}}/>
 	    <TouchableOpacity style={MainSettingStyles.personalInfo} onPress={() => navigation.navigate(
 				  'SettingOptions', {
-				      title:props.userInfo.firstName,
+				      title:"User Info",
 				      component:UserScreen()
 				  })
 								 }>
@@ -103,6 +103,7 @@ const Option = (props) => {
 }
 // Displays the various settings options
 const OptionList = () => {
+	const windowdetails = useWindowDimensions();
     const options = settingOptions.map((option, i )=> {
 	return (
 	    <Option option={option} key={i}/>

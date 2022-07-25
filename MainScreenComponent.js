@@ -69,7 +69,7 @@ const MainScreenStyles = {
 //Placeholder variables for debugging
 const userInfo = {
     pic:GlobalStyle.defaultprofile,
-    firstName:"Test",
+    firstName:"User",
     lastName:"Profile",
     identify:"They/Them",
     phone:"(123)456-7890"
@@ -79,8 +79,8 @@ let userprofilepic = GlobalStyle.defaultprofile;
 
 const userContact = {
 	userId: 999,
-	[Contacts.Fields.Name]: "Test Profile",
-	[Contacts.Fields.FirstName]: 'Test',
+	[Contacts.Fields.Name]: "User Profile",
+	[Contacts.Fields.FirstName]: 'User',
 	[Contacts.Fields.LastName]: 'Profile',
 	Prounouns:'They/Them',
 }
