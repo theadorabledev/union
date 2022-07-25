@@ -9,7 +9,6 @@ import ChatSettingScreenComponent from './ChatSettingScreenComponent';
 import NewChatScreenComponent from './NewChatScreenComponent';
 import SettingOptionsComponent from './SettingOptionsComponent'
 
-
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { getHeaderTitle } from '@react-navigation/elements';
@@ -21,6 +20,8 @@ const StackNav = createNativeStackNavigator();
 
 
 const App = (props) => {
+	var ws = new WebSocket('ws://192.168.1.4:8000/');
+	console.log("New Web Socket Connection: ",ws);
     return (
 	<NavigationContainer>
             <StackNav.Navigator>
