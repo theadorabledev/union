@@ -1,5 +1,5 @@
 /* A file to hold components used within the main screen */
-import React, { useState } from 'react';
+import React, { useState,useContext } from 'react';
 import { View, Text, ScrollView, Button, Image, TouchableOpacity, TouchableHighlight } from "react-native";
 import NavigationBar from 'react-native-navbar';
 import { useNavigation } from '@react-navigation/native';
@@ -14,6 +14,7 @@ import * as Contacts from "expo-contacts";
 
 import uuid from 'react-native-uuid';
 
+import {ChatContext} from './Context.js';
 
 const MainScreenStyles = {
     chatComp: {
@@ -196,7 +197,7 @@ const NoContactsComponent = () => {
 
 // A component to display either all of someone's chats or the incoming (no contacts) screen
 const MessagesListComponent = (props) => {
-    const [chats,setChats] = useState([]);
+    const {chats,setChats} = useContext(ChatContext)
     let empty = (chats.length == 0)
     let chatComponents = chats.map((a, i) => {
 		let groupchatname = a.chatName
@@ -209,8 +210,6 @@ const MessagesListComponent = (props) => {
 		   key={a.chatId}
 		   username={groupchatname}
 		   messages={a.messages}
-		   chats={chats}
-		   chatHandler={setChats}
 		   chatIndex={i}
 	       />;
     });
