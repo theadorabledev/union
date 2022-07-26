@@ -1,7 +1,9 @@
 /* A file to hold components used within the chat screen. */
 
-import React, { useState,useEffect } from 'react';
+
+import React, { useState,useEffect,useContext,useRef} from 'react';
 import { View, Text, ScrollView, Button, Image, TouchableOpacity, TouchableHighlight, Keyboard, TextInput, StyleSheet, Alert } from "react-native";
+
 import NavigationBar from 'react-native-navbar';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -15,6 +17,10 @@ import { render } from 'react-dom';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 import uuid from 'react-native-uuid';
+
+import {ChatContext} from './Context.js';
+
+
 //Styles for the chats
 const ChatStyles = StyleSheet.create({
     message: {
@@ -45,12 +51,12 @@ const ChatStyles = StyleSheet.create({
 
 
 //wip, fix this later
-function addMessage(messagecontents){
+function addMessage(messagecontents,chatid){
 	return {
 		messageId:uuid.v4(),
 		message:messagecontents,
 		senderId:999,
-		recieverId:0,
+		chatId:chatid,
 		date:new Date(),
 	}
 }
@@ -108,14 +114,17 @@ const MessageBubble = (props) => {
 
 // Container for the messages, updated with state variable, displays "No messages" if so
 const MessageBoxComponent = (props) => {
+
 	backgroundColor : '#e5e5e5'
-    const [textmessages,setMessages] = useState(props.messages);
-    let empty = (textmessages.length == 0)
-    let textComponents = textmessages.map((a, i) => {
+	const {chats,setChats} = useContext(ChatContext)
+    let empty = (chats[props.chatIndex].messages.length == 0)
+	const scrollViewRef = useRef();
+    let textComponents = chats[props.chatIndex].messages.map((a, i) => {
+	
 	//track the most recent recieverId
 	let showname = true
 	if ( i > 0) {
-		if (a.senderId == textmessages[i-1].senderId){
+		if (a.senderId == chats[props.chatIndex].messages[i-1].senderId){
 			showname = false
 		}
 	}
@@ -143,7 +152,10 @@ const MessageBoxComponent = (props) => {
 	    {empty ?
 	     <Text>No messages</Text>
 	     :
-	     <ScrollView>
+		<ScrollView
+			ref={scrollViewRef}
+			onContentSizeChange={() => scrollViewRef.current.scrollToEnd({ animated: true })}
+		>
 		 {textComponents}
 	     </ScrollView>
 	    }
@@ -182,6 +194,7 @@ const keyboardStyle = StyleSheet.create({
 // TODO: Connect to messaging API
 const KeyboardComponent = (props) => {
     const [keyboardStatus, setKeyboardStatus] = useState(undefined);
+	const {chats,setChats,ws} = useContext(ChatContext)
 	const [text,setText] = useState('');
 
 
@@ -207,14 +220,16 @@ const KeyboardComponent = (props) => {
 	const onPress = () => {
 		//console.warn("send", text);
 		console.log(text),
-					props.chatHandler((chats) =>{
-						const newChats = [...chats]
-						newChats[props.chatIndex].messages.push(addMessage(text))
-						return newChats
-					}),
-					props.updateNav({messages:props.chats[props.chatIndex].messages}),
-					Keyboard.dismiss(),
-					setText('')
+		setChats((chats) =>{
+				const newChats = [...chats]
+				const message = addMessage(text,newChats[props.chatIndex].chatId)
+				newChats[props.chatIndex].messages.push(message)
+				ws.send(JSON.stringify(message))
+				return newChats;
+			}),
+		Keyboard.dismiss(),
+		//props.scrollref.current.scrollToEnd({ animated: true }),
+		setText('')
 	}
     return (
 		<View style ={keyboardStyle.outer}>
@@ -224,21 +239,10 @@ const KeyboardComponent = (props) => {
 				placeholder='Press here…'
 				onChangeText={newText=>setText(newText)}
 				value={text}
-				// onSubmitEditing={ a=>{
-				// 	console.log(text),
-				// 	props.chatHandler((chats) =>{
-				// 		const newChats = [...chats]
-				// 		newChats[props.chatIndex].messages.push(addMessage(text))
-				// 		return newChats
-				// 	})
-				// 	props.updateNav({messages:props.chats[props.chatIndex].messages})
-				// 	Keyboard.dismiss
-				// 	}
-				// }
 				multiline
 			/>
 			<TouchableOpacity onPress={onPress}>
-				<Ionicons name='paper-plane' size={24} color={GlobalStyle.pinklightcolor} style={keyboardStyle.icon}/>
+				<Ionicons name='paper-plane' size={24} color={GlobalStyle.highlightcolor} style={keyboardStyle.icon}/>
 			</TouchableOpacity>
 
 		</View>
@@ -291,11 +295,11 @@ const ChatScreenComponent = ({route, navigation}) => {
 	    ),
 	});
     }, [navigation]);
-    const {username, messages,chats,chatHandler,chatIndex} = route.params;
+    const {chatIndex} = route.params;
     return (
 	<View style={ChatScreenContainerStyle}>
-	    <MessageBoxComponent messages={messages}/>
-	    <KeyboardComponent chatHandler={chatHandler}chats={chats}chatIndex={chatIndex} updateNav={navigation.setParams}/>
+	    <MessageBoxComponent chatIndex={chatIndex}/>
+	    <KeyboardComponent chatIndex={chatIndex}/>
 	</View>
     );
 
