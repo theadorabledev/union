@@ -118,8 +118,9 @@ const MessageBoxComponent = (props) => {
 	backgroundColor : '#e5e5e5'
 	const {chats,setChats} = useContext(ChatContext)
     let empty = (chats[props.chatIndex].messages.length == 0)
+	const scrollViewRef = useRef();
     let textComponents = chats[props.chatIndex].messages.map((a, i) => {
-
+	
 	//track the most recent recieverId
 	let showname = true
 	if ( i > 0) {
@@ -151,7 +152,10 @@ const MessageBoxComponent = (props) => {
 	    {empty ?
 	     <Text>No messages</Text>
 	     :
-	     <ScrollView ref ={props.scrollref}>
+		<ScrollView
+			ref={scrollViewRef}
+			onContentSizeChange={() => scrollViewRef.current.scrollToEnd({ animated: true })}
+		>
 		 {textComponents}
 	     </ScrollView>
 	    }
@@ -224,7 +228,7 @@ const KeyboardComponent = (props) => {
 				return newChats;
 			}),
 		Keyboard.dismiss(),
-		props.scrollref.current.scrollToEnd({ animated: true }),
+		//props.scrollref.current.scrollToEnd({ animated: true }),
 		setText('')
 	}
     return (
@@ -292,11 +296,10 @@ const ChatScreenComponent = ({route, navigation}) => {
 	});
     }, [navigation]);
     const {chatIndex} = route.params;
-	const scrollViewRef = React.useRef();
     return (
 	<View style={ChatScreenContainerStyle}>
-	    <MessageBoxComponent scrollref={scrollViewRef} chatIndex={chatIndex}/>
-	    <KeyboardComponent scrollref={scrollViewRef} chatIndex={chatIndex}/>
+	    <MessageBoxComponent chatIndex={chatIndex}/>
+	    <KeyboardComponent chatIndex={chatIndex}/>
 	</View>
     );
 
