@@ -184,6 +184,7 @@ const KeyboardComponent = (props) => {
     const [keyboardStatus, setKeyboardStatus] = useState(undefined);
 	const [text,setText] = useState('');
 
+
     useEffect(() => {
 	const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
 	    setKeyboardStatus("Keyboard Shown");
@@ -201,6 +202,8 @@ const KeyboardComponent = (props) => {
 	};
     }, []);
 
+
+	//sends message with use of send button
 	const onPress = () => {
 		//console.warn("send", text);
 		console.log(text),
@@ -208,9 +211,10 @@ const KeyboardComponent = (props) => {
 						const newChats = [...chats]
 						newChats[props.chatIndex].messages.push(addMessage(text))
 						return newChats
-					})
-					props.updateNav({messages:props.chats[props.chatIndex].messages})
-					Keyboard.dismiss
+					}),
+					props.updateNav({messages:props.chats[props.chatIndex].messages}),
+					Keyboard.dismiss(),
+					setText('')
 	}
     return (
 		<View style ={keyboardStyle.outer}>
@@ -219,17 +223,18 @@ const KeyboardComponent = (props) => {
 				style={keyboardStyle.input}
 				placeholder='Press here…'
 				onChangeText={newText=>setText(newText)}
-				onSubmitEditing={ a=>{
-					console.log(text),
-					props.chatHandler((chats) =>{
-						const newChats = [...chats]
-						newChats[props.chatIndex].messages.push(addMessage(text))
-						return newChats
-					})
-					props.updateNav({messages:props.chats[props.chatIndex].messages})
-					Keyboard.dismiss
-					}
-				}
+				value={text}
+				// onSubmitEditing={ a=>{
+				// 	console.log(text),
+				// 	props.chatHandler((chats) =>{
+				// 		const newChats = [...chats]
+				// 		newChats[props.chatIndex].messages.push(addMessage(text))
+				// 		return newChats
+				// 	})
+				// 	props.updateNav({messages:props.chats[props.chatIndex].messages})
+				// 	Keyboard.dismiss
+				// 	}
+				// }
 				multiline
 			/>
 			<TouchableOpacity onPress={onPress}>
