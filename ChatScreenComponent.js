@@ -1,7 +1,9 @@
 /* A file to hold components used within the chat screen. */
 
+
 import React, { useState,useEffect,useContext,useRef} from 'react';
-import { View, Text, ScrollView, Button, Image, TouchableOpacity, TouchableHighlight, Keyboard, TextInput, StyleSheet } from "react-native";
+import { View, Text, ScrollView, Button, Image, TouchableOpacity, TouchableHighlight, Keyboard, TextInput, StyleSheet, Alert } from "react-native";
+
 import NavigationBar from 'react-native-navbar';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -112,10 +114,12 @@ const MessageBubble = (props) => {
 
 // Container for the messages, updated with state variable, displays "No messages" if so
 const MessageBoxComponent = (props) => {
-	
+
+	backgroundColor : '#e5e5e5'
 	const {chats,setChats} = useContext(ChatContext)
     let empty = (chats[props.chatIndex].messages.length == 0)
     let textComponents = chats[props.chatIndex].messages.map((a, i) => {
+
 	//track the most recent recieverId
 	let showname = true
 	if ( i > 0) {
@@ -157,21 +161,29 @@ const MessageBoxComponent = (props) => {
 
 // Styles for the keyboard
 const keyboardStyle = StyleSheet.create({
+	outer: {
+	flexDirection: 'row',
+	margin: 5,
+	},
     container: {
+	backgroundColor: 'white',
+	flexDirection: 'row',
 	flex: 1,
-	justifyContent: 'flex-end',
-	marginBottom: 10
+	marginRight:10,
+	padding: 10,
+	borderRadius: 50,
     },
     input: {
-	padding: 10,
-	borderWidth: 0.5,
-	height:50,
-	borderRadius: 4
+	flex: 1,
+	marginHorizontal:10,
     },
     status: {
 	padding: 10,
 	textAlign: "center"
-    }
+    },
+	icon: {
+	marginHorizontal: 5,
+	}
 });
 
 // Displays a keyboard which allows the user to write messages
@@ -180,6 +192,7 @@ const KeyboardComponent = (props) => {
     const [keyboardStatus, setKeyboardStatus] = useState(undefined);
 	const {chats,setChats,ws} = useContext(ChatContext)
 	const [text,setText] = useState('');
+
 
     useEffect(() => {
 	const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
@@ -199,27 +212,37 @@ const KeyboardComponent = (props) => {
     }, []);
 
 
-    return (
-	 <TextInput
-	    style={keyboardStyle.input}
-	    placeholder='Press here…'
-		value={text}
-		onChangeText={newText=>setText(newText)}
-	    onSubmitEditing={ a=>{
-			console.log(text),
-			setChats((chats) =>{
+	//sends message with use of send button
+	const onPress = () => {
+		//console.warn("send", text);
+		console.log(text),
+		setChats((chats) =>{
 				const newChats = [...chats]
 				const message = addMessage(text,newChats[props.chatIndex].chatId)
 				newChats[props.chatIndex].messages.push(message)
 				ws.send(JSON.stringify(message))
 				return newChats;
-			})
-			props.scrollref.current.scrollToEnd({ animated: true }),
-			setText('')
-			Keyboard.dismiss
-			}
-		}
-	/>
+			}),
+		Keyboard.dismiss(),
+		props.scrollref.current.scrollToEnd({ animated: true }),
+		setText('')
+	}
+    return (
+		<View style ={keyboardStyle.outer}>
+			<View style={keyboardStyle.container}> 
+			<TextInput
+				style={keyboardStyle.input}
+				placeholder='Press here…'
+				onChangeText={newText=>setText(newText)}
+				value={text}
+				multiline
+			/>
+			<TouchableOpacity onPress={onPress}>
+				<Ionicons name='paper-plane' size={24} color={GlobalStyle.highlightcolor} style={keyboardStyle.icon}/>
+			</TouchableOpacity>
+
+		</View>
+	</View>
     );
 }
 
