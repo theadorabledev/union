@@ -203,7 +203,7 @@ const KeyboardComponent = (props) => {
     }, []);
 
 
-	//sends message with use of send button
+	//sends message with use of send button, and clears text
 	const onPress = () => {
 		//console.warn("send", text);
 		console.log(text),
