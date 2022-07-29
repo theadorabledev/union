@@ -4,3 +4,8 @@ export const ChatContext = React.createContext({
 	setChats: () => {},
 	ws: "",
 });
+export const ContactContext = React.createContext({
+	contacts: [],
+	setContacts: () => {},
+	userid: "",
+});

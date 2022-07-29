@@ -14,7 +14,7 @@ import * as Contacts from "expo-contacts";
 
 import uuid from 'react-native-uuid';
 
-import {ChatContext} from './Context.js';
+import {ChatContext,ContactContext} from './Context.js';
 
 const MainScreenStyles = {
     chatComp: {
@@ -133,6 +133,8 @@ export function returnContact(id){
 
 
 
+
+
 const originalmessagesold=[
     {ids:[0], messages:[
 	"Test Message 0. Lorem Ipsum",
@@ -167,18 +169,18 @@ const originalmessagesold=[
 const originalchats=[
     {chatId:0,ids:[0], chatName:"", messages:[
 		MessageCreator("Test Message 0. Lorem Ipsum",0,0),
-		MessageCreator("Test Message 1. Lorem Ipsum",999,0),
+		MessageCreator("Test Message 1. Lorem Ipsum","47769a91-2d07-4580-8828-5913cf821623","TestUser",0),
 		MessageCreator("Test Message 0. Lorem Ipsum",0,0),
-		MessageCreator("Test Message 2. Lorem Ipsum",999,0),
+		MessageCreator("Test Message 2. Lorem Ipsum","47769a91-2d07-4580-8828-5913cf821623","TestUser",0),
 		MessageCreator("Test Message 0. Lorem Ipsum",0,0),
 		MessageCreator("Test Message 0. Lorem Ipsum",0,0),
-		MessageCreator("Test Message 3. Lorem Ipsum",999,0),
+		MessageCreator("Test Message 3. Lorem Ipsum","47769a91-2d07-4580-8828-5913cf821623","TestUser",0),
 		MessageCreator("Test Message 0. Lorem Ipsum",0,0),
 	]},
     {chatId:1,ids:[1,2], chatName:"Test Group chat", messages:[
 		MessageCreator("Test Message 0. Lorem Ipsum",1,1),
 		MessageCreator("Test Message 1. Lorem Ipsum",4,1),
-		MessageCreator("Test Message 2. Lorem Ipsum",999,1),
+		MessageCreator("Test Message 2. Lorem Ipsum","47769a91-2d07-4580-8828-5913cf821623","TestUser",1),
 	]},
 ]
 
@@ -198,20 +200,22 @@ const NoContactsComponent = () => {
 // A component to display either all of someone's chats or the incoming (no contacts) screen
 const MessagesListComponent = (props) => {
     const {chats,setChats} = useContext(ChatContext)
+	const {contacts,setContacts} = useContext(ContactContext)
     let empty = (chats.length == 0)
-    let chatComponents = chats.map((a, i) => {
-		let groupchatname = a.chatName
-		if (a.chatName == ""){
-			groupchatname = returnContact(a.ids[0]).name
+    let chatComponents = []
+	chats.forEach((a, i) => {
+		let groupchatname = a.chatname
+		if (a.chatname == ""){
+			groupchatname = contacts.get(a.contactids[0]).username
 		}else{
-			groupchatname = a.chatName
+			groupchatname = a.chatname
 		}
-	return <ChatComponent
-		   key={a.chatId}
+		chatComponents.push(<ChatComponent
+		   key={a.id}
 		   username={groupchatname}
 		   messages={a.messages}
-		   chatIndex={i}
-	       />;
+		   chatId={a.id}
+	       />)
     });
     return (
 	<>
@@ -220,7 +224,7 @@ const MessagesListComponent = (props) => {
 		    }
 											}/>
 	    <Button title="Clear Messages" color = {GlobalStyle.highlightcolor} onPress={()=>{
-			setChats([])
+			setChats(new Map())
 		    }
 											}/>
 	    {empty ?

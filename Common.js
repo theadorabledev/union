@@ -132,7 +132,7 @@ export const ChatComponent = (props) => {
 					username:props.username,
 					messages:props.messages,
 					newChat:props.isNewChat,
-					chatIndex:props.chatIndex
+					chatId:props.chatId
 					
 				    })
 			    }
