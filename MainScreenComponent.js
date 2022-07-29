@@ -227,12 +227,13 @@ const MessagesListComponent = (props) => {
 	    <Button title={display} color = {GlobalStyle.highlightcolor} onPress={()=>{
 			setUserId((userid)=>{
 				if(userid == id1){
+					setWs(new WebSocket('ws://192.168.1.4:8000/'+id2));
 					return id2
 				}else{
+					setWs(new WebSocket('ws://192.168.1.4:8000/'+id1));
 					return id1
 				}
 			})
-			setWs(new WebSocket('ws://192.168.1.4:8000/'+userid));
 		    }
 											}/>
 	    <Button title="Clear Messages" color = {GlobalStyle.highlightcolor} onPress={()=>{
