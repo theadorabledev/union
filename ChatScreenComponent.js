@@ -229,8 +229,10 @@ const KeyboardComponent = (props) => {
 				const message = addMessage(text,userid,props.chatId)
 				thischat.messages.push(message)
 				thischat.contactids.forEach((currentValue, index, arr)=>{
-					message.recieverId=arr[index]
-					ws.send(JSON.stringify(message))
+					if (arr[index]!=userid){
+						message.recieverId=arr[index]
+						ws.send(JSON.stringify(message))
+					}
 				})
 				newChats.set(props.chatId,thischat)
 				return newChats;

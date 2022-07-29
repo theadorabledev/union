@@ -197,10 +197,15 @@ const NoContactsComponent = () => {
     );
 }
 
+
+id1 = "47769a91-2d07-4580-8828-5913cf821623"
+id2 = "1d4070bf-7ada-46bd-8b7c-c8b8e0507dec"
+
 // A component to display either all of someone's chats or the incoming (no contacts) screen
 const MessagesListComponent = (props) => {
-    const {chats,setChats} = useContext(ChatContext)
-	const {contacts,setContacts} = useContext(ContactContext)
+    const {chats,setChats,ws,setWs} = useContext(ChatContext)
+	const {contacts,setContacts,userid,setUserId} = useContext(ContactContext)
+	const display = "Change Account (" + userid + ")"
     let empty = (chats.length == 0)
     let chatComponents = []
 	chats.forEach((a, i) => {
@@ -219,8 +224,15 @@ const MessagesListComponent = (props) => {
     });
     return (
 	<>
-	    <Button title="Reset Messages" color = {GlobalStyle.highlightcolor} onPress={()=>{
-			setChats(originalchats);
+	    <Button title={display} color = {GlobalStyle.highlightcolor} onPress={()=>{
+			setUserId((userid)=>{
+				if(userid == id1){
+					return id2
+				}else{
+					return id1
+				}
+			})
+			setWs(new WebSocket('ws://192.168.1.4:8000/'+userid));
 		    }
 											}/>
 	    <Button title="Clear Messages" color = {GlobalStyle.highlightcolor} onPress={()=>{
