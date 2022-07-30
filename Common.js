@@ -7,6 +7,7 @@ import React, { useState } from 'react';
 import { View, Text, ScrollView, Button, Image, TouchableOpacity, TouchableHighlight } from "react-native";
 import { Menu, MenuItem, MenuDivider } from 'react-native-material-menu';
 import { useNavigation } from '@react-navigation/native';
+import * as ImagePicker from 'expo-image-picker';
 
 import Ionicons from '@expo/vector-icons/Ionicons';
 import {FontAwesome} from '@expo/vector-icons';
@@ -52,20 +53,37 @@ export const PhoneButton = (props) => {
 
 //Image Button Wrapper
 export const ProfileButton = (props) => {
-    return(
-	<TouchableHighlight style ={{width: props.profileSize,
-				     height: props.profileSize,
-				     borderRadius: props.profileSize/2
-				    }}
-			    onPress={props.onPress}>
-	    <Image
-		style ={{width: props.profileSize,
-			 height: props.profileSize,
-			 borderRadius: props.profileSize/2
-			}}
-		source={props.profileSource}
-	    />
-	</TouchableHighlight>
+	const [image, setImage] = useState(null);
+
+	const pickImage = async () => {
+	  let result = await ImagePicker.launchImageLibraryAsync({
+		mediaTypes: ImagePicker.MediaTypeOptions.All,
+		allowsEditing: true,
+		aspect: [4, 3],
+		quality: 1,
+	  });
+  
+	  if (!result.cancelled) {
+		setImage(result.uri);
+		GlobalStyle.defaultprofile = image;
+	  }
+	};
+
+	return(
+		<TouchableHighlight style ={{width: props.profileSize, height: props.profileSize, borderRadius: props.profileSize/2}}
+					onPress={pickImage}>
+			{ image ?
+				<Image
+					style ={{width: props.profileSize, height: props.profileSize, borderRadius: props.profileSize/2}}
+					source={{ uri: image }}
+				/>
+				:
+				<Image
+					style ={{width: props.profileSize, height: props.profileSize, borderRadius: props.profileSize/2}}
+					source={props.profileSource}
+				/>
+			}
+		</TouchableHighlight>
     );
 }
 

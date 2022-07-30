@@ -6,11 +6,10 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { createStackNavigator } from '@react-navigation/stack';
 import { HeaderBackButton } from '@react-navigation/elements';
 import {HomeButton, SettingsButton,PhoneButton,ProfileButton,ContextMenu} from './Common.js';  // in Common.js create Homebutton
+import {GlobalStyle} from './Styles.js';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const defaultprofile = require('./assets/profilepicsquaresmall.png')  // should be Homebutton
-import {GlobalStyle} from './Styles.js';
-
-import { LinearGradient } from 'expo-linear-gradient';
 
 
 
