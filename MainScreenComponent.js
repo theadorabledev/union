@@ -250,10 +250,10 @@ const MainScreenComponent = ({navigation}) => {
 	navigation.setOptions({
 	    title: getUsername(),
 	    headerRight: () => (
-		<SettingsButton onPress={() => navigation.navigate('MainSettings',{userInfo:userInfo, profilepic:userprofilepic})}/>
+		<SettingsButton onPress={() => navigation.navigate('MainSettings',{userInfo:userInfo})}/>
 	    ),
 	    headerLeft: () => (
-		<ProfileButton profileSize={GlobalStyle.userProfileSize} profileSource={userprofilepic} onPress={()=>{alert("let user change profile picture")}}/>
+		<ProfileButton profileSize={GlobalStyle.userProfileSize} profileSource={userprofilepic}/>
 	    ),
 	});
     }, [navigation]);
