@@ -3,8 +3,8 @@
   Contains the navigation stack
 */
 
-import React, { useState , useEffect} from 'react';
-import { View, Text, ScrollView, Button, Image, TouchableOpacity, TouchableHighlight, Platform} from "react-native";
+import React, { useState } from 'react';
+import { View, Text, ScrollView, Button, Image, TouchableOpacity, TouchableHighlight } from "react-native";
 import { Menu, MenuItem, MenuDivider } from 'react-native-material-menu';
 import { useNavigation } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
