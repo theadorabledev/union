@@ -1,5 +1,5 @@
 /* A file to hold components used within the main screen */
-import React, { useState,useContext } from 'react';
+import React, { useState,useContext,useEffect } from 'react';
 import { View, Text, ScrollView, Button, Image, TouchableOpacity, TouchableHighlight } from "react-native";
 import NavigationBar from 'react-native-navbar';
 import { useNavigation } from '@react-navigation/native';
@@ -109,29 +109,6 @@ function MessageCreator(message,senderid,chatId){
 }
 
 
-const contactList = [
-	ContactCreator("The Fool",0),
-	ContactCreator("The Magician",1),
-	ContactCreator("The High Priestess",2),
-	ContactCreator("The Empress",3),
-	ContactCreator("The Emperor",4),
-	ContactCreator("The Hierophant",5),
-	ContactCreator("The Lovers",6),
-	ContactCreator("The Chariot",7),
-	ContactCreator("Strength",8),
-	ContactCreator("The Hermit",9),
-	ContactCreator("The Wheel of Fortune",10),
-	userContact
-]
-
-export function returnContact(id){
-	let myContact= contactList.find(function(contact){
-		return contact.userId === id;	
-	});
-	return myContact
-}
-
-
 
 
 
@@ -157,7 +134,7 @@ const MessagesListComponent = (props) => {
 	
 	const {userStore,createUserIdentity} = useContext(SignalContext)
 	const display = "Change Account (" + userid + ")"
-    let empty = (chats.length == 0)
+    let empty = (chats.size == 0)
     let chatComponents = []
 	chats.forEach((a, i) => {
 		let groupchatname = a.chatname
@@ -218,9 +195,8 @@ export const NewChatButton = (props) => {
 
 // Displays the main screen, all the chats the user is engaged in
 const MainScreenComponent = ({navigation}) => {
-    React.useLayoutEffect(() => {
+    useEffect(() => {
 	navigation.setOptions({
-	    title: getUsername(),
 	    headerRight: () => (
 		<SettingsButton onPress={() => navigation.navigate('MainSettings',{userInfo:userInfo})}/>
 	    ),

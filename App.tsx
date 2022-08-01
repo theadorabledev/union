@@ -60,8 +60,8 @@ function ReturnChat(chats,id){
 //})
 
 
-function ContactCreator(map,id,username,profilepic,prounouns){
-	map.set(id,{id,username,profilepic,prounouns})
+function ContactCreator(map,id,username,profilepic,pronouns){
+	map.set(id,{id,username,profilepic,pronouns})
 }
 
 function TestChatCreator(map,id,contactids,messages,chatname,chatpic,description){
@@ -104,18 +104,18 @@ const chatMap = new Map();
 
 const initialUserId = "47769a91-2d07-4580-8828-5913cf821623";
 const altId = "1d4070bf-7ada-46bd-8b7c-c8b8e0507dec"
-ContactCreator(contactMap,initialUserId,"TestUser",'./assets/profilepicsquaresmall.png',"They/Them")
-ContactCreator(contactMap,altId,"The Fool",require('./assets/profilepicsquaresmall.png'),"They/Them")
-ContactCreator(contactMap,"1","The Magician",require('./assets/profilepicsquaresmall.png'),"They/Them")
-ContactCreator(contactMap,"2","The High Priestess",'./assets/profilepicsquaresmall.png',"They/Them")
-ContactCreator(contactMap,"3","The Empress",'./assets/profilepicsquaresmall.png',"They/Them")
-ContactCreator(contactMap,"4","The Emperor",'./assets/profilepicsquaresmall.png',"They/Them")
-ContactCreator(contactMap,"5","The Hierophant",'./assets/profilepicsquaresmall.png',"They/Them")
-ContactCreator(contactMap,"6","The Lovers",'./assets/profilepicsquaresmall.png',"They/Them")
-ContactCreator(contactMap,"7","The Chariot",'./assets/profilepicsquaresmall.png',"They/Them")
-ContactCreator(contactMap,"8","Strength",'./assets/profilepicsquaresmall.png',"They/Them")
-ContactCreator(contactMap,"9","The Hermit",'./assets/profilepicsquaresmall.png',"They/Them")
-ContactCreator(contactMap,"10","The Wheel of Fortune",'./assets/profilepicsquaresmall.png',"They/Them")
+ContactCreator(contactMap,initialUserId,"TestUser",null,"They/Them")
+ContactCreator(contactMap,altId,"The Fool",null,"They/Them")
+ContactCreator(contactMap,"1","The Magician",null,"They/Them")
+ContactCreator(contactMap,"2","The High Priestess",null,"They/Them")
+ContactCreator(contactMap,"3","The Empress",null,"They/Them")
+ContactCreator(contactMap,"4","The Emperor",null,"They/Them")
+ContactCreator(contactMap,"5","The Hierophant",null,"They/Them")
+ContactCreator(contactMap,"6","The Lovers",null,"They/Them")
+ContactCreator(contactMap,"7","The Chariot",null,"They/Them")
+ContactCreator(contactMap,"8","Strength",null,"They/Them")
+ContactCreator(contactMap,"9","The Hermit",null,"They/Them")
+ContactCreator(contactMap,"10","The Wheel of Fortune",null,"They/Them")
 
 TestChatCreator(chatMap,"0",[initialUserId,altId],[
 		MessageCreator("Test Message 0. Lorem Ipsum",altId,"0"),
@@ -126,12 +126,12 @@ TestChatCreator(chatMap,"0",[initialUserId,altId],[
 		MessageCreator("Test Message 0. Lorem Ipsum",altId,"0"),
 		MessageCreator("Test Message 3. Lorem Ipsum","47769a91-2d07-4580-8828-5913cf821623","TestUser","0"),
 		MessageCreator("Test Message 0. Lorem Ipsum",altId,"0"),
-	],"",require('./assets/profilepicsquaresmall.png'),"")
+	],"",null,"")
 TestChatCreator(chatMap,"1",[1,4], [
 		MessageCreator("Test Message 0. Lorem Ipsum","1","1"),
 		MessageCreator("Test Message 1. Lorem Ipsum","4","1"),
 		MessageCreator("Test Message 2. Lorem Ipsum","47769a91-2d07-4580-8828-5913cf821623","TestUser","1"),
-	],"Test Group chat", require('./assets/profilepicsquaresmall.png'),"A test Chat")
+	],"Test Group chat", null,"A test Chat")
 
 
 const initialws = new WebSocket('ws://192.168.1.4:8000/'+initialUserId)
@@ -224,6 +224,7 @@ const createID = async (name: string, store: SignalProtocolStore) =>
 						<StackNav.Screen 
 							name="Home"
 							component={MainScreenComponent} 
+							options={({ route }) => ({ title: contacts.get(userid).username })}
 						/>
 						<StackNav.Screen 
 							name="MainSettings"
