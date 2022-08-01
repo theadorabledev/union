@@ -1,4 +1,5 @@
 import React from 'react';
+import { SignalProtocolStore } from "./storage-type";
 export const ChatContext = React.createContext({
 	chats: [],
 	setChats: () => {},
@@ -12,8 +13,7 @@ export const ContactContext = React.createContext({
 	setUserId: () => {},
 });
 
-export const TestingContext = React.createContext({
-	originalChats:new Map(),
-	userid1: "",
-	userid2: "",
+export const SignalContext = React.createContext({
+	userStore: new SignalProtocolStore(),
+	createUserIdentity: () => {},
 });

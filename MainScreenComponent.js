@@ -14,7 +14,7 @@ import * as Contacts from "expo-contacts";
 
 import uuid from 'react-native-uuid';
 
-import {ChatContext,ContactContext} from './Context.js';
+import {ChatContext,ContactContext,SignalContext} from './Context.js';
 
 const MainScreenStyles = {
     chatComp: {
@@ -135,57 +135,6 @@ export function returnContact(id){
 
 
 
-const originalmessagesold=[
-    {ids:[0], messages:[
-	"Test Message 0. Lorem Ipsum",
-	"Test Message 1. Lorem Ipsum",
-	"Test Message 2. Lorem Ipsum",
-	"Test Message 3. Lorem Ipsum",
-	"Test Message 4. Lorem Ipsum",
-	"Test Message 5. Lorem Ipsum",
-	"Test Message 6. Lorem Ipsum",
-	"Test Message 7. Lorem Ipsum",
-	"Test Message 1. Lorem Ipsum",
-	"Test Message 2. Lorem Ipsum",
-	"Test Message 3. Lorem Ipsum",
-	"Test Message 4. Lorem Ipsum",
-	"Test Message 5. Lorem Ipsum",
-	"Test Message 6. Lorem Ipsum",
-	"Test Message 7. Lorem Ipsum",]},
-    {id:1,username:"The Magician", messages:["Test Message 0. Lorem Ipsum"]},
-    {id:2,username:"The High Priestess", messages:["Test Message 0. Lorem Ipsum"]},
-    {id:3,username:"The Empress", messages:["Test Message 0. Lorem Ipsum"]},
-    {id:4,username:"The Emperor", messages:["Test Message 0. Lorem Ipsum"]},
-    {id:5,username:"The Hierophant", messages:["Test Message 0. Lorem Ipsum"]},
-    {id:6,username:"The Lovers", messages:["Test Message 0. Lorem Ipsum"]},
-    {id:7,username:"The Chariot", messages:["Test Message 0. Lorem Ipsum"]},
-    {id:8,username:"Strength", messages:["Test Message 0. Lorem Ipsum"]},
-    {id:9,username:"The Hermit", messages:["Test Message 0. Lorem Ipsum"]},
-    {id:10,username:"The Wheel of Fortune", messages:["Test Message 0. Lorem Ipsum"]},
-]
-
-
-
-const originalchats=[
-    {chatId:0,ids:[0], chatName:"", messages:[
-		MessageCreator("Test Message 0. Lorem Ipsum",0,0),
-		MessageCreator("Test Message 1. Lorem Ipsum","47769a91-2d07-4580-8828-5913cf821623","TestUser",0),
-		MessageCreator("Test Message 0. Lorem Ipsum",0,0),
-		MessageCreator("Test Message 2. Lorem Ipsum","47769a91-2d07-4580-8828-5913cf821623","TestUser",0),
-		MessageCreator("Test Message 0. Lorem Ipsum",0,0),
-		MessageCreator("Test Message 0. Lorem Ipsum",0,0),
-		MessageCreator("Test Message 3. Lorem Ipsum","47769a91-2d07-4580-8828-5913cf821623","TestUser",0),
-		MessageCreator("Test Message 0. Lorem Ipsum",0,0),
-	]},
-    {chatId:1,ids:[1,2], chatName:"Test Group chat", messages:[
-		MessageCreator("Test Message 0. Lorem Ipsum",1,1),
-		MessageCreator("Test Message 1. Lorem Ipsum",4,1),
-		MessageCreator("Test Message 2. Lorem Ipsum","47769a91-2d07-4580-8828-5913cf821623","TestUser",1),
-	]},
-]
-
-
-
 
 // A View to Dispay a default message for incoming users
 const NoContactsComponent = () => {
@@ -205,6 +154,8 @@ id2 = "1d4070bf-7ada-46bd-8b7c-c8b8e0507dec"
 const MessagesListComponent = (props) => {
     const {chats,setChats,ws,setWs} = useContext(ChatContext)
 	const {contacts,setContacts,userid,setUserId} = useContext(ContactContext)
+	
+	const {userStore,createUserIdentity} = useContext(SignalContext)
 	const display = "Change Account (" + userid + ")"
     let empty = (chats.length == 0)
     let chatComponents = []
@@ -240,6 +191,10 @@ const MessagesListComponent = (props) => {
 			setChats(new Map())
 		    }
 											}/>
+											
+		
+	    <Button title="Signal Test Identity Create" color = {GlobalStyle.highlightcolor} onPress={createUserIdentity}/>		
+		
 	    {empty ?
 	     <NoContactsComponent/>
 	     :
