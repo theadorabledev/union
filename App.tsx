@@ -37,7 +37,7 @@ import {ChatContext,ContactContext,SignalContext} from './Context.js';
 
 interface Chat{
 	id:string;
-	contactids:number[];
+	contactids:string[];
 	messages:ChatMessage[];
 	chatname:string;
 	chatpic:string;
