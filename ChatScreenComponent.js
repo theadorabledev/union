@@ -278,8 +278,8 @@ const ChatScreenComponent = ({route, navigation}) => {
 	{text:"Search", handler:()=> {alert("Search conversation function")}},
 	{text:"Add to friends", handler:()=> {alert("Add contact to friends list")}},
     ]
+	const {chatId,chatpic,settingsNavigate} = route.params;
 	
-	const {chatId,chatpic} = route.params;
 	
     React.useLayoutEffect(() => {
 	navigation.setOptions({
@@ -292,7 +292,7 @@ const ChatScreenComponent = ({route, navigation}) => {
 			  alignItems: 'center',
 			  minWidth: 80,
 		      }}>
-		    <SettingsButton onPress={() => navigation.navigate('ChatSettings')}/>
+		    <SettingsButton onPress={settingsNavigate}/>
 		    <ContextMenu options={chatOptions}ionicon="menu"/>
 		</View>
 	    ),

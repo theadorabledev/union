@@ -152,10 +152,19 @@ const MainScreenComponent = ({navigation}) => {
 		<SettingsButton onPress={() => navigation.navigate('MainSettings')}/>
 	    ),
 	    headerLeft: () => (
-		<ProfileButton profileSize={GlobalStyle.userProfileSize} profileSource={userprofilepic}/>
+		<ProfileButton profileSize={GlobalStyle.userProfileSize} profileSource={userprofilepic}onPress={() => navigation.navigate('ChatSettings', {
+			id:userid,
+			canedit:true,
+			map:contacts,
+			maphandler:setContacts,
+			fieldone:"username",
+			fieldtwo:"pronouns",
+			})
+								 }/>
 	    ),
 	});
     }, [navigation]);
+	const {contacts,setContacts,userid} = useContext(ContactContext)
     return (
 	<>
 	    <View>

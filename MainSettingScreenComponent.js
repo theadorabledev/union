@@ -64,11 +64,14 @@ const User = (props) => {
     return(
 	<View style={MainSettingStyles.userInfoContainer}>
 	    <ProfileButton profileSize={GlobalStyle.userProfileSize} profileSource={GlobalStyle.defaultprofile}/>
-	    <TouchableOpacity style={MainSettingStyles.personalInfo} onPress={() => navigation.navigate(
-				  'SettingOptions', {
-				      title:"User Info",
-				      component:0
-				  })
+	    <TouchableOpacity style={MainSettingStyles.personalInfo} onPress={() => navigation.navigate('ChatSettings', {
+			id:userid,
+			canedit:true,
+			map:contacts,
+			maphandler:setContacts,
+			fieldone:"username",
+			fieldtwo:"pronouns",
+			})
 								 }>
 		<Text style={GlobalStyle.textTypes.H2}>{usercontact.username}  {usercontact.pronouns}</Text>
 		<Text style={MainSettingStyles.phone}>{usercontact.id}</Text>

@@ -187,10 +187,38 @@ function getChatPicture(chat){
 export const ChatComponent = (props) => {
     const navigation = useNavigation();
 	const {chats,setChats,ws,setWs} = useContext(ChatContext)
-	
+	const {contacts,setContacts,userid,setUserId} = useContext(ContactContext)
 	const chat = chats.get(props.chatId)
 	const chatname = getChatName(chat)
 	const chatpic = getChatPicture(chat)
+	const settingsNavigate =() => {
+		if(chat.contactids.length != 2){
+			navigation.navigate('ChatSettings', {
+			id:props.chatId,
+			canedit:true,
+			map:chats,
+			maphandler:setChats,
+			fieldone:"chatname",
+			fieldtwo:"description",
+			})
+		}else{
+			
+			const dmid = chat.contactids.find((contactid)=>{
+				return contactid != userid;
+			});
+			console.log(dmid)
+			navigation.navigate('ChatSettings', {
+			id:dmid,
+			canedit:false,
+			map:contacts,
+			maphandler:setContacts,
+			fieldone:"username",
+			fieldtwo:"pronouns",
+			})
+		}
+	}
+	
+	
     const lastMessage = () => {
 	if(chat.messages.length){
 	    return (
@@ -210,12 +238,13 @@ export const ChatComponent = (props) => {
 					messages:chat.messages,
 					newChat:props.isNewChat,
 					chatId:props.chatId,
-					chatpic:chatpic
+					chatpic:chatpic,
+					settingsNavigate:settingsNavigate,
 				    })
 			    }
 			    underlayColor = {GlobalStyle.highlightcolor}>
 	    <View style={ChatComponentStyles.chatComp}>
-		<ProfileButton profileSize={GlobalStyle.contactProfileSize} profileSource={chatpic} onPress={()=>{alert("Take user to contact's settings")}}/>
+		<ProfileButton profileSize={GlobalStyle.contactProfileSize} profileSource={chatpic} onPress={settingsNavigate}/>
 		<View style={ChatComponentStyles.miniChat}>
 		    <Text style={ChatComponentStyles.userName}>{chatname}</Text>
 		    {lastMessage()}
