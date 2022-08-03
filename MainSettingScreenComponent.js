@@ -71,6 +71,7 @@ const User = (props) => {
 			maphandler:setContacts,
 			fieldone:"username",
 			fieldtwo:"pronouns",
+			fieldthree:"profilepic",
 			})
 								 }>
 		<Text style={GlobalStyle.textTypes.H2}>{usercontact.username}  {usercontact.pronouns}</Text>
