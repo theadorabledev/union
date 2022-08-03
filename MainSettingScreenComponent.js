@@ -1,6 +1,6 @@
 /* A file to hold components used within the main settings screen. */
-import React, { useState } from 'react';
-import { View, Text, TextInput, ScrollView, Button, Image, TouchableOpacity, TouchableHighlight, StyleSheet,useWindowDimensions } from "react-native";
+import React, { useState,useContext } from 'react';
+import { View, Text, TextInput, ScrollView, Button, Image, TouchableOpacity, TouchableHighlight, StyleSheet, useWindowDimensions } from "react-native";
 import { useNavigation } from '@react-navigation/native';
 import NavigationBar from 'react-native-navbar';
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -8,7 +8,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import {UserButton, ProfileButton} from './Common.js';
 import {GlobalStyle} from './Styles.js';
 import { UserScreen, Account, Appearance, Notifications, Privacy, Help } from './SettingOptionsComponent.js'
-
+import {ContactContext} from './Context.js'
 const settingsIconSize=35;
 
 const MainSettingStyles = {
@@ -59,28 +59,30 @@ const icons = {
 // A section which contains information about the user
 const User = (props) => {
     const navigation = useNavigation();
+	const {contacts,setContacts,userid} = useContext(ContactContext)
+	const usercontact = contacts.get(userid)
     return(
 	<View style={MainSettingStyles.userInfoContainer}>
-	    <ProfileButton profileSize={GlobalStyle.userProfileSize} profileSource={props.picture} onPress={()=>{alert("let user change profile picture")}}/>
+	    <ProfileButton profileSize={GlobalStyle.userProfileSize} profileSource={GlobalStyle.defaultprofile}/>
 	    <TouchableOpacity style={MainSettingStyles.personalInfo} onPress={() => navigation.navigate(
 				  'SettingOptions', {
 				      title:"User Info",
-				      component:UserScreen()
+				      component:0
 				  })
 								 }>
-		<Text style={GlobalStyle.textTypes.H2}>{props.userInfo.firstName} {props.userInfo.lastName} {props.userInfo.identify}</Text>
-		<Text style={MainSettingStyles.phone}>{props.userInfo.phone}</Text>
+		<Text style={GlobalStyle.textTypes.H2}>{usercontact.username}  {usercontact.pronouns}</Text>
+		<Text style={MainSettingStyles.phone}>{usercontact.id}</Text>
 	    </TouchableOpacity>
 	</View>
     );
 }
 
 const settingOptions = [
-    {text: "Account", icon:icons.account, component:Account()},
-    {text: "Appearance", icon:icons.appearance, component:Appearance()},
-    {text: "Notifications", icon:icons.notification, component:Notifications()},
-    {text: "Privacy", icon:icons.privacy, component:Privacy()},
-    {text: "Help", icon:icons.help, component:Help()},
+    {text: "Account", icon:icons.account, component:1},
+    {text: "Appearance", icon:icons.appearance, component:2},
+    {text: "Notifications", icon:icons.notification, component:3},
+    {text: "Privacy", icon:icons.privacy, component:4},
+    {text: "Help", icon:icons.help, component:5},
 ]
 
 // Wrapper for settings options
@@ -117,8 +119,8 @@ const OptionList = () => {
 }
 
 // Returns the settings screen displayed on the main page
-const MainSettingScreenComponent = ({route, navigation}) => {
-    const {userInfo, profilepic} = route.params;
+const MainSettingScreenComponent = ({navigation}) => {
+    const {contacts,setContacts,userid} = useContext(ContactContext)
     React.useLayoutEffect(() => {
 	navigation.setOptions({
 	    title: "Settings"
@@ -126,7 +128,7 @@ const MainSettingScreenComponent = ({route, navigation}) => {
     }, [navigation]);
     return (
 	<View>
-	    <User userInfo={userInfo} picture={profilepic}/>
+	    <User/>
 	    <OptionList/> 
 	</View>
     );

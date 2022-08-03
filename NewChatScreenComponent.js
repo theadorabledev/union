@@ -4,42 +4,13 @@ import { FlatList, View, Text, ScrollView, Button, Image, TouchableOpacity, Touc
 import NavigationBar from 'react-native-navbar';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
-import {ChatComponent} from './Common.js';
+import {ChatComponent,NewChatComponent} from './Common.js';
 
 //import Contacts from 'react-native-contacts';
 import * as Contacts from "expo-contacts";
 
-
+import uuid from 'react-native-uuid';
 // Gets the contacts with phone numbers and displays them in a screen, loads only visible ones for performance
-
-
-
-
-const NewChatComponent = (props) => {
-    const navigation = useNavigation();
-    return (
-	<TouchableHighlight onPress={() =>
-				navigation.navigate(
-				    'ChatScreen', {
-					username:props.username,
-					messages:props.messages,
-					newChat:props.isNewChat,
-					chatIndex:props.chatIndex
-					
-				    })
-			    }
-			    underlayColor = {GlobalStyle.highlightcolor}>
-	    <View style={ChatComponentStyles.chatComp}>
-		<ProfileButton profileSize={GlobalStyle.contactProfileSize} profileSource={GlobalStyle.defaultprofile} onPress={()=>{alert("Take user to contact's settings")}}/>
-		<View style={ChatComponentStyles.miniChat}>
-		    <Text style={ChatComponentStyles.userName}>{props.username}</Text>
-		</View>
-	    </View>
-	</TouchableHighlight>
-    );
-};
-
-
 
 
 
@@ -57,6 +28,7 @@ const NewChatScreenComponent = ({navigation}) => {
 	    if (status === "granted") {
 		const { data } = await Contacts.getContactsAsync({
 		    fields: [Contacts.PHONE_NUMBERS],
+			fields: [Contacts.Fields.Image],
 		});
 		if (data.length > 0) {
 		    setContacts(data);
@@ -72,8 +44,9 @@ const NewChatScreenComponent = ({navigation}) => {
     // Renders the contact with the item and index
     const renderItem = ({ item, index }) => {
 	// Wrapper for ChatComponent that appears as a possilbe contact in the NewChatScreen
-	return <ChatComponent
+	return <NewChatComponent
 		username={item.name}
+		image={item.image}
 		messages={[]}
 	    />;
     };

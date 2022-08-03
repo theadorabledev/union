@@ -1,20 +1,23 @@
 /* A file to hold components used within the main screen */
-import React, { useState,useContext } from 'react';
+import React, { useState,useContext,useEffect } from 'react';
 import { View, Text, ScrollView, Button, Image, TouchableOpacity, TouchableHighlight } from "react-native";
 import NavigationBar from 'react-native-navbar';
 import { useNavigation } from '@react-navigation/native';
 
 import Ionicons from '@expo/vector-icons/Ionicons';
-
-import {SettingsButton, ProfileButton, ChatComponent} from './Common.js';
-
-import {GlobalStyle} from './Styles.js';
+import { Dropdown } from 'react-native-material-dropdown-v2'
 
 import * as Contacts from "expo-contacts";
 
 import uuid from 'react-native-uuid';
 
-import {ChatContext} from './Context.js';
+import {SettingsButton, ProfileButton, ChatComponent} from './Common.js';
+
+import {GlobalStyle} from './Styles.js';
+
+
+
+import {ChatContext,ContactContext,SignalContext} from './Context.js';
 
 const MainScreenStyles = {
     chatComp: {
@@ -67,120 +70,8 @@ const MainScreenStyles = {
     },
 };
 
-//Placeholder variables for debugging
-const userInfo = {
-    pic:GlobalStyle.defaultprofile,
-    firstName:"User",
-    lastName:"Profile",
-    identify:"They/Them",
-    phone:"(123)456-7890"
-}
 let userprofilepic = GlobalStyle.defaultprofile;
 
-
-const userContact = {
-	userId: 999,
-	[Contacts.Fields.Name]: "User Profile",
-	[Contacts.Fields.FirstName]: 'User',
-	[Contacts.Fields.LastName]: 'Profile',
-	Prounouns:'They/Them',
-}
-
-
-const getUsername = () => {
-    return userInfo.firstName+" "+userInfo.lastName;
-}
-
-function ContactCreator(name,id){
-	return {
-	  userId: id,
-	  [Contacts.Fields.Name]: name,
-	};
-}
-
-function MessageCreator(message,senderid,chatId){
-	return{
-		messageId:uuid.v4(),
-		message:message,
-		senderId:senderid,
-		chatId:chatId,
-		date:new Date(),
-	}
-}
-
-
-const contactList = [
-	ContactCreator("The Fool",0),
-	ContactCreator("The Magician",1),
-	ContactCreator("The High Priestess",2),
-	ContactCreator("The Empress",3),
-	ContactCreator("The Emperor",4),
-	ContactCreator("The Hierophant",5),
-	ContactCreator("The Lovers",6),
-	ContactCreator("The Chariot",7),
-	ContactCreator("Strength",8),
-	ContactCreator("The Hermit",9),
-	ContactCreator("The Wheel of Fortune",10),
-	userContact
-]
-
-export function returnContact(id){
-	let myContact= contactList.find(function(contact){
-		return contact.userId === id;	
-	});
-	return myContact
-}
-
-
-
-const originalmessagesold=[
-    {ids:[0], messages:[
-	"Test Message 0. Lorem Ipsum",
-	"Test Message 1. Lorem Ipsum",
-	"Test Message 2. Lorem Ipsum",
-	"Test Message 3. Lorem Ipsum",
-	"Test Message 4. Lorem Ipsum",
-	"Test Message 5. Lorem Ipsum",
-	"Test Message 6. Lorem Ipsum",
-	"Test Message 7. Lorem Ipsum",
-	"Test Message 1. Lorem Ipsum",
-	"Test Message 2. Lorem Ipsum",
-	"Test Message 3. Lorem Ipsum",
-	"Test Message 4. Lorem Ipsum",
-	"Test Message 5. Lorem Ipsum",
-	"Test Message 6. Lorem Ipsum",
-	"Test Message 7. Lorem Ipsum",]},
-    {id:1,username:"The Magician", messages:["Test Message 0. Lorem Ipsum"]},
-    {id:2,username:"The High Priestess", messages:["Test Message 0. Lorem Ipsum"]},
-    {id:3,username:"The Empress", messages:["Test Message 0. Lorem Ipsum"]},
-    {id:4,username:"The Emperor", messages:["Test Message 0. Lorem Ipsum"]},
-    {id:5,username:"The Hierophant", messages:["Test Message 0. Lorem Ipsum"]},
-    {id:6,username:"The Lovers", messages:["Test Message 0. Lorem Ipsum"]},
-    {id:7,username:"The Chariot", messages:["Test Message 0. Lorem Ipsum"]},
-    {id:8,username:"Strength", messages:["Test Message 0. Lorem Ipsum"]},
-    {id:9,username:"The Hermit", messages:["Test Message 0. Lorem Ipsum"]},
-    {id:10,username:"The Wheel of Fortune", messages:["Test Message 0. Lorem Ipsum"]},
-]
-
-
-
-const originalchats=[
-    {chatId:0,ids:[0], chatName:"", messages:[
-		MessageCreator("Test Message 0. Lorem Ipsum",0,0),
-		MessageCreator("Test Message 1. Lorem Ipsum",999,0),
-		MessageCreator("Test Message 0. Lorem Ipsum",0,0),
-		MessageCreator("Test Message 2. Lorem Ipsum",999,0),
-		MessageCreator("Test Message 0. Lorem Ipsum",0,0),
-		MessageCreator("Test Message 0. Lorem Ipsum",0,0),
-		MessageCreator("Test Message 3. Lorem Ipsum",999,0),
-		MessageCreator("Test Message 0. Lorem Ipsum",0,0),
-	]},
-    {chatId:1,ids:[1,2], chatName:"Test Group chat", messages:[
-		MessageCreator("Test Message 0. Lorem Ipsum",1,1),
-		MessageCreator("Test Message 1. Lorem Ipsum",4,1),
-		MessageCreator("Test Message 2. Lorem Ipsum",999,1),
-	]},
-]
 
 
 
@@ -197,32 +88,41 @@ const NoContactsComponent = () => {
 
 // A component to display either all of someone's chats or the incoming (no contacts) screen
 const MessagesListComponent = (props) => {
-    const {chats,setChats} = useContext(ChatContext)
-    let empty = (chats.length == 0)
-    let chatComponents = chats.map((a, i) => {
-		let groupchatname = a.chatName
-		if (a.chatName == ""){
-			groupchatname = returnContact(a.ids[0]).name
-		}else{
-			groupchatname = a.chatName
-		}
-	return <ChatComponent
-		   key={a.chatId}
-		   username={groupchatname}
-		   messages={a.messages}
-		   chatIndex={i}
-	       />;
+    const {chats,setChats,ws,setWs} = useContext(ChatContext)
+	const {contacts,setContacts,userid,setUserId} = useContext(ContactContext)
+	
+	const {userStore,createUserIdentity,serverip} = useContext(SignalContext)
+	const display = "Change Account"
+    let empty = (chats.size == 0)
+    let chatComponents = []
+	chats.forEach((a, i) => {
+		chatComponents.push(<ChatComponent
+		   key={a.id}
+		   chatId={a.id}
+	       />)
     });
+	
+	let contactArray = [];
+	contacts.forEach((a,i)=>{
+		contactArray.push({value: a.id});
+	})
+	
     return (
-	<>
-	    <Button title="Reset Messages" color = {GlobalStyle.highlightcolor} onPress={()=>{
-			setChats(originalchats);
+	<>											
+	   <Dropdown
+        label={display}
+        data={contactArray}
+		onChangeText= {
+			(value,index,data)=>{
+			setUserId((userid)=>{
+					return value
+			})
 		    }
-											}/>
-	    <Button title="Clear Messages" color = {GlobalStyle.highlightcolor} onPress={()=>{
-			setChats([])
-		    }
-											}/>
+											
+		}
+      />
+	    <Button title="Reset Websocket" color = {GlobalStyle.highlightcolor} onPress={()=>{setWs(new WebSocket('ws://'+serverip+'/'+userid))}}/>		
+		
 	    {empty ?
 	     <NoContactsComponent/>
 	     :
@@ -246,14 +146,13 @@ export const NewChatButton = (props) => {
 
 // Displays the main screen, all the chats the user is engaged in
 const MainScreenComponent = ({navigation}) => {
-    React.useLayoutEffect(() => {
+    useEffect(() => {
 	navigation.setOptions({
-	    title: getUsername(),
 	    headerRight: () => (
-		<SettingsButton onPress={() => navigation.navigate('MainSettings',{userInfo:userInfo, profilepic:userprofilepic})}/>
+		<SettingsButton onPress={() => navigation.navigate('MainSettings')}/>
 	    ),
 	    headerLeft: () => (
-		<ProfileButton profileSize={GlobalStyle.userProfileSize} profileSource={userprofilepic} onPress={()=>{alert("let user change profile picture")}}/>
+		<ProfileButton profileSize={GlobalStyle.userProfileSize} profileSource={userprofilepic}/>
 	    ),
 	});
     }, [navigation]);

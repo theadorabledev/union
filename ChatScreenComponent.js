@@ -18,7 +18,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 import uuid from 'react-native-uuid';
 
-import {ChatContext} from './Context.js';
+import {ChatContext,ContactContext} from './Context.js';
 
 
 //Styles for the chats
@@ -51,12 +51,13 @@ const ChatStyles = StyleSheet.create({
 
 
 //wip, fix this later
-function addMessage(messagecontents,chatid){
+function addMessage(messagecontents,userid,chatid){
 	return {
 		messageId:uuid.v4(),
 		message:messagecontents,
-		senderId:999,
+		senderId:userid,
 		chatId:chatid,
+		recieverId:0,
 		date:new Date(),
 	}
 }
@@ -117,19 +118,20 @@ const MessageBoxComponent = (props) => {
 
 	backgroundColor : '#e5e5e5'
 	const {chats,setChats} = useContext(ChatContext)
-    let empty = (chats[props.chatIndex].messages.length == 0)
+	const {contacts,setContacts,userid} = useContext(ContactContext)
+    let empty = (chats.get(props.chatId).messages.length == 0)
 	const scrollViewRef = useRef();
-    let textComponents = chats[props.chatIndex].messages.map((a, i) => {
+    let textComponents = chats.get(props.chatId).messages.map((a, i) => {
 	
 	//track the most recent recieverId
 	let showname = true
 	if ( i > 0) {
-		if (a.senderId == chats[props.chatIndex].messages[i-1].senderId){
+		if (a.senderId == chats.get(props.chatId).messages[i-1].senderId){
 			showname = false
 		}
 	}
-	let username = returnContact(a.senderId).name
-	if (a.senderId ==999){	
+	let username = contacts.get(a.senderId).username
+	if (a.senderId ==userid){	
 	return <MessageBubble
 		   send
 		   key={i}
@@ -150,7 +152,12 @@ const MessageBoxComponent = (props) => {
     return (
 	<>
 	    {empty ?
+		<ScrollView
+			ref={scrollViewRef}
+			onContentSizeChange={() => scrollViewRef.current.scrollToEnd({ animated: true })}
+		>
 	     <Text>No messages</Text>
+		  </ScrollView>
 	     :
 		<ScrollView
 			ref={scrollViewRef}
@@ -195,6 +202,7 @@ const keyboardStyle = StyleSheet.create({
 const KeyboardComponent = (props) => {
     const [keyboardStatus, setKeyboardStatus] = useState(undefined);
 	const {chats,setChats,ws} = useContext(ChatContext)
+	const {contacts,setContacts,userid} = useContext(ContactContext)
 	const [text,setText] = useState('');
 
 
@@ -221,14 +229,20 @@ const KeyboardComponent = (props) => {
 		//console.warn("send", text);
 		console.log(text),
 		setChats((chats) =>{
-				const newChats = [...chats]
-				const message = addMessage(text,newChats[props.chatIndex].chatId)
-				newChats[props.chatIndex].messages.push(message)
-				ws.send(JSON.stringify(message))
+				const newChats = new Map(chats);
+				const thischat = newChats.get(props.chatId)
+				const message = addMessage(text,userid,props.chatId)
+				thischat.messages.push(message)
+				thischat.contactids.forEach((currentValue, index, arr)=>{
+					if (arr[index]!=userid){
+						message.recieverId=arr[index]
+						ws.send(JSON.stringify(message))
+					}
+				})
+				newChats.set(props.chatId,thischat)
 				return newChats;
 			}),
 		Keyboard.dismiss(),
-		//props.scrollref.current.scrollToEnd({ animated: true }),
 		setText('')
 	}
     return (
@@ -264,6 +278,9 @@ const ChatScreenComponent = ({route, navigation}) => {
 	{text:"Search", handler:()=> {alert("Search conversation function")}},
 	{text:"Add to friends", handler:()=> {alert("Add contact to friends list")}},
     ]
+	
+	const {chatId,chatpic} = route.params;
+	
     React.useLayoutEffect(() => {
 	navigation.setOptions({
 	    title: titlename,
@@ -290,16 +307,16 @@ const ChatScreenComponent = ({route, navigation}) => {
 			  paddingRight: 5,
 		      }}>
 		    <HeaderBackButton onPress={()=>{navigation.goBack()}}/>
-		    <ProfileButton profileSize={GlobalStyle.userProfileSize} profileSource={GlobalStyle.defaultprofile} onPress={()=>{alert("let user change contact's picture")}}/>
+		    <ProfileButton profileSize={GlobalStyle.userProfileSize} profileSource={chatpic} onPress={()=>{alert("let user change contact's picture")}}/>
 		</View>
 	    ),
 	});
     }, [navigation]);
-    const {chatIndex} = route.params;
+    
     return (
 	<View style={ChatScreenContainerStyle}>
-	    <MessageBoxComponent chatIndex={chatIndex}/>
-	    <KeyboardComponent chatIndex={chatIndex}/>
+	    <MessageBoxComponent chatId={chatId}/>
+	    <KeyboardComponent chatId={chatId}/>
 	</View>
     );
 
