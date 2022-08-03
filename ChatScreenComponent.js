@@ -152,7 +152,12 @@ const MessageBoxComponent = (props) => {
     return (
 	<>
 	    {empty ?
+		<ScrollView
+			ref={scrollViewRef}
+			onContentSizeChange={() => scrollViewRef.current.scrollToEnd({ animated: true })}
+		>
 	     <Text>No messages</Text>
+		  </ScrollView>
 	     :
 		<ScrollView
 			ref={scrollViewRef}
@@ -238,7 +243,6 @@ const KeyboardComponent = (props) => {
 				return newChats;
 			}),
 		Keyboard.dismiss(),
-		//props.scrollref.current.scrollToEnd({ animated: true }),
 		setText('')
 	}
     return (
@@ -274,6 +278,9 @@ const ChatScreenComponent = ({route, navigation}) => {
 	{text:"Search", handler:()=> {alert("Search conversation function")}},
 	{text:"Add to friends", handler:()=> {alert("Add contact to friends list")}},
     ]
+	
+	const {chatId,chatpic} = route.params;
+	
     React.useLayoutEffect(() => {
 	navigation.setOptions({
 	    title: titlename,
@@ -300,12 +307,12 @@ const ChatScreenComponent = ({route, navigation}) => {
 			  paddingRight: 5,
 		      }}>
 		    <HeaderBackButton onPress={()=>{navigation.goBack()}}/>
-		    <ProfileButton profileSize={GlobalStyle.userProfileSize} profileSource={GlobalStyle.defaultprofile} onPress={()=>{alert("let user change contact's picture")}}/>
+		    <ProfileButton profileSize={GlobalStyle.userProfileSize} profileSource={chatpic} onPress={()=>{alert("let user change contact's picture")}}/>
 		</View>
 	    ),
 	});
     }, [navigation]);
-    const {chatId} = route.params;
+    
     return (
 	<View style={ChatScreenContainerStyle}>
 	    <MessageBoxComponent chatId={chatId}/>

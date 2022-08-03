@@ -70,47 +70,7 @@ const MainScreenStyles = {
     },
 };
 
-//Placeholder variables for debugging
-const userInfo = {
-    pic:GlobalStyle.defaultprofile,
-    firstName:"User",
-    lastName:"Profile",
-    identify:"They/Them",
-    phone:"(123)456-7890"
-}
 let userprofilepic = GlobalStyle.defaultprofile;
-
-
-const userContact = {
-	userId: 999,
-	[Contacts.Fields.Name]: "User Profile",
-	[Contacts.Fields.FirstName]: 'User',
-	[Contacts.Fields.LastName]: 'Profile',
-	Prounouns:'They/Them',
-}
-
-
-const getUsername = () => {
-    return userInfo.firstName+" "+userInfo.lastName;
-}
-
-function ContactCreator(name,id){
-	return {
-	  userId: id,
-	  [Contacts.Fields.Name]: name,
-	};
-}
-
-function MessageCreator(message,senderid,chatId){
-	return{
-		messageId:uuid.v4(),
-		message:message,
-		senderId:senderid,
-		chatId:chatId,
-		date:new Date(),
-	}
-}
-
 
 
 
@@ -126,30 +86,18 @@ const NoContactsComponent = () => {
     );
 }
 
-
-id1 = "47769a91-2d07-4580-8828-5913cf821623"
-id2 = "1d4070bf-7ada-46bd-8b7c-c8b8e0507dec"
-
 // A component to display either all of someone's chats or the incoming (no contacts) screen
 const MessagesListComponent = (props) => {
     const {chats,setChats,ws,setWs} = useContext(ChatContext)
 	const {contacts,setContacts,userid,setUserId} = useContext(ContactContext)
 	
 	const {userStore,createUserIdentity,serverip} = useContext(SignalContext)
-	const display = "Change Account (" + userid + ")"
+	const display = "Change Account"
     let empty = (chats.size == 0)
     let chatComponents = []
 	chats.forEach((a, i) => {
-		let groupchatname = a.chatname
-		if (a.chatname == ""){
-			groupchatname = contacts.get(a.contactids[0]).username
-		}else{
-			groupchatname = a.chatname
-		}
 		chatComponents.push(<ChatComponent
 		   key={a.id}
-		   username={groupchatname}
-		   messages={a.messages}
 		   chatId={a.id}
 	       />)
     });
@@ -201,7 +149,7 @@ const MainScreenComponent = ({navigation}) => {
     useEffect(() => {
 	navigation.setOptions({
 	    headerRight: () => (
-		<SettingsButton onPress={() => navigation.navigate('MainSettings',{userInfo:userInfo})}/>
+		<SettingsButton onPress={() => navigation.navigate('MainSettings')}/>
 	    ),
 	    headerLeft: () => (
 		<ProfileButton profileSize={GlobalStyle.userProfileSize} profileSource={userprofilepic}/>

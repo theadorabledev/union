@@ -3,7 +3,7 @@
   Contains the navigation stack
 */
 
-import React, { useState } from 'react';
+import React, { useState,useContext } from 'react';
 import { View, Text, ScrollView, Button, Image, TouchableOpacity, TouchableHighlight } from "react-native";
 import { Menu, MenuItem, MenuDivider } from 'react-native-material-menu';
 import { useNavigation } from '@react-navigation/native';
@@ -13,7 +13,8 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import {FontAwesome} from '@expo/vector-icons';
 
 import {GlobalStyle} from './Styles.js';
-
+import {ChatContext,ContactContext,SignalContext} from './Context.js';
+import uuid from 'react-native-uuid';
 // Home button to navigate to MainScreenComponent
 export const HomeButton = ({onPress}) => {
     return(
@@ -51,8 +52,10 @@ export const PhoneButton = (props) => {
     );
 }
 
+
+
 //Image Button Wrapper
-export const ProfileButton = (props) => {
+export const ImagePickerComponent = (props) => {
 	const [image, setImage] = useState(null);
 
 	const pickImage = async () => {
@@ -87,6 +90,18 @@ export const ProfileButton = (props) => {
     );
 }
 
+//Image Button Wrapper
+export const ProfileButton = (props) => {
+	return(
+		<TouchableHighlight style ={{width: props.profileSize, height: props.profileSize, borderRadius: props.profileSize/2}}
+			onPress={props.onPress}>
+			<Image
+				style ={{width: props.profileSize, height: props.profileSize, borderRadius: props.profileSize/2}}
+				source={props.profileSource}
+			/>
+		</TouchableHighlight>
+    );
+}
 
 //context menu wrapper
 export const ContextMenu =(props)=> {
@@ -131,36 +146,150 @@ const ChatComponentStyles = {
 
 // Component to display a chat log with a user, with the most recent message previewed
 // Used on main page and new chat page
+
+
+
+function getChatName(chat){
+	const {contacts,setContacts,userid,setUserId} = useContext(ContactContext)
+	if (chat.chatname != ""){
+		return chat.chatname;
+	}
+	else{
+		let contactnames = chat.contactids.map((a)=>{
+			if (a!= userid){
+				return contacts.get(a).username;
+			}
+		});
+		contactnames.sort(function (a, b) {
+			return a.length - b.length;
+		});
+		return contactnames[0];
+	}
+}
+
+function getChatPicture(chat){
+	const {contacts,setContacts,userid,setUserId} = useContext(ContactContext)
+	let chatpic = GlobalStyle.defaultprofile;
+	if (chat.chatpic != null){
+		chatpic = chat.chatpic;
+	}
+	else if(chat.contactids.length==2){
+		let contactnames = chat.contactids.map((a)=>{
+			if (a!= userid && contacts.get(a).profilepic != null){
+				chatpic = contacts.get(a).profilepic;
+			}
+		});
+	}
+	console.log(chatpic);
+	return chatpic;
+}
+
 export const ChatComponent = (props) => {
     const navigation = useNavigation();
+	const {chats,setChats,ws,setWs} = useContext(ChatContext)
+	
+	const chat = chats.get(props.chatId)
+	const chatname = getChatName(chat)
+	const chatpic = getChatPicture(chat)
     const lastMessage = () => {
-	if(props.messages.length){
+	if(chat.messages.length){
 	    return (
 		<>
-		    <Text>{props.messages[props.messages.length-1].message}</Text>
-		    <Text>{props.messages[props.messages.length-1].date.toString()}</Text>
+		    <Text>{chat.messages[chat.messages.length-1].message}</Text>
+		    <Text>{chat.messages[chat.messages.length-1].date.toString()}</Text>
 		</>
 	    );
 	}
     }
+		
     return (
 	<TouchableHighlight onPress={() =>
 				navigation.navigate(
 				    'ChatScreen', {
-					username:props.username,
-					messages:props.messages,
+					username:chatname,
+					messages:chat.messages,
 					newChat:props.isNewChat,
-					chatId:props.chatId
-					
+					chatId:props.chatId,
+					chatpic:chatpic
 				    })
 			    }
 			    underlayColor = {GlobalStyle.highlightcolor}>
 	    <View style={ChatComponentStyles.chatComp}>
-		<ProfileButton profileSize={GlobalStyle.contactProfileSize} profileSource={GlobalStyle.defaultprofile} onPress={()=>{alert("Take user to contact's settings")}}/>
+		<ProfileButton profileSize={GlobalStyle.contactProfileSize} profileSource={chatpic} onPress={()=>{alert("Take user to contact's settings")}}/>
 		<View style={ChatComponentStyles.miniChat}>
-		    <Text style={ChatComponentStyles.userName}>{props.username}</Text>
+		    <Text style={ChatComponentStyles.userName}>{chatname}</Text>
 		    {lastMessage()}
 		</View>
+	    </View>
+	</TouchableHighlight>
+    );
+};
+
+function ContactCreator(id,username,profilepic,pronouns){
+		return{id,username,profilepic,pronouns};
+	}
+	
+function ChatCreator(id,contactids,messages,chatname,chatpic,description){
+	return {id,contactids,messages,chatname,chatpic,description};
+}
+
+
+//pass props.username, props.uri 
+export const NewChatComponent = (props) => {
+    const navigation = useNavigation();
+	const {chats,setChats,ws,setWs} = useContext(ChatContext)
+	const {contacts,setContacts,userid,setUserId} = useContext(ContactContext)
+	const getImage = () =>{
+		if (typeof props.image == "undefined"){
+			return GlobalStyle.defaultprofile;
+		}else{
+			return props.image;
+		}
+	} 
+	
+	
+	
+	function newContactChat(){
+			console.log("Create Contact");
+			const newcontactid = uuid.v4();
+			setContacts((contacts) =>{
+				const newContacts = new Map(contacts);
+				const thiscontact = ContactCreator(newcontactid,props.username,getImage(),"They/Them");
+				newContacts.set(newcontactid,thiscontact)
+				return newContacts;
+			});
+
+
+			//generate new chat
+			const newchatid = uuid.v4();
+			//this should send information to the server to generate the actual chat and make sure the uuid's match between users, but one thing at a time.
+			const getnewchat =ChatCreator(newchatid,[userid,newcontactid],[],"",null,"");
+			setChats((chats) => {
+				const newChats = new Map(chats);
+				newChats.set(newchatid,getnewchat);
+				return newChats;
+			});
+			
+			navigation.navigate(
+				'ChatScreen', {
+				username:props.username,
+				messages:getnewchat.messages,
+				newChat:true,
+				chatId:newchatid,
+				chatpic:getImage()
+				
+			});
+			
+		}
+    return (
+	<TouchableHighlight 
+		onPress={newContactChat}
+			    underlayColor = {GlobalStyle.highlightcolor}>
+	    <View style={ChatComponentStyles.chatComp}>
+			<ProfileButton profileSize={GlobalStyle.contactProfileSize} profileSource={getImage()} onPress={()=>{alert("Take user to contact's settings")}}/>
+			<View style={ChatComponentStyles.miniChat}>
+				<Text style={ChatComponentStyles.userName}>{props.username}</Text>
+			</View>
 	    </View>
 	</TouchableHighlight>
     );

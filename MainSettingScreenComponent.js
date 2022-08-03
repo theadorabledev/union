@@ -63,7 +63,7 @@ const User = (props) => {
 	const usercontact = contacts.get(userid)
     return(
 	<View style={MainSettingStyles.userInfoContainer}>
-	    <ProfileButton profileSize={GlobalStyle.userProfileSize} profileSource={props.userInfo.pic}/>
+	    <ProfileButton profileSize={GlobalStyle.userProfileSize} profileSource={GlobalStyle.defaultprofile}/>
 	    <TouchableOpacity style={MainSettingStyles.personalInfo} onPress={() => navigation.navigate(
 				  'SettingOptions', {
 				      title:"User Info",
@@ -119,8 +119,8 @@ const OptionList = () => {
 }
 
 // Returns the settings screen displayed on the main page
-const MainSettingScreenComponent = ({route, navigation}) => {
-    const {userInfo, profilepic} = route.params;
+const MainSettingScreenComponent = ({navigation}) => {
+    const {contacts,setContacts,userid} = useContext(ContactContext)
     React.useLayoutEffect(() => {
 	navigation.setOptions({
 	    title: "Settings"
@@ -128,7 +128,7 @@ const MainSettingScreenComponent = ({route, navigation}) => {
     }, [navigation]);
     return (
 	<View>
-	    <User userInfo={userInfo} picture={profilepic}/>
+	    <User/>
 	    <OptionList/> 
 	</View>
     );

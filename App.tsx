@@ -120,18 +120,18 @@ ContactCreator(contactMap,"10","The Wheel of Fortune",null,"They/Them")
 
 TestChatCreator(chatMap,"0",[initialUserId,altId],[
 		MessageCreator("Test Message 0. Lorem Ipsum",altId,"0"),
-		MessageCreator("Test Message 1. Lorem Ipsum","47769a91-2d07-4580-8828-5913cf821623","TestUser","0"),
+		MessageCreator("Test Message 1. Lorem Ipsum",initialUserId,"0"),
 		MessageCreator("Test Message 0. Lorem Ipsum",altId,"0"),
-		MessageCreator("Test Message 2. Lorem Ipsum","47769a91-2d07-4580-8828-5913cf821623","TestUser","0"),
+		MessageCreator("Test Message 2. Lorem Ipsum",initialUserId,"0"),
 		MessageCreator("Test Message 0. Lorem Ipsum",altId,"0"),
 		MessageCreator("Test Message 0. Lorem Ipsum",altId,"0"),
-		MessageCreator("Test Message 3. Lorem Ipsum","47769a91-2d07-4580-8828-5913cf821623","TestUser","0"),
+		MessageCreator("Test Message 3. Lorem Ipsum",initialUserId,"0"),
 		MessageCreator("Test Message 0. Lorem Ipsum",altId,"0"),
 	],"",null,"")
-TestChatCreator(chatMap,"1",[1,4], [
+TestChatCreator(chatMap,"1",[initialUserId,1,4], [
 		MessageCreator("Test Message 0. Lorem Ipsum","1","1"),
 		MessageCreator("Test Message 1. Lorem Ipsum","4","1"),
-		MessageCreator("Test Message 2. Lorem Ipsum","47769a91-2d07-4580-8828-5913cf821623","TestUser","1"),
+		MessageCreator("Test Message 2. Lorem Ipsum",initialUserId,"1"),
 	],"Test Group chat", null,"A test Chat")
 
 
