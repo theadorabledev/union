@@ -5,14 +5,17 @@ import NavigationBar from 'react-native-navbar';
 import { useNavigation } from '@react-navigation/native';
 
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { Dropdown } from 'react-native-material-dropdown-v2'
+
+import * as Contacts from "expo-contacts";
+
+import uuid from 'react-native-uuid';
 
 import {SettingsButton, ProfileButton, ChatComponent} from './Common.js';
 
 import {GlobalStyle} from './Styles.js';
 
-import * as Contacts from "expo-contacts";
 
-import uuid from 'react-native-uuid';
 
 import {ChatContext,ContactContext,SignalContext} from './Context.js';
 
@@ -150,26 +153,27 @@ const MessagesListComponent = (props) => {
 		   chatId={a.id}
 	       />)
     });
+	
+	let contactArray = [];
+	contacts.forEach((a,i)=>{
+		contactArray.push({value: a.id});
+	})
+	
     return (
-	<>
-	    <Button title={display} color = {GlobalStyle.highlightcolor} onPress={()=>{
+	<>											
+	   <Dropdown
+        label={display}
+        data={contactArray}
+		onChangeText= {
+			(value,index,data)=>{
 			setUserId((userid)=>{
-				if(userid == id1){
-					
-					return id2
-				}else{
-					return id1
-				}
+					return value
 			})
 		    }
-											}/>
-	    <Button title="Clear Messages" color = {GlobalStyle.highlightcolor} onPress={()=>{
-			setChats(new Map())
-		    }
-											}/>
 											
-		
-	    <Button title="Signal Test Identity Create" color = {GlobalStyle.highlightcolor} onPress={()=>{setWs(new WebSocket('ws://'+serverip+'/'+userid))}}/>		
+		}
+      />
+	    <Button title="Reset Websocket" color = {GlobalStyle.highlightcolor} onPress={()=>{setWs(new WebSocket('ws://'+serverip+'/'+userid))}}/>		
 		
 	    {empty ?
 	     <NoContactsComponent/>
