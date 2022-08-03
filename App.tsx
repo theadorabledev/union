@@ -32,7 +32,7 @@ import { SignalProtocolStore } from './storage-type';
 
 import {ChatContext,ContactContext,SignalContext} from './Context.js';
 
-
+import { MMKV } from 'react-native-mmkv'
 
 
 interface Chat{
@@ -137,6 +137,19 @@ TestChatCreator(chatMap,"1",[1,4], [
 const initialws = new WebSocket('ws://192.168.1.4:8000/'+initialUserId)
 const userAddress = new SignalProtocolAddress(initialUserId, 1);
 function App() {
+
+// storage with usr id and encryption
+// export const storage = new MMKV({
+// 	id: `user-${userId}-storage`,
+// 	path: `${USER_DIRECTORY}/storage`,
+// 	encryptionKey: 'hunter2'
+//   })
+
+// basic storage initializer
+const storage = new MMKV()
+storage.recrypt('union')
+// to set key and value : storage.set('key', 'val')
+// to retrieve: const val = storage.getString('key')
 	
 function makeKeyId(){
 	return Math.floor(10000 * Math.random());
@@ -144,23 +157,28 @@ function makeKeyId(){
 	
 const storeSomewhereSafe = (store: SignalProtocolStore) => 
 	(key: string, value: any) => {store.put(key, value)};
+	// storage.set(key, value)
 	
 const createID = async (name: string, store: SignalProtocolStore) => 
 {
 	const registrationId = KeyHelper.generateRegistrationId()
 	storeSomewhereSafe(store)(`registrationID`, registrationId)
+	storage.set(`registrationID`, registrationId)
 
 	const identityKeyPair = await KeyHelper.generateIdentityKeyPair()
 	storeSomewhereSafe(store)('identityKey', identityKeyPair)
+	storage.set('identityKey', JSON.stringify(identityKeyPair))
 
 	const baseKeyId = makeKeyId()
 	const preKey = await KeyHelper.generatePreKey(baseKeyId)
 	store.storePreKey(`${baseKeyId}`, preKey.keyPair)
+	storage.set(`${baseKeyId}`, JSON.stringify(preKey.keyPair))
 
 	const signedPreKeyId = makeKeyId()
 	const signedPreKey = await KeyHelper.generateSignedPreKey(identityKeyPair, signedPreKeyId)
 	store.storeSignedPreKey(signedPreKeyId, signedPreKey.keyPair)
-
+	storage.set(`${signedPreKeyId}`, JSON.stringify(signedPreKey.keyPair))
+	
 	// Now we register this with the server or other directory so all users can see them.
 	// You might implement your directory differently, this is not part of the SDK.
 
