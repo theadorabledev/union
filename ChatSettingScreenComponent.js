@@ -9,7 +9,7 @@ import {HomeButton, SettingsButton,PhoneButton,ProfileButton,ContextMenu} from '
 import {GlobalStyle} from './Styles.js';
 import {ContactContext,ChatContext} from './Context.js';
 import { LinearGradient } from 'expo-linear-gradient';
-
+import * as ImagePicker from 'expo-image-picker';
 const defaultprofile = require('./assets/profilepicsquaresmall.png')  // should be Homebutton
 
 const stylesUser = StyleSheet.create({
@@ -27,6 +27,8 @@ const stylesUser = StyleSheet.create({
 	
 	image: {
 	  //margin: 20,
+	  height:128,
+	  width:128,
 	  borderRadius: 50,
 	},
 
@@ -68,6 +70,43 @@ props:
 	fieldone
 	fieldtwo
 */
+
+const ImagePickerComponent = (props) => {
+	const [image, setImage] = useState(null);
+
+	const pickImage = async () => {
+	  let result = await ImagePicker.launchImageLibraryAsync({
+		mediaTypes: ImagePicker.MediaTypeOptions.All,
+		allowsEditing: true,
+		aspect: [4, 3],
+		quality: 1,
+	  });
+  
+	  if (!result.cancelled) {
+		setImage(result.uri);
+		GlobalStyle.defaultprofile = image;
+	  }
+	};
+
+	return(
+		<TouchableHighlight style={stylesUser.image}
+					onPress={pickImage}>
+			{ image ?
+				<Image
+					style={stylesUser.image}
+					source={{ uri: image }}
+				/>
+				:
+				<Image
+					style={stylesUser.image}
+					source={props.profileSource}
+				/>
+			}
+		</TouchableHighlight>
+    );
+}
+
+
 const UpdateSettingsScreen = (props) => {
 
 	const [settingsfieldone,setSettingsFieldOne] = useState("")
@@ -99,7 +138,7 @@ const UpdateSettingsScreen = (props) => {
 		style={stylesUser.background}
 		/>
 		<View style={{flex:3,width:"80%",minHeight:100,alignItems: "center",justifyContent:"center"}}>
-			<Image style={stylesUser.image} source={defaultprofile} />
+			<ImagePickerComponent profileSource ={props.map.get(props.id)[props.fieldthree]}/>
 		</View>
 		<View style={{height:200, width:"80%",minHeight:200,justifyContent: 'space-evenly',alignItems:"center"}}>
 			<Text style={stylesUser.label}>Chat Name</Text>
@@ -139,13 +178,13 @@ const ChatSettingScreenComponent = ({route,navigation}) => {
 	});
     }, [navigation]);
 	
-	const {id,map,maphandler,fieldone,fieldtwo,canedit} = route.params;
+	const {id,map,maphandler,fieldone,fieldtwo,fieldthree,canedit} = route.params;
 	const {contacts,setContacts,userid} = useContext(ContactContext)
 	const {chats,setChats,ws,setWs} = useContext(ChatContext)
 	
     return (
 		<View style={{flex:1}}>
-			<UpdateSettingsScreen map={map} maphandler={maphandler} canedit={canedit} id={id} fieldone={fieldone} fieldtwo={fieldtwo}/>
+			<UpdateSettingsScreen map={map} maphandler={maphandler} canedit={canedit} id={id} fieldone={fieldone} fieldtwo={fieldtwo} fieldthree={fieldthree}/>
 		</View>
     );
 }

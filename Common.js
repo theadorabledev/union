@@ -169,13 +169,10 @@ function getChatName(chat){
 
 function getChatPicture(chat){
 	const {contacts,setContacts,userid,setUserId} = useContext(ContactContext)
-	let chatpic = GlobalStyle.defaultprofile;
-	if (chat.chatpic != null){
-		chatpic = chat.chatpic;
-	}
-	else if(chat.contactids.length==2){
+	let chatpic = chat.chatpic;
+	if(chat.contactids.length==2){
 		let contactnames = chat.contactids.map((a)=>{
-			if (a!= userid && contacts.get(a).profilepic != null){
+			if (a!= userid){
 				chatpic = contacts.get(a).profilepic;
 			}
 		});
@@ -200,6 +197,7 @@ export const ChatComponent = (props) => {
 			maphandler:setChats,
 			fieldone:"chatname",
 			fieldtwo:"description",
+			fieldthree:"chatpic",
 			})
 		}else{
 			
@@ -214,6 +212,7 @@ export const ChatComponent = (props) => {
 			maphandler:setContacts,
 			fieldone:"username",
 			fieldtwo:"pronouns",
+			fieldthree: "profilepic",
 			})
 		}
 	}
@@ -292,7 +291,7 @@ export const NewChatComponent = (props) => {
 			//generate new chat
 			const newchatid = uuid.v4();
 			//this should send information to the server to generate the actual chat and make sure the uuid's match between users, but one thing at a time.
-			const getnewchat =ChatCreator(newchatid,[userid,newcontactid],[],"",null,"");
+			const getnewchat =ChatCreator(newchatid,[userid,newcontactid],[],"",GlobalStyle.defaultprofile,"");
 			setChats((chats) => {
 				const newChats = new Map(chats);
 				newChats.set(newchatid,getnewchat);
