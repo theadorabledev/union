@@ -72,8 +72,7 @@ props:
 */
 
 const ImagePickerComponent = (props) => {
-	const [image, setImage] = useState(null);
-
+	
 	const pickImage = async () => {
 	  let result = await ImagePicker.launchImageLibraryAsync({
 		mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -83,18 +82,17 @@ const ImagePickerComponent = (props) => {
 	  });
   
 	  if (!result.cancelled) {
-		setImage(result.uri);
-		GlobalStyle.defaultprofile = image;
+		props.setImage(result.uri);
 	  }
 	};
 
 	return(
 		<TouchableHighlight style={stylesUser.image}
 					onPress={pickImage}>
-			{ image ?
+			{ props.image ?
 				<Image
 					style={stylesUser.image}
-					source={{ uri: image }}
+					source={{ uri: props.image }}
 				/>
 				:
 				<Image
@@ -111,6 +109,7 @@ const UpdateSettingsScreen = (props) => {
 
 	const [settingsfieldone,setSettingsFieldOne] = useState("")
 	const [settingsfieldtwo,setSettingsFieldTwo] = useState("")
+	const [image, setImage] = useState(null);
 	const onPress = () => {
 		props.maphandler((map)=>{
 			const newMap = new Map(props.map);
@@ -120,6 +119,9 @@ const UpdateSettingsScreen = (props) => {
 			}
 			if (settingsfieldtwo != ""){
 				element[props.fieldtwo] = settingsfieldtwo;
+			}
+			if (image != null){
+				element[props.fieldthree]= {uri:image}
 			}
 			newMap.set(props.id,element);
 			return newMap;
@@ -138,7 +140,7 @@ const UpdateSettingsScreen = (props) => {
 		style={stylesUser.background}
 		/>
 		<View style={{flex:3,width:"80%",minHeight:100,alignItems: "center",justifyContent:"center"}}>
-			<ImagePickerComponent profileSource ={props.map.get(props.id)[props.fieldthree]}/>
+			{props.canedit?	<ImagePickerComponent image={image} setImage={setImage} profileSource ={props.map.get(props.id)[props.fieldthree]}/> : <Image style={stylesUser.image} source ={props.map.get(props.id)[props.fieldthree]}/>}
 		</View>
 		<View style={{height:200, width:"80%",minHeight:200,justifyContent: 'space-evenly',alignItems:"center"}}>
 			<Text style={stylesUser.label}>Chat Name</Text>

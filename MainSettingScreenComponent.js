@@ -63,7 +63,7 @@ const User = (props) => {
 	const usercontact = contacts.get(userid)
     return(
 	<View style={MainSettingStyles.userInfoContainer}>
-	    <ProfileButton profileSize={GlobalStyle.userProfileSize} profileSource={GlobalStyle.defaultprofile}/>
+	    <ProfileButton profileSize={GlobalStyle.userProfileSize} profileSource={contacts.get(userid).profilepic}/>
 	    <TouchableOpacity style={MainSettingStyles.personalInfo} onPress={() => navigation.navigate('ChatSettings', {
 			id:userid,
 			canedit:true,

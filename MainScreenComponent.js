@@ -70,7 +70,6 @@ const MainScreenStyles = {
     },
 };
 
-let userprofilepic = GlobalStyle.defaultprofile;
 
 
 
@@ -152,13 +151,14 @@ const MainScreenComponent = ({navigation}) => {
 		<SettingsButton onPress={() => navigation.navigate('MainSettings')}/>
 	    ),
 	    headerLeft: () => (
-		<ProfileButton profileSize={GlobalStyle.userProfileSize} profileSource={userprofilepic}onPress={() => navigation.navigate('ChatSettings', {
+		<ProfileButton profileSize={GlobalStyle.userProfileSize} profileSource={contacts.get(userid).profilepic}onPress={() => navigation.navigate('ChatSettings', {
 			id:userid,
 			canedit:true,
 			map:contacts,
 			maphandler:setContacts,
 			fieldone:"username",
 			fieldtwo:"pronouns",
+			fieldthree:"profilepic",
 			})
 								 }/>
 	    ),
