@@ -164,37 +164,21 @@ const createID = async (name: string, store: SignalProtocolStore) =>
 {
 	const registrationId = KeyHelper.generateRegistrationId()
 	storeSomewhereSafe(store)(`registrationID`, registrationId)
-<<<<<<< HEAD
-	//storage.set(`registrationID`, registrationId)
-
-	const identityKeyPair = await KeyHelper.generateIdentityKeyPair()
-	storeSomewhereSafe(store)('identityKey', identityKeyPair)
-	//storage.set('identityKey', JSON.stringify(identityKeyPair))
-=======
 	// storage.set(`registrationID`, registrationId)
 
 	const identityKeyPair = await KeyHelper.generateIdentityKeyPair()
 	storeSomewhereSafe(store)('identityKey', identityKeyPair)
 	// storage.set('identityKey', JSON.stringify(identityKeyPair))
->>>>>>> b13994ac3bde6c2d22b8d108f5ef12b33fb4bfa5
 
 	const baseKeyId = makeKeyId()
 	const preKey = await KeyHelper.generatePreKey(baseKeyId)
 	store.storePreKey(`${baseKeyId}`, preKey.keyPair)
-<<<<<<< HEAD
-	//storage.set(`${baseKeyId}`, JSON.stringify(preKey.keyPair))
-=======
 	// storage.set(`${baseKeyId}`, JSON.stringify(preKey.keyPair))
->>>>>>> b13994ac3bde6c2d22b8d108f5ef12b33fb4bfa5
 
 	const signedPreKeyId = makeKeyId()
 	const signedPreKey = await KeyHelper.generateSignedPreKey(identityKeyPair, signedPreKeyId)
 	store.storeSignedPreKey(signedPreKeyId, signedPreKey.keyPair)
-<<<<<<< HEAD
-	//storage.set(`${signedPreKeyId}`, JSON.stringify(signedPreKey.keyPair))
-=======
 	// storage.set(`${signedPreKeyId}`, JSON.stringify(signedPreKey.keyPair))
->>>>>>> b13994ac3bde6c2d22b8d108f5ef12b33fb4bfa5
 	
 	// Now we register this with the server or other directory so all users can see them.
 	// You might implement your directory differently, this is not part of the SDK.
