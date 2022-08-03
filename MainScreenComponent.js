@@ -132,7 +132,7 @@ const MessagesListComponent = (props) => {
     const {chats,setChats,ws,setWs} = useContext(ChatContext)
 	const {contacts,setContacts,userid,setUserId} = useContext(ContactContext)
 	
-	const {userStore,createUserIdentity} = useContext(SignalContext)
+	const {userStore,createUserIdentity,serverip} = useContext(SignalContext)
 	const display = "Change Account (" + userid + ")"
     let empty = (chats.size == 0)
     let chatComponents = []
@@ -155,10 +155,9 @@ const MessagesListComponent = (props) => {
 	    <Button title={display} color = {GlobalStyle.highlightcolor} onPress={()=>{
 			setUserId((userid)=>{
 				if(userid == id1){
-					setWs(new WebSocket('ws://192.168.1.4:8000/'+id2));
+					
 					return id2
 				}else{
-					setWs(new WebSocket('ws://192.168.1.4:8000/'+id1));
 					return id1
 				}
 			})
@@ -170,7 +169,7 @@ const MessagesListComponent = (props) => {
 											}/>
 											
 		
-	    <Button title="Signal Test Identity Create" color = {GlobalStyle.highlightcolor} onPress={createUserIdentity}/>		
+	    <Button title="Signal Test Identity Create" color = {GlobalStyle.highlightcolor} onPress={()=>{setWs(new WebSocket('ws://'+serverip+'/'+userid))}}/>		
 		
 	    {empty ?
 	     <NoContactsComponent/>

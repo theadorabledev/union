@@ -104,6 +104,7 @@ const chatMap = new Map();
 
 const initialUserId = "47769a91-2d07-4580-8828-5913cf821623";
 const altId = "1d4070bf-7ada-46bd-8b7c-c8b8e0507dec"
+const serverip = "68.198.220.163:8000"
 ContactCreator(contactMap,initialUserId,"TestUser",null,"They/Them")
 ContactCreator(contactMap,altId,"The Fool",null,"They/Them")
 ContactCreator(contactMap,"1","The Magician",null,"They/Them")
@@ -134,7 +135,7 @@ TestChatCreator(chatMap,"1",[1,4], [
 	],"Test Group chat", null,"A test Chat")
 
 
-const initialws = new WebSocket('ws://192.168.1.4:8000/'+initialUserId)
+const initialws = new WebSocket('ws://'+serverip+'/'+initialUserId)
 const userAddress = new SignalProtocolAddress(initialUserId, 1);
 function App() {
 	
@@ -198,7 +199,7 @@ const createID = async (name: string, store: SignalProtocolStore) =>
 	const [userid,setUserId] = useState(initialUserId);
 	const chatState = {chats,setChats,ws,setWs};
 	const contactState = {contacts,setContacts,userid,setUserId};
-	const signalState = {userStore,createUserIdentity}
+	const signalState = {userStore,createUserIdentity,serverip}
 
 	ws.onmessage = (e) => {
 		let msgData = JSON.parse(e.data);
