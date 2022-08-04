@@ -139,6 +139,8 @@ ChatCreator(chatMap,"1",[initialUserId,"1","4"], [
 	}
 	
 function App() {
+	save('test', '321');
+	getValueFor('test');
 //generate id for signal
 function makeKeyId(){
 	return Math.floor(10000 * Math.random());
