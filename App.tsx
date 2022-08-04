@@ -123,6 +123,21 @@ ChatCreator(chatMap,"1",[initialUserId,"1","4"], [
 		MessageCreator("Test Message 2. Lorem Ipsum",initialUserId,"1"),
 	],"Test Group chat", GlobalStyle.defaultprofile,"A test Chat")
 
+	async function save(key, value) {
+		await SecureStore.setItemAsync(key, value);
+	  }
+	  
+	  async function getValueFor(key) {
+		const result = await SecureStore.getItemAsync(key);
+		if (result) {
+			console.log("Here's your value \n" , result);
+		  }
+	  }
+	
+	async function removeValue(key){
+		await SecureStore.deleteItemAsync(key);
+	}
+	
 function App() {
 //generate id for signal
 function makeKeyId(){
