@@ -1,6 +1,6 @@
 import 'react-native-gesture-handler'; 
 import React, { useState } from 'react';
-import { View, Text, ScrollView, Button, Image, TouchableOpacity, TouchableHighlight } from "react-native";
+import { View, Text, ScrollView, Button, Image,ImageSourcePropType,  TouchableOpacity, TouchableHighlight } from "react-native";
 
 import MainScreenComponent from './MainScreenComponent';
 import MainSettingScreenComponent from './MainSettingScreenComponent';
@@ -30,57 +30,26 @@ from '@privacyresearch/libsignal-protocol-typescript'
 
 import { SignalProtocolStore } from './storage-type';
 
-import {ChatContext,ContactContext,SignalContext} from './Context.js';
+import {ChatContext,ContactContext,SignalContext,Chat,Contact,ProcessedChatMessage} from './Context';
 
 //import { MMKV } from 'react-native-mmkv'
 
 
-interface Chat{
-	id:string;
-	contactids:string[];
-	messages:ChatMessage[];
-	chatname:string;
-	chatpic:string;
-	description:string;
-}
 
 
-function ReturnChat(chats,id){
-	let myChatData= chats.findIndex(function(chat){
-		return chat.chatId === id;
-	});
-	return myChatData;
-}
-
-
-//setChats((chats) =>{
-//	const newChats = [...chats]
-//	newChats[props.chatIndex].messages.push(addMessage(text))
-//	return newChats
-//})
-
-
-function ContactCreator(map,id,username,profilepic,pronouns){
+function ContactCreator(map:Map<string,Contact>,id:string,username:string,profilepic:ImageSourcePropType,pronouns:string){
 	map.set(id,{id,username,profilepic,pronouns})
 }
 
-function TestChatCreator(map,id,contactids,messages,chatname,chatpic,description){
+function TestChatCreator(map:Map<string,Chat>,id:string,contactids:string[],messages:ProcessedChatMessage[],chatname:string,chatpic:ImageSourcePropType,description:string){
 	map.set(id,{id,contactids,messages,chatname,chatpic,description})
 }
 
-interface ChatMessage {
-	messageId: string;
-	message: string;
-	senderId:string;
-	chatId:string;
-	recieverId:string;
-	date:Date;
-	delivered: boolean;
-}
 
-function MessageCreator(message,senderid,chatId){
+
+function MessageCreator(message:string,senderid:string,chatId:string){
 	return{
-		messageId:uuid.v4(),
+		messageId:uuid.v4().toString(),
 		message:message,
 		senderId:senderid,
 		chatId:chatId,
@@ -96,11 +65,11 @@ function MessageCreator(message,senderid,chatId){
 
 
 
-const contactMap = new Map();
+const contactMap = new Map<string,Contact>();
 
 
 
-const chatMap = new Map();
+const chatMap = new Map<string,Chat>();
 
 const initialUserId = "47769a91-2d07-4580-8828-5913cf821623";
 const altId = "1d4070bf-7ada-46bd-8b7c-c8b8e0507dec"
@@ -128,7 +97,7 @@ TestChatCreator(chatMap,"0",[initialUserId,altId],[
 		MessageCreator("Test Message 3. Lorem Ipsum",initialUserId,"0"),
 		MessageCreator("Test Message 0. Lorem Ipsum",altId,"0"),
 	],"",GlobalStyle.defaultprofile,"")
-TestChatCreator(chatMap,"1",[initialUserId,1,4], [
+TestChatCreator(chatMap,"1",[initialUserId,"1","4"], [
 		MessageCreator("Test Message 0. Lorem Ipsum","1","1"),
 		MessageCreator("Test Message 1. Lorem Ipsum","4","1"),
 		MessageCreator("Test Message 2. Lorem Ipsum",initialUserId,"1"),
@@ -209,12 +178,13 @@ const createID = async (name: string, store: SignalProtocolStore) =>
 		console.log({ userStore });
 	};
 	
-	console.log("New Web Socket Connection: ",ws);
-	const [contacts,setContacts] = useState(contactMap);
+	
+	const [contacts,setContacts] = useState<Map<string,Contact>>(contactMap);
 	const [userStore] = useState(new SignalProtocolStore());
-	const [ws,setWs] = useState(initialws)
-	const [chats,setChats] = useState(new Map<Chat>(chatMap));
-	const [userid,setUserId] = useState(initialUserId);
+	const [ws,setWs] = useState<WebSocket>(initialws)
+	const [chats,setChats] = useState<Map<string,Chat>>(new Map<string,Chat>(chatMap));
+	console.log("New Web Socket Connection: ",ws);
+	const [userid,setUserId] = useState<string>(initialUserId);
 	const chatState = {chats,setChats,ws,setWs};
 	const contactState = {contacts,setContacts,userid,setUserId};
 	const signalState = {userStore,createUserIdentity,serverip}
@@ -222,13 +192,16 @@ const createID = async (name: string, store: SignalProtocolStore) =>
 	ws.onmessage = (e) => {
 		let msgData = JSON.parse(e.data);
 		console.log("Recieved: ", msgData);
-		let chatId = msgData.chatId
+		let chatId:string = msgData.chatId
 		console.log(chatId)
 		setChats((chats) =>{
 			const newChats = new Map(chats);
-			const thischat = newChats.get(chatId)
-			thischat.messages.push(msgData)
-			newChats.set(chatId,thischat)
+			const thischat = newChats.get(chatId);
+			if (typeof thischat != undefined){
+				const tschat = thischat as Chat;
+				tschat.messages.push(msgData)
+				newChats.set(chatId,tschat)
+			}	
 			return newChats;
 		})
 	};
@@ -243,7 +216,7 @@ const createID = async (name: string, store: SignalProtocolStore) =>
 						<StackNav.Screen 
 							name="Home"
 							component={MainScreenComponent} 
-							options={({ route }) => ({ title: contacts.get(userid).username })}
+							options={({ route }) => ({ title: (contacts.get(userid) as Contact).username })}
 						/>
 						<StackNav.Screen 
 							name="MainSettings"
@@ -252,7 +225,7 @@ const createID = async (name: string, store: SignalProtocolStore) =>
 						<StackNav.Screen 
 							name="ChatScreen"
 							component={ChatScreenComponent}
-							options={({ route }) => ({ title: route.params.username })}
+							options={({ route }) => ({ title: "test to see if it runs" })}
 						/>
 						<StackNav.Screen 
 							name="ChatSettings"
@@ -274,6 +247,7 @@ const createID = async (name: string, store: SignalProtocolStore) =>
     );
 }
 
+//route.params.username
 
 
 

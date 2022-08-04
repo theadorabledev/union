@@ -18,7 +18,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 import uuid from 'react-native-uuid';
 
-import {ChatContext,ContactContext} from './Context.js';
+import {ChatContext,ContactContext} from './Context.ts';
 
 
 //Styles for the chats

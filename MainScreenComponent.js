@@ -17,7 +17,7 @@ import {GlobalStyle} from './Styles.js';
 
 
 
-import {ChatContext,ContactContext,SignalContext} from './Context.js';
+import {ChatContext,ContactContext,SignalContext} from './Context.ts';
 
 const MainScreenStyles = {
     chatComp: {

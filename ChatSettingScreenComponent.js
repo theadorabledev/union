@@ -7,7 +7,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { HeaderBackButton } from '@react-navigation/elements';
 import {HomeButton, SettingsButton,PhoneButton,ProfileButton,ContextMenu} from './Common.js';  // in Common.js create Homebutton
 import {GlobalStyle} from './Styles.js';
-import {ContactContext,ChatContext} from './Context.js';
+import {ContactContext,ChatContext} from './Context.ts';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as ImagePicker from 'expo-image-picker';
 const defaultprofile = require('./assets/profilepicsquaresmall.png')  // should be Homebutton

@@ -8,7 +8,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import {UserButton, ProfileButton} from './Common.js';
 import {GlobalStyle} from './Styles.js';
 import { UserScreen, Account, Appearance, Notifications, Privacy, Help } from './SettingOptionsComponent.js'
-import {ContactContext} from './Context.js'
+import {ContactContext} from './Context.ts'
 const settingsIconSize=35;
 
 const MainSettingStyles = {
