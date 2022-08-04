@@ -51,6 +51,8 @@ import {
 	ProcessedChatMessage} 
 from './Context';
 
+import * as SecureStore from 'expo-secure-store';
+
 
 //contact creation function
 function ContactCreator(map:Map<string,Contact>,id:string,username:string,profilepic:ImageSourcePropType,pronouns:string){
