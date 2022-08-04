@@ -70,11 +70,6 @@ const MainScreenStyles = {
     },
 };
 
-
-
-
-
-
 // A View to Dispay a default message for incoming users
 const NoContactsComponent = () => {
     return (
@@ -88,10 +83,10 @@ const NoContactsComponent = () => {
 // A component to display either all of someone's chats or the incoming (no contacts) screen
 const MessagesListComponent = (props) => {
     const {chats,setChats,ws,setWs} = useContext(ChatContext)
-	const {contacts,setContacts,userid,setUserId} = useContext(ContactContext)
-	
-	const {userStore,createUserIdentity,serverip} = useContext(SignalContext)
-	const display = "Change Account"
+    const {contacts,setContacts,userid,setUserId} = useContext(ContactContext)
+
+    const {userStore,createUserIdentity,serverip} = useContext(SignalContext)
+    const display = "Change Account"
     let empty = (chats.size == 0)
     let chatComponents = []
 	chats.forEach((a, i) => {
@@ -100,28 +95,29 @@ const MessagesListComponent = (props) => {
 		   chatId={a.id}
 	       />)
     });
-	
-	let contactArray = [];
-	contacts.forEach((a,i)=>{
-		contactArray.push({value: a.id});
-	})
-	
+
+    let contactArray = [];
+    contacts.forEach((a,i)=>{
+	contactArray.push({value: a.id});
+    })
+
     return (
-	<>											
-	   <Dropdown
-        label={display}
-        data={contactArray}
+	<>
+	    <Dropdown
+		label={display}
+		data={contactArray}
 		onChangeText= {
-			(value,index,data)=>{
+		    (value,index,data)=>{
 			setUserId((userid)=>{
-					return value
+			    return value
 			})
 		    }
-											
 		}
-      />
-	    <Button title="Reset Websocket" color = {GlobalStyle.highlightcolor} onPress={()=>{setWs(new WebSocket('ws://'+serverip+'/'+userid))}}/>		
-		
+	    />
+	    <Button
+		title="Reset Websocket"
+		color = {GlobalStyle.highlightcolor}
+		onPress={()=>{setWs(new WebSocket('ws://'+serverip+'/'+userid))}}/>
 	    {empty ?
 	     <NoContactsComponent/>
 	     :
@@ -147,11 +143,16 @@ export const NewChatButton = (props) => {
 const MainScreenComponent = ({navigation}) => {
     useEffect(() => {
 	navigation.setOptions({
+	    // Navigate you to the settings page
 	    headerRight: () => (
 		<SettingsButton onPress={() => navigation.navigate('MainSettings')}/>
 	    ),
+	    // Display user icon and take you to chat settings page
 	    headerLeft: () => (
-		<ProfileButton profileSize={GlobalStyle.userProfileSize} profileSource={contacts.get(userid).profilepic}onPress={() => navigation.navigate('ChatSettings', {
+		<ProfileButton
+		    profileSize={GlobalStyle.userProfileSize}
+		    profileSource={contacts.get(userid).profilepic}
+		    onPress={() => navigation.navigate('ChatSettings', {
 			id:userid,
 			canedit:true,
 			map:contacts,
@@ -159,12 +160,12 @@ const MainScreenComponent = ({navigation}) => {
 			fieldone:"username",
 			fieldtwo:"pronouns",
 			fieldthree:"profilepic",
-			})
-								 }/>
+		    })}
+		/>
 	    ),
 	});
     }, [navigation]);
-	const {contacts,setContacts,userid} = useContext(ContactContext)
+    const {contacts,setContacts,userid} = useContext(ContactContext)
     return (
 	<>
 	    <View>
@@ -173,7 +174,5 @@ const MainScreenComponent = ({navigation}) => {
 	    <NewChatButton/>
 	</>
     );
-
 };
-
 export default MainScreenComponent;
