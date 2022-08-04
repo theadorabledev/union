@@ -4,7 +4,7 @@ import { View, Text, TextInput, ScrollView, Button, Image, TouchableOpacity, Tou
 import { useNavigation } from '@react-navigation/native';
 import NavigationBar from 'react-native-navbar';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { MaterialCommunityIcons } from '@expo/vector-icons'; 
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import {UserButton, ProfileButton} from './Common.js';
 import {GlobalStyle} from './Styles.js';
 import { UserScreen, Account, Appearance, Notifications, Privacy, Help } from './SettingOptionsComponent.js'
@@ -59,12 +59,16 @@ const icons = {
 // A section which contains information about the user
 const User = (props) => {
     const navigation = useNavigation();
-	const {contacts,setContacts,userid} = useContext(ContactContext)
-	const usercontact = contacts.get(userid)
+    const {contacts,setContacts,userid} = useContext(ContactContext)
+    const usercontact = contacts.get(userid)
     return(
 	<View style={MainSettingStyles.userInfoContainer}>
-	    <ProfileButton profileSize={GlobalStyle.userProfileSize} profileSource={contacts.get(userid).profilepic}/>
-	    <TouchableOpacity style={MainSettingStyles.personalInfo} onPress={() => navigation.navigate('ChatSettings', {
+	    <ProfileButton
+		profileSize={GlobalStyle.userProfileSize}
+		profileSource={contacts.get(userid).profilepic}/>
+	    <TouchableOpacity
+		style={MainSettingStyles.personalInfo}
+		onPress={() => navigation.navigate('ChatSettings', {
 			id:userid,
 			canedit:true,
 			map:contacts,
@@ -72,8 +76,7 @@ const User = (props) => {
 			fieldone:"username",
 			fieldtwo:"pronouns",
 			fieldthree:"profilepic",
-			})
-								 }>
+		})}>
 		<Text style={GlobalStyle.textTypes.H2}>{usercontact.username}  {usercontact.pronouns}</Text>
 		<Text style={MainSettingStyles.phone}>{usercontact.id}</Text>
 	    </TouchableOpacity>
@@ -93,13 +96,14 @@ const settingOptions = [
 const Option = (props) => {
     const navigation = useNavigation();
     return (
-	<TouchableOpacity  onPress={() =>
-			       navigation.navigate(
-				   'SettingOptions', {
-				       title:props.option.text,
-				       component:props.option.component
-				   })
-			   }>
+	<TouchableOpacity
+	    onPress={() =>
+		navigation.navigate(
+		    'SettingOptions', {
+			title:props.option.text,
+			component:props.option.component
+		    })
+	    }>
 	    <View style={MainSettingStyles.optionContainer}>
 		<MaterialCommunityIcons name={props.option.icon} style={MainSettingStyles.optionVector}/>
 		<Text style={GlobalStyle.textTypes.H3}>{props.option.text}</Text>
@@ -109,7 +113,7 @@ const Option = (props) => {
 }
 // Displays the various settings options
 const OptionList = () => {
-	const windowdetails = useWindowDimensions();
+    const windowdetails = useWindowDimensions();
     const options = settingOptions.map((option, i )=> {
 	return (
 	    <Option option={option} key={i}/>
@@ -133,7 +137,7 @@ const MainSettingScreenComponent = ({navigation}) => {
     return (
 	<View>
 	    <User/>
-	    <OptionList/> 
+	    <OptionList/>
 	</View>
     );
 }

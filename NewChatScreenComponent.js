@@ -10,10 +10,8 @@ import {ChatComponent,NewChatComponent} from './Common.js';
 import * as Contacts from "expo-contacts";
 
 import uuid from 'react-native-uuid';
+
 // Gets the contacts with phone numbers and displays them in a screen, loads only visible ones for performance
-
-
-
 const NewChatScreenComponent = ({navigation}) => {
     React.useLayoutEffect(() => {
 	navigation.setOptions({
@@ -57,7 +55,5 @@ const NewChatScreenComponent = ({navigation}) => {
 	    keyExtractor={keyExtractor}
 	/>
     );
-
 }
-
 export default NewChatScreenComponent;
