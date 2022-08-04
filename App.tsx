@@ -36,8 +36,6 @@ import {ChatContext,ContactContext,SignalContext,Chat,Contact,ProcessedChatMessa
 import * as SecureStore from 'expo-secure-store';
 
 
-
-
 function ContactCreator(map:Map<string,Contact>,id:string,username:string,profilepic:ImageSourcePropType,pronouns:string){
 	map.set(id,{id,username,profilepic,pronouns})
 }
@@ -107,6 +105,19 @@ TestChatCreator(chatMap,"1",[initialUserId,"1","4"], [
 
 const initialws = new WebSocket('ws://'+serverip+'/'+initialUserId)
 const userAddress = new SignalProtocolAddress(initialUserId, 1);
+
+// save (key,val); to store
+async function save(key, value) {
+	await SecureStore.setItemAsync(key, value);
+  }
+  
+  //test retrive
+async function getValueFor(key) {
+	let result = await SecureStore.getItemAsync(key);
+	if (result) {
+		console.log("Here's your value \n" , result);
+	  }
+  }
 function App() {
 
 // storage with usr id and encryption
