@@ -5,14 +5,14 @@ import NavigationBar from 'react-native-navbar';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { createStackNavigator } from '@react-navigation/stack';
 import { HeaderBackButton } from '@react-navigation/elements';
-import {HomeButton, SettingsButton,PhoneButton,ProfileButton,ContextMenu} from './Common.js';  // in Common.js create Homebutton
-import {GlobalStyle} from './Styles.js';
-import {ContactContext,ChatContext} from './Context.ts';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as ImagePicker from 'expo-image-picker';
-const defaultprofile = require('./assets/profilepicsquaresmall.png')  // should be Homebutton
 
-const stylesUser = StyleSheet.create({
+import {GlobalStyle} from './Styles.js';
+import {ContactContext,ChatContext} from './Context.ts';
+
+const stylesUser = StyleSheet.create(
+{
 	outerContainer: {
 	  backgroundColor: '#0e101c',
 	  marginLeft: 200,
@@ -60,7 +60,7 @@ const stylesUser = StyleSheet.create({
 	  color: GlobalStyle.highlightcolor,
 	  backgroundColor: 'white',
 	},
-  });
+});
 // Update chat information
 /*
 props:
