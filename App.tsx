@@ -1,23 +1,35 @@
 import 'react-native-gesture-handler'; 
 import React, { useState } from 'react';
-import { View, Text, ScrollView, Button, Image,ImageSourcePropType,  TouchableOpacity, TouchableHighlight } from "react-native";
+import { 
+	View, 
+	Text, 
+	ScrollView, 
+	Button, 
+	Image,
+	ImageSourcePropType,  
+	TouchableOpacity, 
+	TouchableHighlight } 
+from "react-native";
+//used for  id generation
+import uuid from 'react-native-uuid';
+//navigation
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { getHeaderTitle } from '@react-navigation/elements';
+import { withNavigation } from 'react-navigation';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
+//import components to include in the navigation pages
 import MainScreenComponent from './MainScreenComponent';
 import MainSettingScreenComponent from './MainSettingScreenComponent';
 import ChatScreenComponent from './ChatScreenComponent';
 import ChatSettingScreenComponent from './ChatSettingScreenComponent';
 import NewChatScreenComponent from './NewChatScreenComponent';
-import SettingOptionsComponent from './SettingOptionsComponent'
+import SettingOptionsComponent from './SettingOptionsComponent';
+//import global style
 import {GlobalStyle} from './Styles.js';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { getHeaderTitle } from '@react-navigation/elements';
-import { withNavigation } from 'react-navigation';
 
-import Ionicons from '@expo/vector-icons/Ionicons';
-import uuid from 'react-native-uuid';
-const StackNav = createNativeStackNavigator();
-
+//import signal components
 import {
     KeyHelper,
     SignedPublicPreKeyType,
@@ -27,25 +39,28 @@ import {
     SessionCipher,
     MessageType }
 from '@privacyresearch/libsignal-protocol-typescript'
-
 import { SignalProtocolStore } from './storage-type';
 
-import {ChatContext,ContactContext,SignalContext,Chat,Contact,ProcessedChatMessage} from './Context';
+//import typescript interfaces and contexts
+import {
+	ChatContext,
+	ContactContext,
+	SignalContext,
+	Chat,
+	Contact,
+	ProcessedChatMessage} 
+from './Context';
 
-//import { MMKV } from 'react-native-mmkv'
-import * as SecureStore from 'expo-secure-store';
 
-
+//contact creation function
 function ContactCreator(map:Map<string,Contact>,id:string,username:string,profilepic:ImageSourcePropType,pronouns:string){
 	map.set(id,{id,username,profilepic,pronouns})
 }
-
-function TestChatCreator(map:Map<string,Chat>,id:string,contactids:string[],messages:ProcessedChatMessage[],chatname:string,chatpic:ImageSourcePropType,description:string){
+//chat creation function
+function ChatCreator(map:Map<string,Chat>,id:string,contactids:string[],messages:ProcessedChatMessage[],chatname:string,chatpic:ImageSourcePropType,description:string){
 	map.set(id,{id,contactids,messages,chatname,chatpic,description})
 }
-
-
-
+//message creation function
 function MessageCreator(message:string,senderid:string,chatId:string){
 	return{
 		messageId:uuid.v4().toString(),
@@ -57,23 +72,26 @@ function MessageCreator(message:string,senderid:string,chatId:string){
 		delivered:true,
 	}
 }
-
-
-
-
-
-
-
+//create stack navigator
+const StackNav = createNativeStackNavigator();
+//create maps for contact & chat storage
 const contactMap = new Map<string,Contact>();
-
-
-
 const chatMap = new Map<string,Chat>();
-
+//this should be generated randomly at first run 
 const initialUserId = "47769a91-2d07-4580-8828-5913cf821623";
+//debug id for testing purposes
 const altId = "1d4070bf-7ada-46bd-8b7c-c8b8e0507dec"
+//please don't doxx me.
 const serverip = "68.198.220.163:8000"
+//generate websocket connection on app start
+const initialws = new WebSocket('ws://'+serverip+'/'+initialUserId)
+//signal protocol address (currently unused)
+const userAddress = new SignalProtocolAddress(initialUserId, 1);
+
+//add user to contacts
 ContactCreator(contactMap,initialUserId,"TestUser",GlobalStyle.defaultprofile,"They/Them")
+
+//generate debug contacts
 ContactCreator(contactMap,altId,"The Fool",GlobalStyle.defaultprofile,"They/Them")
 ContactCreator(contactMap,"1","The Magician",GlobalStyle.defaultprofile,"They/Them")
 ContactCreator(contactMap,"2","The High Priestess",GlobalStyle.defaultprofile,"They/Them")
@@ -86,7 +104,8 @@ ContactCreator(contactMap,"8","Strength",GlobalStyle.defaultprofile,"They/Them")
 ContactCreator(contactMap,"9","The Hermit",GlobalStyle.defaultprofile,"They/Them")
 ContactCreator(contactMap,"10","The Wheel of Fortune",GlobalStyle.defaultprofile,"They/Them")
 
-TestChatCreator(chatMap,"0",[initialUserId,altId],[
+//generate debug chats
+ChatCreator(chatMap,"0",[initialUserId,altId],[
 		MessageCreator("Test Message 0. Lorem Ipsum",altId,"0"),
 		MessageCreator("Test Message 1. Lorem Ipsum",initialUserId,"0"),
 		MessageCreator("Test Message 0. Lorem Ipsum",altId,"0"),
@@ -96,52 +115,23 @@ TestChatCreator(chatMap,"0",[initialUserId,altId],[
 		MessageCreator("Test Message 3. Lorem Ipsum",initialUserId,"0"),
 		MessageCreator("Test Message 0. Lorem Ipsum",altId,"0"),
 	],"",GlobalStyle.defaultprofile,"")
-TestChatCreator(chatMap,"1",[initialUserId,"1","4"], [
+ChatCreator(chatMap,"1",[initialUserId,"1","4"], [
 		MessageCreator("Test Message 0. Lorem Ipsum","1","1"),
 		MessageCreator("Test Message 1. Lorem Ipsum","4","1"),
 		MessageCreator("Test Message 2. Lorem Ipsum",initialUserId,"1"),
 	],"Test Group chat", GlobalStyle.defaultprofile,"A test Chat")
 
-
-const initialws = new WebSocket('ws://'+serverip+'/'+initialUserId)
-const userAddress = new SignalProtocolAddress(initialUserId, 1);
-
-// save (key,val); to store
-async function save(key, value) {
-	await SecureStore.setItemAsync(key, value);
-  }
-  
-  //test retrive
-async function getValueFor(key) {
-	let result = await SecureStore.getItemAsync(key);
-	if (result) {
-		console.log("Here's your value \n" , result);
-	  }
-  }
 function App() {
-
-// storage with usr id and encryption
-// export const storage = new MMKV({
-// 	id: `user-${userId}-storage`,
-// 	path: `${USER_DIRECTORY}/storage`,
-// 	encryptionKey: 'hunter2'
-//   })
-
-// basic storage initializer
-// const storage = new MMKV()
-// storage.recrypt('union')
-// to set key and value : storage.set('key', 'val')
-// to retrieve: const val = storage.getString('key')
-
-//getValueFor('usr');
+//generate id for signal
 function makeKeyId(){
 	return Math.floor(10000 * Math.random());
 }
-	
+//placeholder function for signal storage
 const storeSomewhereSafe = (store: SignalProtocolStore) => 
 	(key: string, value: any) => {store.put(key, value)};
 	// storage.set(key, value)
 	
+//signal id creation function
 const createID = async (name: string, store: SignalProtocolStore) => 
 {
 	const registrationId = KeyHelper.generateRegistrationId()
@@ -163,9 +153,11 @@ const createID = async (name: string, store: SignalProtocolStore) =>
 	//storage.set(`${signedPreKeyId}`, JSON.stringify(signedPreKey.keyPair))
 	
 	// Now we register this with the server or other directory so all users can see them.
-	// You might implement your directory differently, this is not part of the SDK.
 
 	/*
+	Everything here needs to be reimplemented when signal server is ready
+
+
 	const publicSignedPreKey: SignedPublicPreKeyType = {
 	keyId: signedPreKeyId,
 	publicKey: signedPreKey.keyPair.pubKey,
@@ -185,28 +177,37 @@ const createID = async (name: string, store: SignalProtocolStore) =>
 	})
 	*/
 }
-	const createUserIdentity = async () => 
-	{
-		await createID(initialUserId, userStore);
-		console.log({ userStore });
-	};
-	
-	
+//call id creation function
+const createUserIdentity = async () => 
+{
+	await createID(initialUserId, userStore);
+	console.log({ userStore });
+};
+	//data states
 	const [contacts,setContacts] = useState<Map<string,Contact>>(contactMap);
-	const [userStore] = useState(new SignalProtocolStore());
-	const [ws,setWs] = useState<WebSocket>(initialws)
 	const [chats,setChats] = useState<Map<string,Chat>>(new Map<string,Chat>(chatMap));
-	console.log("New Web Socket Connection: ",ws);
 	const [userid,setUserId] = useState<string>(initialUserId);
+	//signal storage state
+	const [userStore] = useState(new SignalProtocolStore());
+	//websocket state
+	const [ws,setWs] = useState<WebSocket>(initialws)
+	
+	//organize data for context providing
 	const chatState = {chats,setChats,ws,setWs};
 	const contactState = {contacts,setContacts,userid,setUserId};
 	const signalState = {userStore,createUserIdentity,serverip}
+	
+	console.log("New Web Socket Connection: ",ws);
 
+	//on recieve message from server
 	ws.onmessage = (e) => {
+		//parse json string
 		let msgData = JSON.parse(e.data);
 		console.log("Recieved: ", msgData);
+		//get chatid
 		let chatId:string = msgData.chatId
 		console.log(chatId)
+		//push message to chat map & update state
 		setChats((chats) =>{
 			const newChats = new Map(chats);
 			const thischat = newChats.get(chatId);
@@ -219,7 +220,7 @@ const createID = async (name: string, store: SignalProtocolStore) =>
 		})
 	};
 	
-	
+	//context providers allow pages to access all relevant information
     return (
 	<NavigationContainer>
 		<ChatContext.Provider value={chatState}>
@@ -238,7 +239,7 @@ const createID = async (name: string, store: SignalProtocolStore) =>
 						<StackNav.Screen 
 							name="ChatScreen"
 							component={ChatScreenComponent}
-							options={({ route }) => ({ title: "test to see if it runs" })}
+							options={({ route }) => ({ title: "Typescript placeholder" })}
 						/>
 						<StackNav.Screen 
 							name="ChatSettings"
@@ -260,10 +261,5 @@ const createID = async (name: string, store: SignalProtocolStore) =>
     );
 }
 
-//route.params.username
-
-
-
-
-export {ChatContext};
+//replace typescript placeholder with this once assertion problem is fixed route.params.username
 export default App;
