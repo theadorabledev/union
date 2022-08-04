@@ -33,6 +33,7 @@ import { SignalProtocolStore } from './storage-type';
 import {ChatContext,ContactContext,SignalContext,Chat,Contact,ProcessedChatMessage} from './Context';
 
 //import { MMKV } from 'react-native-mmkv'
+import * as SecureStore from 'expo-secure-store';
 
 
 
