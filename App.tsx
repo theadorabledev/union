@@ -132,7 +132,8 @@ function App() {
 // storage.recrypt('union')
 // to set key and value : storage.set('key', 'val')
 // to retrieve: const val = storage.getString('key')
-	
+
+//getValueFor('usr');
 function makeKeyId(){
 	return Math.floor(10000 * Math.random());
 }
