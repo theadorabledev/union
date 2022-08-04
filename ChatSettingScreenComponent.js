@@ -13,26 +13,28 @@ import {ContactContext,ChatContext} from './Context.ts';
 
 const stylesUser = StyleSheet.create(
 {
-	outerContainer: {
+	outerContainer:
+	{
 	  backgroundColor: '#0e101c',
 	  marginLeft: 200,
 	},
-	background: {
+	background:
+	{
 		position: 'absolute',
 		left: 0,
 		right: 0,
 		top: 0,
 		height: 700,
 	},
-	
-	image: {
+	image: 
+	{
 	  //margin: 20,
 	  height:128,
 	  width:128,
 	  borderRadius: 50,
 	},
-
-	innerContainer: {
+	innerContainer:
+	{
 	  display:'flex',
 	  flexDirection:'column',
 	  justifyContent: 'space-evenly',
@@ -44,14 +46,16 @@ const stylesUser = StyleSheet.create(
 	label: {
 	  color: 'white',
 	},
-	input: {
+	input:
+	{
 	  height: 45,
 	  width: "90%",
 	  padding: 10,
 	  borderRadius: 5,
 	  backgroundColor: 'white',
-	  },
-	button: {
+	},
+	button:
+	{
 	  height: 50,
 	  width: "100%",
 	  borderRadius: 10,
@@ -72,33 +76,37 @@ props:
 */
 
 const ImagePickerComponent = (props) => {
-	
 	const pickImage = async () => {
-	  let result = await ImagePicker.launchImageLibraryAsync({
-		mediaTypes: ImagePicker.MediaTypeOptions.All,
-		allowsEditing: true,
-		aspect: [4, 3],
-		quality: 1,
-	  });
-  
-	  if (!result.cancelled) {
-		props.setImage(result.uri);
-	  }
+		let result = await ImagePicker.launchImageLibraryAsync(
+		{
+			mediaTypes: ImagePicker.MediaTypeOptions.All,
+			allowsEditing: true,
+			aspect: [4, 3],
+			quality: 1,
+	  	});
+		if (!result.cancelled)
+		{
+			props.setImage(result.uri);
+	  	}
 	};
 
 	return(
-		<TouchableHighlight style={stylesUser.image}
-					onPress={pickImage}>
-			{ props.image ?
-				<Image
-					style={stylesUser.image}
-					source={{ uri: props.image }}
-				/>
+		<TouchableHighlight 
+			style={stylesUser.image}
+			onPress={pickImage}
+		>
+			{
+				props.image 
+				?
+					<Image
+						style={stylesUser.image}
+						source={{ uri: props.image }}
+					/>
 				:
-				<Image
-					style={stylesUser.image}
-					source={props.profileSource}
-				/>
+					<Image
+						style={stylesUser.image}
+						source={props.profileSource}
+					/>
 			}
 		</TouchableHighlight>
     );
