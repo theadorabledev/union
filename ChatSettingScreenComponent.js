@@ -187,12 +187,27 @@ const ChatSettingScreenComponent = ({route,navigation}) => {
 	    title: "Chat Settings"
 	});
     }, [navigation]);
-	
-	const {id,map,maphandler,fieldone,fieldtwo,fieldthree,canedit} = route.params;
+
+	const {contacts,setContacts,userid} = useContext(ContactContext);
+	const {chats,setChats} = useContext(ChatContext);
+	const contactfields = ["username","pronouns","profilepic"];
+	const chatfields = ["chatname","description","chatpic"]
+	const {id,ischat} = route.params;
+	let canedit = true;
+	if (userid==id){
+		canedit = false;
+	}
 	
     return (
+		
 		<View style={{flex:1}}>
-			<UpdateSettingsScreen map={map} maphandler={maphandler} canedit={canedit} id={id} fieldone={fieldone} fieldtwo={fieldtwo} fieldthree={fieldthree}/>
+			{
+				ischat
+				?
+				<UpdateSettingsScreen map={chats} maphandler={setChats} canedit={canedit} id={id} fieldone={chatfields[0]} fieldtwo={chatfields[1]} fieldthree={chatfields[2]}/>
+					:
+				<UpdateSettingsScreen map={contacts} maphandler={setContacts} canedit={canedit} id={id} fieldone={contactfields[0]} fieldtwo={contactfields[1]} fieldthree={contactfields[2]}/>
+			}
 		</View>
     );
 }

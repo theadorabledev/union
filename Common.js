@@ -77,12 +77,7 @@ export const SettingProfileButton = (props) => {
 				profileSource={contacts.get(userid).profilepic}
 				onPress={() => navigation.navigate('ChatSettings', {
 				id:userid,
-				canedit:true,
-				map:contacts,
-				maphandler:setContacts,
-				fieldone:"username",
-				fieldtwo:"pronouns",
-				fieldthree:"profilepic",
+				ischat:false,
 				})}
 			/>
 	)
@@ -200,12 +195,7 @@ export const ChatComponent = (props) => {
 			navigation.navigate('ChatSettings', 
 			{
 				id:props.chatId,
-				canedit:true,
-				map:chats,
-				maphandler:setChats,
-				fieldone:"chatname",
-				fieldtwo:"description",
-				fieldthree:"chatpic",
+				ischat:true,
 			})
 		}
 		else{
@@ -216,12 +206,7 @@ export const ChatComponent = (props) => {
 			navigation.navigate('ChatSettings', 
 			{
 				id:dmid,
-				canedit:false,
-				map:contacts,
-				maphandler:setContacts,
-				fieldone:"username",
-				fieldtwo:"pronouns",
-				fieldthree: "profilepic",
+				ischat:false,
 			})
 		}
 	}

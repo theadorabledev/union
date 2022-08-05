@@ -84,6 +84,10 @@ async function getValueFor(key:string) {
 	const result = await SecureStore.getItemAsync(key);
 	if (result) {
 		console.log("Here's your value \n" , result);
+		return result;
+	}else{
+		//console.log("ayy no value");
+		return undefined;
 	}
   }
 
@@ -144,8 +148,8 @@ ChatCreator(chatMap,"1",[initialUserId,"1","4"], [
 
 	
 function App() {
-	save('test', '321');
-	getValueFor('test');
+	//save('test', '321');
+	//getValueFor('test');
 //generate id for signal
 function makeKeyId(){
 	return Math.floor(10000 * Math.random());
@@ -200,12 +204,13 @@ const createID = async (name: string, store: SignalProtocolStore) =>
 	oneTimePreKeys: [publicPreKey],
 	})
 	*/
+	//save('firsttimerun', false);
 }
 //call id creation function
 const createUserIdentity = async () => 
 {
 	await createID(initialUserId, userStore);
-	console.log({ userStore });
+	//console.log({ userStore });
 };
 	//data states
 	const [contacts,setContacts] = useState<Map<string,Contact>>(contactMap);
@@ -220,8 +225,7 @@ const createUserIdentity = async () =>
 	const chatState = {chats,setChats,ws,setWs};
 	const contactState = {contacts,setContacts,userid,setUserId};
 	const signalState = {userStore,createUserIdentity,serverip}
-	
-	console.log("New Web Socket Connection: ",ws);
+	//console.log("New Web Socket Connection: ",ws);
 
 	//on recieve message from server
 	ws.onmessage = (e) => {
@@ -243,7 +247,7 @@ const createUserIdentity = async () =>
 			return newChats;
 		})
 	};
-	
+
 	//context providers allow pages to access all relevant information
     return (
 	<NavigationContainer>
@@ -268,6 +272,7 @@ const createUserIdentity = async () =>
 						<StackNav.Screen 
 							name="ChatSettings"
 							component={ChatSettingScreenComponent}
+							initialParams={{ id:userid,ischat:false,forceupdate:true}}
 						/>
 						<StackNav.Screen 
 							name="NewChatScreen"
