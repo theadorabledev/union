@@ -11,7 +11,7 @@ import * as Contacts from "expo-contacts";
 
 import uuid from 'react-native-uuid';
 
-import {SettingsButton, ProfileButton, ChatComponent} from './Common.js';
+import {SettingsButton, ProfileButton,SettingProfileButton, ChatComponent} from './Common.js';
 
 import {GlobalStyle} from './Styles.js';
 
@@ -141,6 +141,7 @@ export const NewChatButton = (props) => {
 
 // Displays the main screen, all the chats the user is engaged in
 const MainScreenComponent = ({navigation}) => {
+	const {contacts,setContacts,userid} = useContext(ContactContext)
     useEffect(() => {
 	navigation.setOptions({
 	    // Navigate you to the settings page
@@ -149,23 +150,11 @@ const MainScreenComponent = ({navigation}) => {
 	    ),
 	    // Display user icon and take you to chat settings page
 	    headerLeft: () => (
-		<ProfileButton
-		    profileSize={GlobalStyle.userProfileSize}
-		    profileSource={contacts.get(userid).profilepic}
-		    onPress={() => navigation.navigate('ChatSettings', {
-			id:userid,
-			canedit:true,
-			map:contacts,
-			maphandler:setContacts,
-			fieldone:"username",
-			fieldtwo:"pronouns",
-			fieldthree:"profilepic",
-		    })}
-		/>
+			<SettingProfileButton/>
 	    ),
 	});
     }, [navigation]);
-    const {contacts,setContacts,userid} = useContext(ContactContext)
+    
     return (
 	<>
 	    <View>

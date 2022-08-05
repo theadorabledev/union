@@ -67,6 +67,27 @@ export const ProfileButton = (props) => {
     );
 }
 
+
+export const SettingProfileButton = (props) => {
+	const {contacts,setContacts,userid} = useContext(ContactContext);
+	const navigation = useNavigation();
+    return(
+		<ProfileButton
+				profileSize={GlobalStyle.userProfileSize}
+				profileSource={contacts.get(userid).profilepic}
+				onPress={() => navigation.navigate('ChatSettings', {
+				id:userid,
+				canedit:true,
+				map:contacts,
+				maphandler:setContacts,
+				fieldone:"username",
+				fieldtwo:"pronouns",
+				fieldthree:"profilepic",
+				})}
+			/>
+	)
+}
+
 //context menu wrapper
 export const ContextMenu =(props)=> {
     const [visible, setVisible] = useState(false);
@@ -101,15 +122,27 @@ function getChatName(chat){
 		return chat.chatname;
 	}
 	else{
-		let contactnames = chat.contactids.map((a)=>{
-			if (a!= userid){
-				return contacts.get(a).username;
-			}
+		const filteredcontacts = chat.contactids.filter((a)=>{
+			return a!= userid;
 		});
+		const contactnames = filteredcontacts.map((a)=>{
+				const contact = contacts.get(a);
+				if(typeof contact != "undefined"){
+					return contacts.get(a).username;
+				}
+		})
+
 		contactnames.sort(function (a, b) {
 			return a.length - b.length;
 		});
-		return contactnames[0];
+		console.log(contactnames);
+		if(contactnames.length > 1){
+			return contactnames.toString();
+		}else if(contactnames.length>0){
+			return contactnames[0];
+		}else{
+			return "name not found";
+		}
 	}
 }
 
@@ -120,11 +153,14 @@ function getChatPicture(chat){
 	if(chat.contactids.length==2){
 		let contactnames = chat.contactids.map((a)=>{
 			if (a!= userid){
-				chatpic = contacts.get(a).profilepic;
+				const contact = contacts.get(a);
+				if(typeof contact != "undefined"){
+					chatpic = contacts.get(a).profilepic;
+				}
 			}
 		});
 	}
-	console.log(chatpic);
+	//log(chatpic);
 	return chatpic;
 }
 
@@ -270,14 +306,7 @@ export const NewChatComponent = (props) => {
 			return newChats;
 		});
 		//navigate to new chat screen
-		navigation.navigate('ChatScreen', 
-		{
-			username:props.username,
-			messages:getnewchat.messages,
-			newChat:true,
-			chatId:newchatid,
-			chatpic:getImage()
-		});
+		navigation.navigate('Home');
 	}
     return (
 	<TouchableHighlight 
