@@ -18,7 +18,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { getHeaderTitle } from '@react-navigation/elements';
 import { withNavigation } from 'react-navigation';
 import Ionicons from '@expo/vector-icons/Ionicons';
-
+import * as SecureStore from 'expo-secure-store';
 //import components to include in the navigation pages
 import MainScreenComponent from './MainScreenComponent';
 import MainSettingScreenComponent from './MainSettingScreenComponent';
@@ -51,7 +51,7 @@ import {
 	ProcessedChatMessage} 
 from './Context';
 
-import * as SecureStore from 'expo-secure-store';
+
 
 
 //contact creation function
@@ -74,6 +74,24 @@ function MessageCreator(message:string,senderid:string,chatId:string){
 		delivered:true,
 	}
 }
+
+
+async function save(key:string, value:any) {
+	await SecureStore.setItemAsync(key, value);
+}
+  
+async function getValueFor(key:string) {
+	const result = await SecureStore.getItemAsync(key);
+	if (result) {
+		console.log("Here's your value \n" , result);
+	}
+  }
+
+async function removeValue(key:string){
+	await SecureStore.deleteItemAsync(key);
+}
+
+
 //create stack navigator
 const StackNav = createNativeStackNavigator();
 //create maps for contact & chat storage
@@ -123,20 +141,7 @@ ChatCreator(chatMap,"1",[initialUserId,"1","4"], [
 		MessageCreator("Test Message 2. Lorem Ipsum",initialUserId,"1"),
 	],"Test Group chat", GlobalStyle.defaultprofile,"A test Chat")
 
-	async function save(key, value) {
-		await SecureStore.setItemAsync(key, value);
-	  }
-	  
-	  async function getValueFor(key) {
-		const result = await SecureStore.getItemAsync(key);
-		if (result) {
-			console.log("Here's your value \n" , result);
-		  }
-	  }
-	
-	async function removeValue(key){
-		await SecureStore.deleteItemAsync(key);
-	}
+
 	
 function App() {
 	save('test', '321');
