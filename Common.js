@@ -130,7 +130,7 @@ function getChatName(chat){
 		contactnames.sort(function (a, b) {
 			return a.length - b.length;
 		});
-		console.log(contactnames);
+		//console.log(contactnames);
 		if(contactnames.length > 1){
 			return contactnames.toString();
 		}else if(contactnames.length>0){
@@ -202,7 +202,6 @@ export const ChatComponent = (props) => {
 			const dmid = chat.contactids.find((contactid)=>{
 				return contactid != userid;
 			});
-			console.log(dmid)
 			navigation.navigate('ChatSettings', 
 			{
 				id:dmid,

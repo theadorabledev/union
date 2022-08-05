@@ -113,7 +113,7 @@ const initialws = new WebSocket('ws://'+serverip+'/'+initialUserId)
 const userAddress = new SignalProtocolAddress(initialUserId, 1);
 
 //add user to contacts
-ContactCreator(contactMap,initialUserId,"TestUser",GlobalStyle.defaultprofile,"They/Them")
+//ContactCreator(contactMap,initialUserId,"TestUser",GlobalStyle.defaultprofile,"They/Them")
 function debugData(){
 
 
@@ -149,6 +149,16 @@ ChatCreator(chatMap,"1",[initialUserId,"1","4"], [
 
 
 }
+
+const TestComponent = (props) => {
+	return(
+		<View>
+			<Text>Splash Screen Placeholder</Text>
+		</View>
+	);
+}
+
+
 function App() {
 	//save('test', '321');
 	//getValueFor('test');
@@ -232,6 +242,14 @@ const createUserIdentity = async () =>
 
 	useEffect(() => {
 		
+
+		SecureStore.getItemAsync('userid').then((useridvalue)=>{
+			if(useridvalue!=null){
+				setUserId(useridvalue);
+			}
+		})
+
+
 		SecureStore.getItemAsync('chatids').then((chatidjson)=>{
 			if(chatidjson != null){
 				const chatids:string[] = JSON.parse(chatidjson);
@@ -292,6 +310,7 @@ const createUserIdentity = async () =>
 	SecureStore.setItemAsync('chatids',JSON.stringify(chatids))
 	},[chats])
 
+
 	useEffect(()=>{
 		const contactids:string[] = [];
 		contacts.forEach((contact)=>{
@@ -300,6 +319,11 @@ const createUserIdentity = async () =>
 	})
 	SecureStore.setItemAsync('contactids',JSON.stringify(contactids))
 	},[contacts])
+
+	useEffect(()=>{
+			console.log('setting the userid');
+			SecureStore.setItemAsync('userid',userid);
+	},[userid])
 
 
 
@@ -331,6 +355,14 @@ const createUserIdentity = async () =>
 			<SignalContext.Provider value={signalState}>
 				<ContactContext.Provider value={contactState}>
 					<StackNav.Navigator>
+						{ (contacts.size == 0)?
+
+						<><StackNav.Screen 
+							name="Home"
+							component={TestComponent}
+							/>
+						</>
+						:
 						<>
 						<StackNav.Screen 
 							name="Home"
@@ -360,6 +392,7 @@ const createUserIdentity = async () =>
 							component={SettingOptionsComponent}
 						/>
 						</>
+						}
 					</StackNav.Navigator>
 				</ContactContext.Provider>
 			</SignalContext.Provider>
