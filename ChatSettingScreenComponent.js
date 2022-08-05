@@ -193,9 +193,9 @@ const ChatSettingScreenComponent = ({route,navigation}) => {
 	const contactfields = ["username","pronouns","profilepic"];
 	const chatfields = ["chatname","description","chatpic"]
 	const {id,ischat} = route.params;
-	let canedit = true;
+	let canedit = false;
 	if (userid==id){
-		canedit = false;
+		canedit = true;
 	}
 	
     return (

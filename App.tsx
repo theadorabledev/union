@@ -1,5 +1,5 @@
 import 'react-native-gesture-handler'; 
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { 
 	View, 
 	Text, 
@@ -76,7 +76,7 @@ function MessageCreator(message:string,senderid:string,chatId:string){
 }
 
 
-async function save(key:string, value:any) {
+export async function save(key:string, value:any) {
 	await SecureStore.setItemAsync(key, value);
 }
   
@@ -114,6 +114,8 @@ const userAddress = new SignalProtocolAddress(initialUserId, 1);
 
 //add user to contacts
 ContactCreator(contactMap,initialUserId,"TestUser",GlobalStyle.defaultprofile,"They/Them")
+function debugData(){
+
 
 //generate debug contacts
 ContactCreator(contactMap,altId,"The Fool",GlobalStyle.defaultprofile,"They/Them")
@@ -146,7 +148,7 @@ ChatCreator(chatMap,"1",[initialUserId,"1","4"], [
 	],"Test Group chat", GlobalStyle.defaultprofile,"A test Chat")
 
 
-	
+}
 function App() {
 	//save('test', '321');
 	//getValueFor('test');
@@ -221,11 +223,85 @@ const createUserIdentity = async () =>
 	//websocket state
 	const [ws,setWs] = useState<WebSocket>(initialws)
 	
+	const [firsttimerun,setFirstTimeRun] = useState(true); 
 	//organize data for context providing
 	const chatState = {chats,setChats,ws,setWs};
 	const contactState = {contacts,setContacts,userid,setUserId};
 	const signalState = {userStore,createUserIdentity,serverip}
 	//console.log("New Web Socket Connection: ",ws);
+
+	useEffect(() => {
+		
+		SecureStore.getItemAsync('chatids').then((chatidjson)=>{
+			if(chatidjson != null){
+				const chatids:string[] = JSON.parse(chatidjson);
+				chatids.forEach((chatid)=>{
+					SecureStore.getItemAsync(chatid).then((chatjson)=>{
+						if(chatjson != null){
+							setChats((chats)=>{
+								const newChats = new Map(chats);
+								newChats.set(chatid,JSON.parse(chatjson));
+								return newChats;
+							})
+						}
+					})
+				})
+			}
+		})
+
+		SecureStore.getItemAsync('contactids').then((contactidjson)=>{
+			if(contactidjson != null){
+				const contactids:string[] = JSON.parse(contactidjson);
+				contactids.forEach((contactid)=>{
+					SecureStore.getItemAsync(contactid).then((contactjson)=>{
+						if(contactjson != null){
+							setContacts((contacts)=>{
+								const newContacts = new Map(contacts);
+								newContacts.set(contactid,JSON.parse(contactjson));
+								return newContacts;
+							})
+						}
+					})
+				})
+			}
+		})
+
+
+	},[])
+
+
+	useEffect(() => {
+		SecureStore.getItemAsync("firsttimerun").then((userdata)=>{
+			console.log("is this running",userdata);
+			if(userdata == null){
+				setFirstTimeRun(true);
+			}else{
+				console.log("is this running",userdata);
+				setFirstTimeRun(false);
+			}
+		})
+	},[firsttimerun])
+
+
+	useEffect(()=>{
+		const chatids:string[] = [];
+		chats.forEach((chat)=>{
+			chatids.push(chat.id);
+			SecureStore.setItemAsync(chat.id,JSON.stringify(chat));
+	})
+	SecureStore.setItemAsync('chatids',JSON.stringify(chatids))
+	},[chats])
+
+	useEffect(()=>{
+		const contactids:string[] = [];
+		contacts.forEach((contact)=>{
+			contactids.push(contact.id);
+			SecureStore.setItemAsync(contact.id,JSON.stringify(contact));
+	})
+	SecureStore.setItemAsync('contactids',JSON.stringify(contactids))
+	},[contacts])
+
+
 
 	//on recieve message from server
 	ws.onmessage = (e) => {
@@ -255,6 +331,7 @@ const createUserIdentity = async () =>
 			<SignalContext.Provider value={signalState}>
 				<ContactContext.Provider value={contactState}>
 					<StackNav.Navigator>
+						<>
 						<StackNav.Screen 
 							name="Home"
 							component={MainScreenComponent} 
@@ -282,6 +359,7 @@ const createUserIdentity = async () =>
 							name="SettingOptions"
 							component={SettingOptionsComponent}
 						/>
+						</>
 					</StackNav.Navigator>
 				</ContactContext.Provider>
 			</SignalContext.Provider>
