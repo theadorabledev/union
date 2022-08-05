@@ -94,6 +94,7 @@ export const ContextMenu =(props)=> {
 
 
 //retrieve dynamically determined name from chat object, corresponding to either chat name, or name of contact if DM.
+//not alphabetized correctly?
 function getChatName(chat){
 	const {contacts,setContacts,userid,setUserId} = useContext(ContactContext)
 	if (chat.chatname != ""){

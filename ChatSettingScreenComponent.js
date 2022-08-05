@@ -189,8 +189,6 @@ const ChatSettingScreenComponent = ({route,navigation}) => {
     }, [navigation]);
 	
 	const {id,map,maphandler,fieldone,fieldtwo,fieldthree,canedit} = route.params;
-	const {contacts,setContacts,userid} = useContext(ContactContext)
-	const {chats,setChats,ws,setWs} = useContext(ChatContext)
 	
     return (
 		<View style={{flex:1}}>
