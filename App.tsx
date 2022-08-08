@@ -151,6 +151,27 @@ ChatCreator(chatMap,"1",[initialUserId,"1","4"], [
 
 }
 
+function delData(chats,contacts){
+	useEffect(()=>{
+		const chatids:string[] = [];
+		chats.forEach((chat)=>{
+			chatids.push(chat.id);
+			SecureStore.deleteItemAsync(chat.id);
+	})
+	SecureStore.deleteItemAsync('chatids')
+	},[chats]);
+
+
+	useEffect(()=>{
+		const contactids:string[] = [];
+		contacts.forEach((contact)=>{
+			contactids.push(contact.id);
+			SecureStore.deleteItemAsync(contact.id);
+	})
+	SecureStore.deleteItemAsync('contactids')
+	},[contacts]);
+}
+
 const TestComponent = (props) => {
 	const {contacts,setContacts,userid,setUserId} = useContext(ContactContext);
 	return(
@@ -352,7 +373,8 @@ const createUserIdentity = async () =>
 		}
 	},[userid])
 
-
+	//resets data probably should implemet it better
+	//delData(chats, contacts);
 
 	//on recieve message from server
 	ws.onmessage = (e) => {
