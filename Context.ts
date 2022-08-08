@@ -63,6 +63,7 @@ export const ContactContext = React.createContext({
 	setContacts: contacttype,
 	userid: "string",
 	setUserId:stringhandlertype,
+	resetContactData: () => {},
 });
 //provide the signal store state & signal id creation to the rest of the app (currently unused)
 export const SignalContext = React.createContext({

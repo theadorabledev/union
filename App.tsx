@@ -151,32 +151,11 @@ ChatCreator(chatMap,"1",[initialUserId,"1","4"], [
 
 }
 
-function delData(chats,contacts){
-	useEffect(()=>{
-		const chatids:string[] = [];
-		chats.forEach((chat)=>{
-			chatids.push(chat.id);
-			SecureStore.deleteItemAsync(chat.id);
-	})
-	SecureStore.deleteItemAsync('chatids')
-	},[chats]);
-
-
-	useEffect(()=>{
-		const contactids:string[] = [];
-		contacts.forEach((contact)=>{
-			contactids.push(contact.id);
-			SecureStore.deleteItemAsync(contact.id);
-	})
-	SecureStore.deleteItemAsync('contactids')
-	},[contacts]);
-}
 
 const TestComponent = (props) => {
 	const {contacts,setContacts,userid,setUserId} = useContext(ContactContext);
 	return(
-		<View>
-			<Button title="reset account id" onPress={()=>{
+			<Button title="Create Account" onPress={()=>{
 				ContactCreator(contactMap,initialUserId,"TestUser",GlobalStyle.defaultprofile,"They/Them")
 				setContacts((contacts)=>{
 					const newcontactmap = new Map<string,Contact>();
@@ -186,12 +165,6 @@ const TestComponent = (props) => {
 				});
 				setUserId(initialUserId);
 			}}/>
-
-			<Button title="remove account id from storage" onPress={()=>{
-				removeValue('userid');
-			}}/>
-
-		</View>
 	);
 }
 
@@ -261,6 +234,24 @@ const createUserIdentity = async () =>
 	await createID(initialUserId, userStore);
 	//console.log({ userStore });
 };
+
+
+function delData(){
+
+	chats.forEach((chat:Chat)=>{
+
+		SecureStore.deleteItemAsync(chat.id);
+	})
+	SecureStore.deleteItemAsync('chatids')
+
+	contacts.forEach((contact:Contact)=>{
+		SecureStore.deleteItemAsync(contact.id);
+	})
+	SecureStore.deleteItemAsync('contactids')
+	SecureStore.deleteItemAsync('userid');
+	console.log("Cleared Save Data");
+}
+
 	//data states
 	const [contacts,setContacts] = useState<Map<string,Contact>>(contactMap);
 	const [chats,setChats] = useState<Map<string,Chat>>(new Map<string,Chat>(chatMap));
@@ -273,7 +264,7 @@ const createUserIdentity = async () =>
 	const [firsttimerun,setFirstTimeRun] = useState(true); 
 	//organize data for context providing
 	const chatState = {chats,setChats,ws,setWs};
-	const contactState = {contacts,setContacts,userid,setUserId};
+	const contactState = {contacts,setContacts,userid,setUserId,resetContactData:delData};
 	const signalState = {userStore,createUserIdentity,serverip}
 	//console.log("New Web Socket Connection: ",ws);
 	useEffect(() => {
@@ -327,6 +318,7 @@ const createUserIdentity = async () =>
 			}catch(e){
 				console.warn(e);
 			}finally{
+				console.log("Finishing")
 				setAppIsReady(true);
 			}
 		}
@@ -369,6 +361,8 @@ const createUserIdentity = async () =>
 			if(userid != ""){
 				console.log('saving the userid');
 				SecureStore.setItemAsync('userid',userid);
+			}else{
+				setFirstTimeRun(true);
 			}
 		}
 	},[userid])
@@ -404,6 +398,9 @@ const createUserIdentity = async () =>
 		  // loading its initial state and rendering its first pixels. So instead,
 		  // we hide the splash screen once we know the root view has already
 		  // performed layout.
+		  if (typeof contacts.get(userid) != "undefined"){
+			setFirstTimeRun(false);
+		  }
 		  console.log("calling hideasync")
 		  await SplashScreen.hideAsync();
 		}

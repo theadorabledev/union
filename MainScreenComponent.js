@@ -83,7 +83,7 @@ const NoContactsComponent = () => {
 // A component to display either all of someone's chats or the incoming (no contacts) screen
 const MessagesListComponent = (props) => {
     const {chats,setChats,ws,setWs} = useContext(ChatContext)
-    const {contacts,setContacts,userid,setUserId} = useContext(ContactContext)
+    const {contacts,setContacts,userid,setUserId,resetContactData} = useContext(ContactContext)
 
     const {userStore,createUserIdentity,serverip} = useContext(SignalContext)
     const display = "Change Account"
@@ -115,9 +115,17 @@ const MessagesListComponent = (props) => {
 		}
 	    />
 	    <Button
-		title="Reset Websocket"
-		color = {GlobalStyle.highlightcolor}
-		onPress={()=>{setWs(new WebSocket('ws://'+serverip+'/'+userid))}}/>
+			title="Reset Websocket"
+			color = {GlobalStyle.highlightcolor}
+			onPress={()=>{setWs(new WebSocket('ws://'+serverip+'/'+userid))}}
+		/>
+
+		<Button
+			title="Reset ContactData"
+			color = {GlobalStyle.highlightcolor}
+			onPress={()=>{resetContactData()}}
+		/>
+
 	    {empty ?
 	     <NoContactsComponent/>
 	     :
