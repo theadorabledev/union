@@ -1,5 +1,5 @@
 import 'react-native-gesture-handler'; 
-import React, { useState,useEffect } from 'react';
+import React, { useState,useEffect,useContext } from 'react';
 import { 
 	View, 
 	Text, 
@@ -113,7 +113,7 @@ const initialws = new WebSocket('ws://'+serverip+'/'+initialUserId)
 const userAddress = new SignalProtocolAddress(initialUserId, 1);
 
 //add user to contacts
-//ContactCreator(contactMap,initialUserId,"TestUser",GlobalStyle.defaultprofile,"They/Them")
+ContactCreator(contactMap,initialUserId,"TestUser",GlobalStyle.defaultprofile,"They/Them")
 function debugData(){
 
 
@@ -172,9 +172,18 @@ function delData(chats,contacts){
 }
 
 const TestComponent = (props) => {
+	const {contacts,setContacts,userid,setUserId} = useContext(ContactContext);
 	return(
 		<View>
-			<Text>Splash Screen Placeholder</Text>
+			<Button title="reset account id" onPress={()=>{
+				setUserId(initialUserId);
+			}}/>
+
+			<Button title="remove account id from storage" onPress={()=>{
+
+				removeValue('userid');
+			}}/>
+
 		</View>
 	);
 }
@@ -248,13 +257,13 @@ const createUserIdentity = async () =>
 	//data states
 	const [contacts,setContacts] = useState<Map<string,Contact>>(contactMap);
 	const [chats,setChats] = useState<Map<string,Chat>>(new Map<string,Chat>(chatMap));
-	const [userid,setUserId] = useState<string>(initialUserId);
+	const [userid,setUserId] = useState<string>("");
 	//signal storage state
 	const [userStore] = useState(new SignalProtocolStore());
 	//websocket state
 	const [ws,setWs] = useState<WebSocket>(initialws)
 	
-	const [firsttimerun,setFirstTimeRun] = useState(true); 
+	const [firsttimerun,setFirstTimeRun] = useState(false); 
 	//organize data for context providing
 	const chatState = {chats,setChats,ws,setWs};
 	const contactState = {contacts,setContacts,userid,setUserId};
@@ -262,11 +271,19 @@ const createUserIdentity = async () =>
 	//console.log("New Web Socket Connection: ",ws);
 
 	useEffect(() => {
-		
 
 		SecureStore.getItemAsync('userid').then((useridvalue)=>{
-			if(useridvalue!=null){
+			if(useridvalue!=null && useridvalue != ""){
 				setUserId(useridvalue);
+				console.log(useridvalue);
+			}else if(useridvalue == ""){
+				setFirstTimeRun(true);
+				console.log("first time run");
+			}
+			
+			else{
+				console.log("first time run");
+				setFirstTimeRun(true);
 			}
 		})
 
@@ -308,20 +325,6 @@ const createUserIdentity = async () =>
 
 	},[])
 
-
-	useEffect(() => {
-		SecureStore.getItemAsync("firsttimerun").then((userdata)=>{
-			console.log("is this running",userdata);
-			if(userdata == null){
-				setFirstTimeRun(true);
-			}else{
-				console.log("is this running",userdata);
-				setFirstTimeRun(false);
-			}
-		})
-	},[firsttimerun])
-
-
 	useEffect(()=>{
 		const chatids:string[] = [];
 		chats.forEach((chat)=>{
@@ -342,8 +345,10 @@ const createUserIdentity = async () =>
 	},[contacts])
 
 	useEffect(()=>{
+		if(userid != ""){
 			console.log('setting the userid');
 			SecureStore.setItemAsync('userid',userid);
+		}
 	},[userid])
 
 
@@ -376,7 +381,7 @@ const createUserIdentity = async () =>
 			<SignalContext.Provider value={signalState}>
 				<ContactContext.Provider value={contactState}>
 					<StackNav.Navigator>
-						{ (contacts.size == 0)?
+						{ (userid == "" || (typeof contacts.get(userid) == "undefined"))?
 
 						<><StackNav.Screen 
 							name="Home"
