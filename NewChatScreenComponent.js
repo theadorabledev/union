@@ -26,6 +26,7 @@ const NewChatScreenComponent = ({navigation}) => {
 	    if (status === "granted") {
 		const { data } = await Contacts.getContactsAsync({
 		    fields: [Contacts.PHONE_NUMBERS],
+			fields:[Contacts.Fields.id],
 			fields: [Contacts.Fields.Image],
 		});
 		if (data.length > 0) {

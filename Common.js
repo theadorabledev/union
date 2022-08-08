@@ -254,6 +254,26 @@ function ChatCreator(id,contactids,messages,chatname,chatpic,description){
 	return {id,contactids,messages,chatname,chatpic,description};
 }
 
+
+export const ContactComponent = (props) => {
+	const {contacts,setContacts,userid,setUserId} = useContext(ContactContext)
+	const contact = contacts.get(props.id);
+
+	return (
+		<TouchableHighlight 
+			onPress={newContactChat}
+					underlayColor = {GlobalStyle.highlightcolor}>
+			<View style={ChatComponentStyles.chatComp}>
+				<ProfileButton profileSize={GlobalStyle.contactProfileSize} profileSource={getImage()} onPress={()=>{alert("Take user to contact's settings")}}/>
+				<View style={ChatComponentStyles.miniChat}>
+					<Text style={ChatComponentStyles.userName}>{props.username}</Text>
+				</View>
+			</View>
+		</TouchableHighlight>
+		);
+}
+
+
 //Displays devices contact data with options to create new contact & chat if user presses
 //pass props.username, props.uri 
 export const NewChatComponent = (props) => {
@@ -297,7 +317,7 @@ export const NewChatComponent = (props) => {
 		onPress={newContactChat}
 			    underlayColor = {GlobalStyle.highlightcolor}>
 	    <View style={ChatComponentStyles.chatComp}>
-			<ProfileButton profileSize={GlobalStyle.contactProfileSize} profileSource={getImage()} onPress={()=>{alert("Take user to contact's settings")}}/>
+			<ProfileButton profileSize={GlobalStyle.contactProfileSize} profileSource={getImage()}/>
 			<View style={ChatComponentStyles.miniChat}>
 				<Text style={ChatComponentStyles.userName}>{props.username}</Text>
 			</View>

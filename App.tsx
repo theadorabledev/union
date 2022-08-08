@@ -180,7 +180,7 @@ function App() {
 	function makeKeyId(){
 		return Math.floor(10000 * Math.random());
 	}
-	//placeholder function for signal storage
+	//stores data to signal protool store. This is probably not the best implementation of this
 	const storeSomewhereSafe = (store: SignalProtocolStore) => 
 		(key: string, value: any) => {store.put(key, value)};
 		// storage.set(key, value)
@@ -205,6 +205,7 @@ function App() {
 		const signedPreKeyId = makeKeyId()
 		const signedPreKey = await KeyHelper.generateSignedPreKey(identityKeyPair, signedPreKeyId)
 		store.storeSignedPreKey(signedPreKeyId, signedPreKey.keyPair)
+		
 		//storage.set(`${signedPreKeyId}`, JSON.stringify(signedPreKey.keyPair))
 		
 		// Now we register this with the server or other directory so all users can see them.
@@ -262,9 +263,11 @@ function App() {
 	const [userStore,setUserStore] = useState(new SignalProtocolStore());
 
 
+	//creates the user identity and saves it to the persistent data
 	async function createUserIdentity():Promise<void>{ 
 		console.log("This actually ran")
 		await createID(userid, userStore);
+		//we have to override the json function to safe the array buffers in a different manner. Hopefully, they still work when loaded again
 		const stringifiedstore = JSON.stringify(userStore,function(k,v){
 			if (k == "pubKey" || k == "privKey"){
 				const buf = Buffer.from(v);
