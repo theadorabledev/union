@@ -6,7 +6,7 @@ import React, { useState,useContext } from 'react';
 import { View, Text, ScrollView, Button, Image, TouchableOpacity, TouchableHighlight } from "react-native";
 import { Menu, MenuItem, MenuDivider } from 'react-native-material-menu';
 import uuid from 'react-native-uuid';
-
+import { format,isSameDay,parseISO} from 'date-fns'
 import { useNavigation } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
 
@@ -212,10 +212,18 @@ export const ChatComponent = (props) => {
 	//return JSX object that displays contents & time of last message
     const lastMessage = () => {
 		if(chat.messages.length){
+			const dateinfo = chat.messages[chat.messages.length-1].date;
+			const formatdate = () => {
+				if(isSameDay(Date.now(),dateinfo)){
+					return format(new Date(dateinfo),'p');
+				}else{
+					return format(new Date(dateinfo),"MMM d")
+				}
+			}
 			return (
 			<>
 				<Text>{chat.messages[chat.messages.length-1].message}</Text>
-				<Text>{chat.messages[chat.messages.length-1].date.toString()}</Text>
+				<Text>{formatdate()}</Text>
 			</>
 			);
 		}
@@ -232,6 +240,10 @@ export const ChatComponent = (props) => {
 				settingsNavigate:settingsNavigate,
 			})
 		}
+		onLongPress ={()=>{
+			props.setSelectedChatId(props.chatId);
+			props.setShowModal(true);
+		}}
 		underlayColor = {GlobalStyle.highlightcolor}>
 			<View style={ChatComponentStyles.chatComp}>
 				<ProfileButton profileSize={GlobalStyle.contactProfileSize} profileSource={chatpic} onPress={settingsNavigate}/>

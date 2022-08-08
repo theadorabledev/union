@@ -1,6 +1,7 @@
 import React, {Dispatch,useState} from 'react';
 import {ImageSourcePropType} from 'react-native';
 import { SignalProtocolStore } from "./storage-type";
+import uuid from 'react-native-uuid';
 import {
 	MessageType,
   } from "@privacyresearch/libsignal-protocol-typescript";
@@ -43,10 +44,23 @@ export interface ChatMessage {
 	delivered: boolean;
   }
 
-
+export function MessageCreator(message:string,senderid:string,chatId:string){
+	 
+	const messageobj:ProcessedChatMessage = {
+		messageId:uuid.v4().toString(),
+		message:message,
+		senderId:senderid,
+		chatId:chatId,
+		recieverId:"",
+		date:new Date(),
+		delivered:true,
+	}
+	return messageobj;
+}
 //React.Dispatch instances, used to instantiate the contexts used throughout the app.
 const chattype: Dispatch<React.SetStateAction<Map<string, Chat>>> = () =>{};
 const contacttype: Dispatch<React.SetStateAction<Map<string, Contact>>> = () =>{};
+const processedmessagetype: Dispatch<React.SetStateAction<Map<string, ProcessedChatMessage>>> = () =>{};
 const websockettype: React.Dispatch<React.SetStateAction<WebSocket>> = () => {};
 const stringhandlertype: React.Dispatch<React.SetStateAction<string>> = () => {};
 
@@ -56,6 +70,8 @@ export const ChatContext = React.createContext({
 	setChats: chattype,
 	ws: new WebSocket('ws://localhost/'),
 	setWs:websockettype,
+	processedmessages: new Map<string,ProcessedChatMessage>(),
+	setProcessedMessages:processedmessagetype,
 });
 //provides the contacts state & the user id state to the rest of the app
 export const ContactContext = React.createContext({

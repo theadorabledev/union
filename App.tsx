@@ -51,7 +51,8 @@ import {
 	SignalContext,
 	Chat,
 	Contact,
-	ProcessedChatMessage} 
+	ProcessedChatMessage,
+	MessageCreator} 
 from './Context';
 
 
@@ -66,17 +67,7 @@ function ChatCreator(map:Map<string,Chat>,id:string,contactids:string[],messages
 	map.set(id,{id,contactids,messages,chatname,chatpic,description})
 }
 //message creation function
-function MessageCreator(message:string,senderid:string,chatId:string){
-	return{
-		messageId:uuid.v4().toString(),
-		message:message,
-		senderId:senderid,
-		chatId:chatId,
-		recieverId:"",
-		date:new Date(),
-		delivered:true,
-	}
-}
+
 
 
 export async function save(key:string, value:any) {
@@ -259,6 +250,7 @@ function App() {
 	const [contacts,setContacts] = useState<Map<string,Contact>>(contactMap);
 	const [chats,setChats] = useState<Map<string,Chat>>(new Map<string,Chat>(chatMap));
 	const [userid,setUserId] = useState<string>("");
+	const [processedmessages,setProcessedMessages] = useState<Map<string,ProcessedChatMessage>>(new Map<string,ProcessedChatMessage>());
 	//signal storage state
 	const [userStore,setUserStore] = useState(new SignalProtocolStore());
 
@@ -285,7 +277,7 @@ function App() {
 	const [appIsReady, setAppIsReady] = useState(false);
 	const [firsttimerun,setFirstTimeRun] = useState(true); 
 	//organize data for context providing
-	const chatState = {chats,setChats,ws,setWs};
+	const chatState = {chats,setChats,ws,setWs,processedmessages,setProcessedMessages};
 	const contactState = {contacts,setContacts,userid,setUserId,resetContactData:delData};
 	const signalState = {userStore,createUserIdentity,serverip}
 
@@ -311,10 +303,10 @@ function App() {
 				const chatidjson = await SecureStore.getItemAsync('chatids')
 				if(chatidjson != null){
 					const chatids:string[] = JSON.parse(chatidjson);
-					console.log('chatidsload',chatids);
+					//console.log('chatidsload',chatids);
 					for (const chatid of chatids){
 						const chatjson = await SecureStore.getItemAsync(chatid);
-						console.log('chatjson',chatjson)
+						//console.log('chatjson',chatjson)
 						if(chatjson != null){
 							setChats((chats)=>{
 								const newChats = new Map(chats);
@@ -329,7 +321,7 @@ function App() {
 				const contactidjson = await SecureStore.getItemAsync('contactids');
 				if(contactidjson != null){
 					const contactids:string[] = JSON.parse(contactidjson);
-					console.log('contactidsload',contactids);
+					//console.log('contactidsload',contactids);
 					for (const contactid of contactids){
 						const contactjson = await SecureStore.getItemAsync(contactid)
 						if(contactjson != null){
@@ -345,11 +337,11 @@ function App() {
 				const userstorejson = await SecureStore.getItemAsync('userstore');
 				//console.log(userstorejson);
 				if(userstorejson!=null){
-					console.log(userstorejson);
+					//console.log(userstorejson);
 					const newuserstore = JSON.parse(userstorejson,(key,value)=>{
 						//console.log(key,value);
 						if (key == "pubKey" || key == "privKey"){
-							console.log(value);
+							//console.log(value);
 							const arraybuf = Buffer.from(value).buffer;
 							//console.log(value.data)
 							return arraybuf;
@@ -374,7 +366,11 @@ function App() {
 			const chatids:string[] = [];
 			chats.forEach((chat)=>{
 				chatids.push(chat.id);
-				SecureStore.setItemAsync(chat.id,JSON.stringify(chat));
+				SecureStore.setItemAsync(chat.id,JSON.stringify(chat,function(key,value){
+					console.log(key,typeof key,value,typeof value);
+					
+					return value;
+				}));
 			})
 		
 			SecureStore.setItemAsync('chatids',JSON.stringify(chatids))
@@ -393,7 +389,7 @@ function App() {
 				SecureStore.setItemAsync(contact.id,JSON.stringify(contact));
 			})
 			SecureStore.setItemAsync('contactids',JSON.stringify(contactids));
-			console.log("saving contactids as",contactids)
+			//console.log("saving contactids as",contactids)
 			if (typeof contacts.get(userid) != "undefined"){
 				setFirstTimeRun(false);
 			}
@@ -404,7 +400,7 @@ function App() {
 	useEffect(()=>{
 		if (appIsReady) {
 			if(userid != ""){
-				console.log('saving the userid');
+				//console.log('saving the userid');
 				SecureStore.setItemAsync('userid',userid);
 			}else{
 				setFirstTimeRun(true);

@@ -6,7 +6,6 @@ import { render } from 'react-dom';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 import uuid from 'react-native-uuid';
-
 import { createStackNavigator } from '@react-navigation/stack';
 import { useNavigation } from '@react-navigation/native';
 import { HeaderBackButton } from '@react-navigation/elements';
@@ -14,7 +13,7 @@ import { HeaderBackButton } from '@react-navigation/elements';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
 import {SettingsButton,PhoneButton,ProfileButton,ContextMenu} from './Common.js';
-import {ChatContext,ContactContext} from './Context';
+import {ChatContext,ContactContext,MessageCreator} from './Context';
 import {GlobalStyle} from './Styles.js';
 
 
@@ -54,20 +53,6 @@ const ChatStyles = StyleSheet.create(
 		}
 	}
 )
-
-
-
-//Add message function that creates a message object, this needs to be replaced with typescript component.
-function addMessage(messagecontents,userid,chatid){
-	return {
-		messageId:uuid.v4(),
-		message:messagecontents,
-		senderId:userid,
-		chatId:chatid,
-		recieverId:0,
-		date:new Date(),
-	}
-}
 
 
 // Message bubble which displays the text of a message
@@ -247,7 +232,7 @@ const KeyboardComponent = (props) => {
 		{
 			const newChats = new Map(chats);
 			const thischat = newChats.get(props.chatId)
-			const message = addMessage(text,userid,props.chatId)
+			const message = MessageCreator(text,userid,props.chatId)
 			thischat.messages.push(message)
 			thischat.contactids.forEach((currentValue, index, arr)=>
 			{
