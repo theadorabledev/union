@@ -150,6 +150,27 @@ ChatCreator(chatMap,"1",[initialUserId,"1","4"], [
 
 }
 
+function delData(chats,contacts){
+	useEffect(()=>{
+		const chatids:string[] = [];
+		chats.forEach((chat)=>{
+			chatids.push(chat.id);
+			SecureStore.deleteItemAsync(chat.id);
+	})
+	//SecureStore.setItemAsync('chatids',JSON.stringify(chatids))
+	},[chats]);
+
+
+	useEffect(()=>{
+		const contactids:string[] = [];
+		contacts.forEach((contact)=>{
+			contactids.push(contact.id);
+			SecureStore.deleteItemAsync(contact.id);
+	})
+	//SecureStore.setItemAsync('contactids',JSON.stringify(contactids))
+	},[contacts]);
+}
+
 const TestComponent = (props) => {
 	return(
 		<View>
