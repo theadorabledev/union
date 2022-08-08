@@ -123,7 +123,7 @@ const MessagesListComponent = (props) => {
 		<Button
 			title="Reset ContactData"
 			color = {GlobalStyle.highlightcolor}
-			onPress={()=>{resetContactData()}}
+			onPress={resetContactData}
 		/>
 
 	    {empty ?

@@ -1,5 +1,6 @@
 import 'react-native-gesture-handler'; 
 import React, { useState,useEffect,useContext,useCallback } from 'react';
+var Buffer = require("@craftzdog/react-native-buffer").Buffer;
 import { 
 	View, 
 	Text, 
@@ -8,7 +9,8 @@ import {
 	Image,
 	ImageSourcePropType,  
 	TouchableOpacity, 
-	TouchableHighlight } 
+	TouchableHighlight, 
+	AsyncStorage} 
 from "react-native";
 //used for  id generation
 import uuid from 'react-native-uuid';
@@ -40,7 +42,7 @@ import {
     SessionCipher,
     MessageType }
 from '@privacyresearch/libsignal-protocol-typescript'
-import { SignalProtocolStore } from './storage-type';
+import { SignalProtocolStore,arrayBufferToString } from './storage-type';
 
 //import typescript interfaces and contexts
 import {
@@ -153,7 +155,8 @@ ChatCreator(chatMap,"1",[initialUserId,"1","4"], [
 
 
 const TestComponent = (props) => {
-	const {contacts,setContacts,userid,setUserId} = useContext(ContactContext);
+	const {contacts,setContacts,userid,setUserId,} = useContext(ContactContext);
+	const {userStore,createUserIdentity} = useContext(SignalContext);
 	return(
 			<Button title="Create Account" onPress={()=>{
 				ContactCreator(contactMap,initialUserId,"TestUser",GlobalStyle.defaultprofile,"They/Them")
@@ -164,100 +167,116 @@ const TestComponent = (props) => {
 					return newcontactmap;
 				});
 				setUserId(initialUserId);
+				createUserIdentity();
 			}}/>
 	);
 }
 
 SplashScreen.preventAutoHideAsync();
+
+
 function App() {
-	//save('test', '321');
-	//getValueFor('test');
-//generate id for signal
-function makeKeyId(){
-	return Math.floor(10000 * Math.random());
-}
-//placeholder function for signal storage
-const storeSomewhereSafe = (store: SignalProtocolStore) => 
-	(key: string, value: any) => {store.put(key, value)};
-	// storage.set(key, value)
-	
-//signal id creation function
-const createID = async (name: string, store: SignalProtocolStore) => 
-{
-	const registrationId = KeyHelper.generateRegistrationId()
-	storeSomewhereSafe(store)(`registrationID`, registrationId)
-	//storage.set(`registrationID`, registrationId)
 
-	const identityKeyPair = await KeyHelper.generateIdentityKeyPair()
-	storeSomewhereSafe(store)('identityKey', identityKeyPair)
-	//storage.set('identityKey', JSON.stringify(identityKeyPair))
-
-	const baseKeyId = makeKeyId()
-	const preKey = await KeyHelper.generatePreKey(baseKeyId)
-	store.storePreKey(`${baseKeyId}`, preKey.keyPair)
-	//storage.set(`${baseKeyId}`, JSON.stringify(preKey.keyPair))
-
-	const signedPreKeyId = makeKeyId()
-	const signedPreKey = await KeyHelper.generateSignedPreKey(identityKeyPair, signedPreKeyId)
-	store.storeSignedPreKey(signedPreKeyId, signedPreKey.keyPair)
-	//storage.set(`${signedPreKeyId}`, JSON.stringify(signedPreKey.keyPair))
-	
-	// Now we register this with the server or other directory so all users can see them.
-
-	/*
-	Everything here needs to be reimplemented when signal server is ready
-
-
-	const publicSignedPreKey: SignedPublicPreKeyType = {
-	keyId: signedPreKeyId,
-	publicKey: signedPreKey.keyPair.pubKey,
-	signature: signedPreKey.signature,
+	function makeKeyId(){
+		return Math.floor(10000 * Math.random());
 	}
+	//placeholder function for signal storage
+	const storeSomewhereSafe = (store: SignalProtocolStore) => 
+		(key: string, value: any) => {store.put(key, value)};
+		// storage.set(key, value)
+		
+	//signal id creation function
+	const createID = async (name: string, store: SignalProtocolStore) => 
+	{
+		const registrationId = KeyHelper.generateRegistrationId()
+		storeSomewhereSafe(store)(`registrationID`, registrationId)
+		//storage.set(`registrationID`, registrationId)
 
-	const publicPreKey: PreKeyType = {
-	keyId: preKey.keyId,
-	publicKey: preKey.keyPair.pubKey,
+		const identityKeyPair = await KeyHelper.generateIdentityKeyPair()
+		const view = Buffer.from(identityKeyPair.privKey);
+		storeSomewhereSafe(store)('identityKey', identityKeyPair)
+		//storage.set('identityKey', JSON.stringify(identityKeyPair))
+		const baseKeyId = makeKeyId()
+		const preKey = await KeyHelper.generatePreKey(baseKeyId)
+		store.storePreKey(`${baseKeyId}`, preKey.keyPair)
+		
+		//storage.set(`${baseKeyId}`, JSON.stringify(preKey.keyPair))
+
+		const signedPreKeyId = makeKeyId()
+		const signedPreKey = await KeyHelper.generateSignedPreKey(identityKeyPair, signedPreKeyId)
+		store.storeSignedPreKey(signedPreKeyId, signedPreKey.keyPair)
+		//storage.set(`${signedPreKeyId}`, JSON.stringify(signedPreKey.keyPair))
+		
+		// Now we register this with the server or other directory so all users can see them.
+
+		/*
+		Everything here needs to be reimplemented when signal server is ready
+
+
+		const publicSignedPreKey: SignedPublicPreKeyType = {
+		keyId: signedPreKeyId,
+		publicKey: signedPreKey.keyPair.pubKey,
+		signature: signedPreKey.signature,
+		}
+
+		const publicPreKey: PreKeyType = {
+		keyId: preKey.keyId,
+		publicKey: preKey.keyPair.pubKey,
+		}
+
+		directory.storeKeyBundle(name, {
+		registrationId,
+		identityPubKey: identityKeyPair.pubKey,
+		signedPreKey: publicSignedPreKey,
+		oneTimePreKeys: [publicPreKey],
+		})
+		*/
+		//save('firsttimerun', false);
 	}
-
-	directory.storeKeyBundle(name, {
-	registrationId,
-	identityPubKey: identityKeyPair.pubKey,
-	signedPreKey: publicSignedPreKey,
-	oneTimePreKeys: [publicPreKey],
-	})
-	*/
-	//save('firsttimerun', false);
-}
-//call id creation function
-const createUserIdentity = async () => 
-{
-	await createID(initialUserId, userStore);
-	//console.log({ userStore });
-};
+	//call id creation function
 
 
-function delData(){
 
-	chats.forEach((chat:Chat)=>{
+	function delData(){
 
-		SecureStore.deleteItemAsync(chat.id);
-	})
-	SecureStore.deleteItemAsync('chatids')
+		chats.forEach((chat:Chat)=>{
 
-	contacts.forEach((contact:Contact)=>{
-		SecureStore.deleteItemAsync(contact.id);
-	})
-	SecureStore.deleteItemAsync('contactids')
-	SecureStore.deleteItemAsync('userid');
-	console.log("Cleared Save Data");
-}
+			SecureStore.deleteItemAsync(chat.id);
+		})
+		SecureStore.deleteItemAsync('chatids')
+
+		contacts.forEach((contact:Contact)=>{
+			SecureStore.deleteItemAsync(contact.id);
+		})
+		SecureStore.deleteItemAsync('contactids')
+		SecureStore.deleteItemAsync('userid');
+		SecureStore.deleteItemAsync('userstore');
+		console.log("Cleared Save Data");
+	}
 
 	//data states
 	const [contacts,setContacts] = useState<Map<string,Contact>>(contactMap);
 	const [chats,setChats] = useState<Map<string,Chat>>(new Map<string,Chat>(chatMap));
 	const [userid,setUserId] = useState<string>("");
 	//signal storage state
-	const [userStore] = useState(new SignalProtocolStore());
+	const [userStore,setUserStore] = useState(new SignalProtocolStore());
+
+
+	async function createUserIdentity():Promise<void>{ 
+		console.log("This actually ran")
+		await createID(userid, userStore);
+		const stringifiedstore = JSON.stringify(userStore,function(k,v){
+			if (k == "pubKey" || k == "privKey"){
+				const buf = Buffer.from(v);
+				console.log(buf.toJSON())
+				return Buffer.from(v).toJSON();
+			}
+			return v;
+		});
+		await SecureStore.setItemAsync('userstore',stringifiedstore);
+		console.log(stringifiedstore);
+	};
+
 	//websocket state
 	const [ws,setWs] = useState<WebSocket>(initialws)
 	const [appIsReady, setAppIsReady] = useState(false);
@@ -266,6 +285,10 @@ function delData(){
 	const chatState = {chats,setChats,ws,setWs};
 	const contactState = {contacts,setContacts,userid,setUserId,resetContactData:delData};
 	const signalState = {userStore,createUserIdentity,serverip}
+
+
+
+
 	//console.log("New Web Socket Connection: ",ws);
 	useEffect(() => {
 		async function prepare(){	
@@ -315,6 +338,25 @@ function delData(){
 						}
 					}
 				}
+
+				const userstorejson = await SecureStore.getItemAsync('userstore');
+				//console.log(userstorejson);
+				if(userstorejson!=null){
+					console.log(userstorejson);
+					const newuserstore = JSON.parse(userstorejson,(key,value)=>{
+						//console.log(key,value);
+						if (key == "pubKey" || key == "privKey"){
+							console.log(value);
+							const arraybuf = Buffer.from(value).buffer;
+							//console.log(value.data)
+							return arraybuf;
+						}
+						return value;
+					})
+					//console.log(newuserstore);
+					setUserStore(newuserstore);
+				}
+
 			}catch(e){
 				console.warn(e);
 			}finally{
@@ -366,6 +408,16 @@ function delData(){
 			}
 		}
 	},[userid])
+
+	//not working?
+	useEffect(()=>{
+		if (appIsReady) {
+			//console.log('saving the userstore');
+			//console.log(JSON.stringify(userStore))
+			SecureStore.setItemAsync('userstore',JSON.stringify(userStore));
+		}
+	},[userStore])
+
 
 	//resets data probably should implemet it better
 	//delData(chats, contacts);

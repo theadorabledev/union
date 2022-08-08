@@ -68,5 +68,6 @@ export const ContactContext = React.createContext({
 //provide the signal store state & signal id creation to the rest of the app (currently unused)
 export const SignalContext = React.createContext({
 	userStore: new SignalProtocolStore(),
-	createUserIdentity: () => {},
+	createUserIdentity: async () => {},
+	serverip:"string",
 });
