@@ -1,5 +1,5 @@
 import 'react-native-gesture-handler'; 
-import React, { useState,useEffect,useContext } from 'react';
+import React, { useState,useEffect,useContext,useCallback } from 'react';
 import { 
 	View, 
 	Text, 
@@ -26,6 +26,7 @@ import ChatScreenComponent from './ChatScreenComponent';
 import ChatSettingScreenComponent from './ChatSettingScreenComponent';
 import NewChatScreenComponent from './NewChatScreenComponent';
 import SettingOptionsComponent from './SettingOptionsComponent';
+import * as SplashScreen from 'expo-splash-screen';
 //import global style
 import {GlobalStyle} from './Styles.js';
 
@@ -113,7 +114,7 @@ const initialws = new WebSocket('ws://'+serverip+'/'+initialUserId)
 const userAddress = new SignalProtocolAddress(initialUserId, 1);
 
 //add user to contacts
-ContactCreator(contactMap,initialUserId,"TestUser",GlobalStyle.defaultprofile,"They/Them")
+//ContactCreator(contactMap,initialUserId,"TestUser",GlobalStyle.defaultprofile,"They/Them")
 function debugData(){
 
 
@@ -155,11 +156,17 @@ const TestComponent = (props) => {
 	return(
 		<View>
 			<Button title="reset account id" onPress={()=>{
+				ContactCreator(contactMap,initialUserId,"TestUser",GlobalStyle.defaultprofile,"They/Them")
+				setContacts((contacts)=>{
+					const newcontactmap = new Map<string,Contact>();
+					const newcontact:Contact = {id:initialUserId,username:"TestUser",profilepic:GlobalStyle.defaultprofile,pronouns:"They/Them"}
+					newcontactmap.set(initialUserId,newcontact);
+					return newcontactmap;
+				});
 				setUserId(initialUserId);
 			}}/>
 
 			<Button title="remove account id from storage" onPress={()=>{
-
 				removeValue('userid');
 			}}/>
 
@@ -167,7 +174,7 @@ const TestComponent = (props) => {
 	);
 }
 
-
+SplashScreen.preventAutoHideAsync();
 function App() {
 	//save('test', '321');
 	//getValueFor('test');
@@ -241,37 +248,35 @@ const createUserIdentity = async () =>
 	const [userStore] = useState(new SignalProtocolStore());
 	//websocket state
 	const [ws,setWs] = useState<WebSocket>(initialws)
-	
-	const [firsttimerun,setFirstTimeRun] = useState(false); 
+	const [appIsReady, setAppIsReady] = useState(false);
+	const [firsttimerun,setFirstTimeRun] = useState(true); 
 	//organize data for context providing
 	const chatState = {chats,setChats,ws,setWs};
 	const contactState = {contacts,setContacts,userid,setUserId};
 	const signalState = {userStore,createUserIdentity,serverip}
 	//console.log("New Web Socket Connection: ",ws);
-
 	useEffect(() => {
+		async function prepare(){	
+			try{
+				const userid = await SecureStore.getItemAsync('userid')
+				if(userid!=null && userid != ""){
+					setUserId(userid);
+					setFirstTimeRun(false);
+				}else if(userid == ""){
+					setFirstTimeRun(true);
+				}
+				
+				else{
+					setFirstTimeRun(true);
+				}
 
-		SecureStore.getItemAsync('userid').then((useridvalue)=>{
-			if(useridvalue!=null && useridvalue != ""){
-				setUserId(useridvalue);
-				console.log(useridvalue);
-			}else if(useridvalue == ""){
-				setFirstTimeRun(true);
-				console.log("first time run");
-			}
-			
-			else{
-				console.log("first time run");
-				setFirstTimeRun(true);
-			}
-		})
-
-
-		SecureStore.getItemAsync('chatids').then((chatidjson)=>{
-			if(chatidjson != null){
-				const chatids:string[] = JSON.parse(chatidjson);
-				chatids.forEach((chatid)=>{
-					SecureStore.getItemAsync(chatid).then((chatjson)=>{
+				const chatidjson = await SecureStore.getItemAsync('chatids')
+				if(chatidjson != null){
+					const chatids:string[] = JSON.parse(chatidjson);
+					console.log('chatidsload',chatids);
+					for (const chatid of chatids){
+						const chatjson = await SecureStore.getItemAsync(chatid);
+						console.log('chatjson',chatjson)
 						if(chatjson != null){
 							setChats((chats)=>{
 								const newChats = new Map(chats);
@@ -279,16 +284,16 @@ const createUserIdentity = async () =>
 								return newChats;
 							})
 						}
-					})
-				})
-			}
-		})
+					}
+				}
 
-		SecureStore.getItemAsync('contactids').then((contactidjson)=>{
-			if(contactidjson != null){
-				const contactids:string[] = JSON.parse(contactidjson);
-				contactids.forEach((contactid)=>{
-					SecureStore.getItemAsync(contactid).then((contactjson)=>{
+
+				const contactidjson = await SecureStore.getItemAsync('contactids');
+				if(contactidjson != null){
+					const contactids:string[] = JSON.parse(contactidjson);
+					console.log('contactidsload',contactids);
+					for (const contactid of contactids){
+						const contactjson = await SecureStore.getItemAsync(contactid)
 						if(contactjson != null){
 							setContacts((contacts)=>{
 								const newContacts = new Map(contacts);
@@ -296,37 +301,54 @@ const createUserIdentity = async () =>
 								return newContacts;
 							})
 						}
-					})
-				})
+					}
+				}
+			}catch(e){
+				console.warn(e);
+			}finally{
+				setAppIsReady(true);
 			}
-		})
-
-
+		}
+		prepare();
 	},[])
-
 	useEffect(()=>{
-		const chatids:string[] = [];
-		chats.forEach((chat)=>{
-			chatids.push(chat.id);
-			SecureStore.setItemAsync(chat.id,JSON.stringify(chat));
-	})
-	SecureStore.setItemAsync('chatids',JSON.stringify(chatids))
+		if (appIsReady) {
+			const chatids:string[] = [];
+			chats.forEach((chat)=>{
+				chatids.push(chat.id);
+				SecureStore.setItemAsync(chat.id,JSON.stringify(chat));
+			})
+		
+			SecureStore.setItemAsync('chatids',JSON.stringify(chatids))
+			SecureStore.getItemAsync('chatids').then((chatids)=>{
+				console.log("saving chatids as",chatids);
+			})
+		}
 	},[chats])
 
 
 	useEffect(()=>{
-		const contactids:string[] = [];
-		contacts.forEach((contact)=>{
-			contactids.push(contact.id);
-			SecureStore.setItemAsync(contact.id,JSON.stringify(contact));
-	})
-	SecureStore.setItemAsync('contactids',JSON.stringify(contactids))
-	},[contacts])
+		if (appIsReady) {
+			const contactids:string[] = [];
+			contacts.forEach((contact)=>{
+				contactids.push(contact.id);
+				SecureStore.setItemAsync(contact.id,JSON.stringify(contact));
+			})
+			SecureStore.setItemAsync('contactids',JSON.stringify(contactids));
+			console.log("saving contactids as",contactids)
+			if (typeof contacts.get(userid) != "undefined"){
+				setFirstTimeRun(false);
+			}
+		}
+	}
+	,[contacts])
 
 	useEffect(()=>{
-		if(userid != ""){
-			console.log('setting the userid');
-			SecureStore.setItemAsync('userid',userid);
+		if (appIsReady) {
+			if(userid != ""){
+				console.log('saving the userid');
+				SecureStore.setItemAsync('userid',userid);
+			}
 		}
 	},[userid])
 
@@ -353,14 +375,31 @@ const createUserIdentity = async () =>
 		})
 	};
 
+	const onLayoutRootView = useCallback(async () => {
+		if (appIsReady) {
+		  // This tells the splash screen to hide immediately! If we call this after
+		  // `setAppIsReady`, then we may see a blank screen while the app is
+		  // loading its initial state and rendering its first pixels. So instead,
+		  // we hide the splash screen once we know the root view has already
+		  // performed layout.
+		  console.log("calling hideasync")
+		  await SplashScreen.hideAsync();
+		}
+	  }, [appIsReady]);
+
+
+	if (!appIsReady) {
+		return null;
+	}
 	//context providers allow pages to access all relevant information
     return (
+	<View style={{flex:1}} onLayout={onLayoutRootView}>
 	<NavigationContainer>
 		<ChatContext.Provider value={chatState}>
 			<SignalContext.Provider value={signalState}>
 				<ContactContext.Provider value={contactState}>
 					<StackNav.Navigator>
-						{ (userid == "" || (typeof contacts.get(userid) == "undefined"))?
+						{ (firsttimerun)?
 
 						<><StackNav.Screen 
 							name="Home"
@@ -403,6 +442,7 @@ const createUserIdentity = async () =>
 			</SignalContext.Provider>
 		</ChatContext.Provider>
 	</NavigationContainer>
+	</View>
     );
 }
 
