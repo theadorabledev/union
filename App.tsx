@@ -157,7 +157,7 @@ function delData(chats,contacts){
 			chatids.push(chat.id);
 			SecureStore.deleteItemAsync(chat.id);
 	})
-	//SecureStore.setItemAsync('chatids',JSON.stringify(chatids))
+	SecureStore.deleteItemAsync('chatids')
 	},[chats]);
 
 
@@ -167,7 +167,7 @@ function delData(chats,contacts){
 			contactids.push(contact.id);
 			SecureStore.deleteItemAsync(contact.id);
 	})
-	//SecureStore.setItemAsync('contactids',JSON.stringify(contactids))
+	SecureStore.deleteItemAsync('contactids')
 	},[contacts]);
 }
 
@@ -351,7 +351,8 @@ const createUserIdentity = async () =>
 		}
 	},[userid])
 
-
+	//resets data probably should implemet it better
+	//delData(chats, contacts);
 
 	//on recieve message from server
 	ws.onmessage = (e) => {
