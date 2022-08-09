@@ -279,6 +279,7 @@ const ChatScreenComponent = ({route, navigation}) => {
 	{text:"Settings", handler:() => navigation.navigate('ChatSettings')},
 	{text:"Search", handler:()=> {alert("Search conversation function")}},
 	{text:"Add to friends", handler:()=> {alert("Add contact to friends list")}},
+	{text:"Make Poll", handler:()=> {alert("make a new poll")}},
     ]
 	const {chatId,chatpic,settingsNavigate} = route.params;
     React.useLayoutEffect(() => {
