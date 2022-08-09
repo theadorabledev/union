@@ -274,7 +274,7 @@ const KeyboardComponent = (props) => {
 // Displays the Chat Screen between two users
 const ChatScreenComponent = ({route, navigation}) => {
 
-    const titlename = route.params.username.length > 15 ?  route.params.username.substring(0,14) + "..." : route.params.username
+    const titlename = route.params.username.length > 14 ?  route.params.username.substring(0,13) + "..." : route.params.username
     const chatOptions = [
 	{text:"Settings", handler:() => navigation.navigate('ChatSettings')},
 	{text:"Search", handler:()=> {alert("Search conversation function")}},

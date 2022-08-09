@@ -26,7 +26,7 @@ import MainScreenComponent from './MainScreenComponent';
 import MainSettingScreenComponent from './MainSettingScreenComponent';
 import ChatScreenComponent from './ChatScreenComponent';
 import {RegisterUserComponent,ChatSettingScreenComponent} from './ChatSettingScreenComponent';
-import NewChatScreenComponent from './NewChatScreenComponent';
+import {NewChatScreenComponent,NewGroupChatScreenComponent} from './NewChatScreenComponent';
 import SettingOptionsComponent from './SettingOptionsComponent';
 import * as SplashScreen from 'expo-splash-screen';
 //import global style
@@ -451,7 +451,7 @@ function App() {
 						{ (firsttimerun)?
 
 						<><StackNav.Screen 
-							name="Home"
+							name="UserRegister"
 							component={RegisterUserComponent}
 							/>
 						</>
@@ -474,12 +474,17 @@ function App() {
 						<StackNav.Screen 
 							name="ChatSettings"
 							component={ChatSettingScreenComponent}
-							initialParams={{ id:userid,ischat:false,forceupdate:true}}
 						/>
 						<StackNav.Screen 
 							name="NewChatScreen"
 							component={NewChatScreenComponent}
 						/>
+
+						<StackNav.Screen 
+							name="NewGroupChatScreen"
+							component={NewGroupChatScreenComponent}
+						/>
+
 						<StackNav.Screen 
 							name="SettingOptions"
 							component={SettingOptionsComponent}

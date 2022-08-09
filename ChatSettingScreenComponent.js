@@ -225,11 +225,11 @@ const ChatSettingScreenComponent = ({route,navigation}) => {
 	const chatfields = [{name:"chatname",formatname:"Set Chat Name"},{name:"description",formatname:"Set Chat Description"},{name:"chatpic",formatname:""}];
 	const {id,ischat} = route.params;
 
-	let canedit = false;
+	const canedit = ischat;
 	if (userid==id){
 		canedit = true;
 	}
-
+	
 	function updateMap(map,maphandler,settingsfieldone,settingsfieldtwo,image){
 		maphandler((map)=>{
 			console.log(settingsfieldone);
