@@ -7,9 +7,10 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { HeaderBackButton } from '@react-navigation/elements';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as ImagePicker from 'expo-image-picker';
-
+import uuid from 'react-native-uuid';
 import {GlobalStyle} from './Styles.js';
-import {ContactContext,ChatContext} from './Context.ts';
+import {ContactContext,ChatContext} from './Context';
+import { SignalContext } from './Context';
 
 const stylesUser = StyleSheet.create(
 {
@@ -114,30 +115,13 @@ const ImagePickerComponent = (props) => {
 
 
 const UpdateSettingsScreen = (props) => {
-
+	let edittext ="";
+	const [image, setImage] = useState(null);
 	const [settingsfieldone,setSettingsFieldOne] = useState("")
 	const [settingsfieldtwo,setSettingsFieldTwo] = useState("")
-	const [image, setImage] = useState(null);
-	const onPress = () => {
-		props.maphandler((map)=>{
-			const newMap = new Map(props.map);
-			const element = newMap.get(props.id);
-			if (settingsfieldone != ""){
-				element[props.fieldone] = settingsfieldone;
-			}
-			if (settingsfieldtwo != ""){
-				element[props.fieldtwo] = settingsfieldtwo;
-			}
-			if (image != null){
-				element[props.fieldthree]= {uri:image}
-			}
-			newMap.set(props.id,element);
-			return newMap;
-		})
-	}
-	
-		console.log(props.map.get(props.id)[props.fieldone])
-	
+	if(props.canedit){
+		edittext = "Set"
+	}	
     return (
 	<View style={stylesUser.innerContainer}>
 		<LinearGradient
@@ -148,27 +132,27 @@ const UpdateSettingsScreen = (props) => {
 		style={stylesUser.background}
 		/>
 		<View style={{flex:3,width:"80%",minHeight:100,alignItems: "center",justifyContent:"center"}}>
-			{props.canedit?	<ImagePickerComponent image={image} setImage={setImage} profileSource ={props.map.get(props.id)[props.fieldthree]}/> : <Image style={stylesUser.image} source ={props.map.get(props.id)[props.fieldthree]}/>}
+			{props.canedit?	<ImagePickerComponent image={image} setImage={setImage} profileSource ={props.element.picture}/> : <Image style={stylesUser.image} source ={props.element.picture}/>}
 		</View>
 		<View style={{height:200, width:"80%",minHeight:200,justifyContent: 'space-evenly',alignItems:"center"}}>
-			<Text style={stylesUser.label}>Chat Name</Text>
+			<Text style={stylesUser.label}>{props.fields[0].formatname}</Text>
 			<TextInput editable={props.canedit}
 			style={stylesUser.input} 
-			placeholder={props.map.get(props.id)[props.fieldone]}
+			placeholder={props.element.name}
 			onChangeText={newFieldOne=>setSettingsFieldOne(newFieldOne)}
 			/>
-			<Text style={stylesUser.label}>Chat Description</Text>
+			<Text style={stylesUser.label}>{props.fields[1].formatname}</Text>
 			<TextInput editable={props.canedit}
 			style={stylesUser.input}
-			placeholder={props.map.get(props.id)[props.fieldtwo]}
+			placeholder={props.element.details}
 			onChangeText={newFieldTwo=>setSettingsFieldTwo(newFieldTwo)}
 			/>
 		</View>
 		<View style={{flex:2,width:"80%",alignItems: "center"}}>
 		
 			{props.canedit?	
-			<TouchableOpacity style={stylesUser.button} onPress={
-					onPress
+			<TouchableOpacity style={stylesUser.button} onPress={()=>
+					props.onPress(settingsfieldone,settingsfieldtwo,image)
 			}>
 			<View>
 			<Text>Update</Text>
@@ -180,6 +164,53 @@ const UpdateSettingsScreen = (props) => {
     )
 }
 
+
+// Returns the settings screen displayed on the main page
+const RegisterUserComponent = ({navigation}) => {
+    React.useLayoutEffect(() => {
+	navigation.setOptions({
+	    title: "Create Account"
+	});
+    }, [navigation]);
+	//const [account,SetAccount] = useState(id,name,picture,details};
+	const {contacts,setContacts,userid,setUserId} = useContext(ContactContext);
+	const [userinfo,setUserInfo] = useState({id:uuid.v4(),name:"",picture:GlobalStyle.defaultprofile,details:""})
+	const contactfields = [{name:"username",formatname:"Username"},{name:"pronouns",formatname:"Pronouns"},{name:"profilepic",formatname:""}];
+	const {userStore,createUserIdentity,serverip} = useContext(SignalContext);
+	const onPress = (settingsfieldone,settingsfieldtwo,image) => {
+		if (settingsfieldone != ""){
+			const element = userinfo;
+			setContacts((contacts)=>{
+				const newMap = new Map(contacts);
+				if (settingsfieldone != ""){
+					element.name = settingsfieldone;
+				}
+				if (settingsfieldtwo != ""){
+					element.details = settingsfieldtwo;
+				}
+				if (image != null){
+					element.picture= {uri:image}
+				}
+				newMap.set(element.id,element);
+				return newMap;
+			})
+			setUserId(element.id);
+			createUserIdentity();
+		}
+	}
+
+    return (
+		
+		<View style={{flex:1}}>
+			{
+				<UpdateSettingsScreen onPress={onPress} canedit={true} element={userinfo} fields={contactfields}/>
+			}
+		</View>
+    );
+}
+
+
+
 // Returns the settings screen displayed on the main page
 const ChatSettingScreenComponent = ({route,navigation}) => {
     React.useLayoutEffect(() => {
@@ -190,26 +221,54 @@ const ChatSettingScreenComponent = ({route,navigation}) => {
 
 	const {contacts,setContacts,userid} = useContext(ContactContext);
 	const {chats,setChats} = useContext(ChatContext);
-	const contactfields = ["username","pronouns","profilepic"];
-	const chatfields = ["chatname","description","chatpic"]
+	const contactfields = [{name:"username",formatname:"Username"},{name:"pronouns",formatname:"Pronouns"},{name:"profilepic",formatname:""}];
+	const chatfields = [{name:"chatname",formatname:"Set Chat Name"},{name:"description",formatname:"Set Chat Description"},{name:"chatpic",formatname:""}];
 	const {id,ischat} = route.params;
+
 	let canedit = false;
 	if (userid==id){
 		canedit = true;
 	}
-	
+
+	function updateMap(map,maphandler,settingsfieldone,settingsfieldtwo,image){
+		maphandler((map)=>{
+			console.log(settingsfieldone);
+			const newMap = new Map(map);
+			const element = newMap.get(id);
+			if (settingsfieldone != ""){
+				element.name = settingsfieldone;
+			}
+			if (settingsfieldtwo != ""){
+				element.details = settingsfieldtwo;
+			}
+			if (image != null){
+				element.picture= {uri:image}
+			}
+			newMap.set(id,element);
+			return newMap;
+		})
+	}
+
+	const onPress = (settingsfieldone,settingsfieldtwo,image) => {
+		if(ischat){
+			updateMap(chats,setChats,settingsfieldone,settingsfieldtwo,image)
+		}else{
+			updateMap(contacts,setContacts,settingsfieldone,settingsfieldtwo,image)
+		}
+		
+	}
+
     return (
 		
 		<View style={{flex:1}}>
 			{
 				ischat
 				?
-				<UpdateSettingsScreen map={chats} maphandler={setChats} canedit={canedit} id={id} fieldone={chatfields[0]} fieldtwo={chatfields[1]} fieldthree={chatfields[2]}/>
+				<UpdateSettingsScreen onPress={onPress} canedit={canedit} element={chats.get(id)} fields={chatfields}/>
 					:
-				<UpdateSettingsScreen map={contacts} maphandler={setContacts} canedit={canedit} id={id} fieldone={contactfields[0]} fieldtwo={contactfields[1]} fieldthree={contactfields[2]}/>
+				<UpdateSettingsScreen onPress={onPress} canedit={canedit} element={contacts.get(id)} fields={contactfields}/>
 			}
 		</View>
     );
 }
-
-export default ChatSettingScreenComponent;
+export {RegisterUserComponent,ChatSettingScreenComponent};

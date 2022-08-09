@@ -65,7 +65,7 @@ const User = (props) => {
 	<View style={MainSettingStyles.userInfoContainer}>
 	    <ProfileButton
 		profileSize={GlobalStyle.userProfileSize}
-		profileSource={contacts.get(userid).profilepic}/>
+		profileSource={contacts.get(userid).picture}/>
 	    <TouchableOpacity
 		style={MainSettingStyles.personalInfo}
 		onPress={() => navigation.navigate('ChatSettings', {
@@ -77,7 +77,7 @@ const User = (props) => {
 			fieldtwo:"pronouns",
 			fieldthree:"profilepic",
 		})}>
-		<Text style={GlobalStyle.textTypes.H2}>{usercontact.username}  {usercontact.pronouns}</Text>
+		<Text style={GlobalStyle.textTypes.H2}>{usercontact.name}  {usercontact.details}</Text>
 		<Text style={MainSettingStyles.phone}>{usercontact.id}</Text>
 	    </TouchableOpacity>
 	</View>

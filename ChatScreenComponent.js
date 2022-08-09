@@ -226,27 +226,30 @@ const KeyboardComponent = (props) => {
 	const onPress = () => 
 	{
 		//console.warn("send", text);
-		console.log(text),
+		const trimtext = text.trim();
+		console.log(trimtext)
 		//create a message object corresponding to the contents of the keyboard, push it to the chat, then send it to each member of the chat that isn't the device user.
-		setChats((chats) =>
-		{
-			const newChats = new Map(chats);
-			const thischat = newChats.get(props.chatId)
-			const message = MessageCreator(text,userid,props.chatId)
-			thischat.messages.push(message)
-			thischat.contactids.forEach((currentValue, index, arr)=>
+		if (trimtext != ""){
+			setChats((chats) =>
 			{
-				if (arr[index]!=userid)
+				const newChats = new Map(chats);
+				const thischat = newChats.get(props.chatId)
+				const message = MessageCreator(trimtext,userid,props.chatId)
+				thischat.messages.push(message)
+				thischat.contactids.forEach((currentValue, index, arr)=>
 				{
-					message.recieverId=arr[index]
-					ws.send(JSON.stringify(message))
-				}
+					if (arr[index]!=userid)
+					{
+						message.recieverId=arr[index]
+						ws.send(JSON.stringify(message))
+					}
+				})
+				newChats.set(props.chatId,thischat)
+				return newChats;
 			})
-			newChats.set(props.chatId,thischat)
-			return newChats;
-		}),
-		Keyboard.dismiss(),
-		setText('')
+		}
+		Keyboard.dismiss();
+		setText("");
 	}
     return (
 		<View style ={keyboardStyle.outer}>
@@ -304,7 +307,7 @@ const ChatScreenComponent = ({route, navigation}) => {
 					paddingRight: 5,
 				}}>
 					<HeaderBackButton onPress={()=>{navigation.goBack()}}/>
-					<ProfileButton profileSize={GlobalStyle.userProfileSize} profileSource={chatpic} onPress={()=>{alert("let user change contact's picture")}}/>
+					<ProfileButton profileSize={GlobalStyle.userProfileSize} profileSource={chatpic} onPress={()=>{}}/>
 				</View>
 			),
 		});

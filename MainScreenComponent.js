@@ -96,7 +96,7 @@ const MessagesListComponent = (props) => {
 		const a_messagearray = a[1].messages;
 		const b_messagearray = b[1].messages;
 		if (a_messagearray.length > 0 && b_messagearray.length > 0){
-			return compareAsc(b_messagearray[b_messagearray.length-1].date,a_messagearray[a_messagearray.length-1].date);
+			return compareAsc(new Date(b_messagearray[b_messagearray.length-1].date),new Date(a_messagearray[a_messagearray.length-1].date));
 		}
 	})
 

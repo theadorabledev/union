@@ -44,7 +44,7 @@ const NewChatScreenComponent = ({navigation}) => {
     const renderItem = ({ item, index }) => {
 	// Wrapper for ChatComponent that appears as a possilbe contact in the NewChatScreen
 	return <NewChatComponent
-		username={item.name}
+		name={item.name}
 		image={item.image}
 		messages={[]}
 	    />;

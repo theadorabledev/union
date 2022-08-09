@@ -74,7 +74,7 @@ export const SettingProfileButton = (props) => {
     return(
 		<ProfileButton
 				profileSize={GlobalStyle.userProfileSize}
-				profileSource={contacts.get(userid).profilepic}
+				profileSource={contacts.get(userid).picture}
 				onPress={() => navigation.navigate('ChatSettings', {
 				id:userid,
 				ischat:false,
@@ -113,8 +113,8 @@ export const ContextMenu =(props)=> {
 //not alphabetized correctly?
 function getChatName(chat){
 	const {contacts,setContacts,userid,setUserId} = useContext(ContactContext)
-	if (chat.chatname != ""){
-		return chat.chatname;
+	if (chat.name != ""){
+		return chat.name;
 	}
 	else{
 		const filteredcontacts = chat.contactids.filter((a)=>{
@@ -123,7 +123,7 @@ function getChatName(chat){
 		const contactnames = filteredcontacts.map((a)=>{
 				const contact = contacts.get(a);
 				if(typeof contact != "undefined"){
-					return contacts.get(a).username;
+					return contacts.get(a).name;
 				}
 		})
 
@@ -144,13 +144,13 @@ function getChatName(chat){
 //retrieve dynamically determined name from chat object, corresponding to either chat picture, or contact profile picture if DM.
 function getChatPicture(chat){
 	const {contacts,setContacts,userid,setUserId} = useContext(ContactContext)
-	let chatpic = chat.chatpic;
+	let chatpic = chat.picture;
 	if(chat.contactids.length==2){
 		let contactnames = chat.contactids.map((a)=>{
 			if (a!= userid){
 				const contact = contacts.get(a);
 				if(typeof contact != "undefined"){
-					chatpic = contacts.get(a).profilepic;
+					chatpic = contacts.get(a).picture;
 				}
 			}
 		});
@@ -214,7 +214,7 @@ export const ChatComponent = (props) => {
 		if(chat.messages.length){
 			const dateinfo = chat.messages[chat.messages.length-1].date;
 			const formatdate = () => {
-				if(isSameDay(Date.now(),dateinfo)){
+				if(isSameDay(Date.now(),new Date(dateinfo))){
 					return format(new Date(dateinfo),'p');
 				}else{
 					return format(new Date(dateinfo),"MMM d")
@@ -258,12 +258,12 @@ export const ChatComponent = (props) => {
 
 
 //used to create new contact object (needs to be replaced with typescript compatable format)
-function ContactCreator(id,username,profilepic,pronouns){
-	return{id,username,profilepic,pronouns};
+function ContactCreator(id,name,picture,details){
+	return{id,name,picture,details};
 }
 //used to create new chat object (needs to be replaced with typescript compatable format)
-function ChatCreator(id,contactids,messages,chatname,chatpic,description){
-	return {id,contactids,messages,chatname,chatpic,description};
+function ChatCreator(id,contactids,messages,name,picture,details){
+	return {id,contactids,messages,name,picture,details};
 }
 
 
@@ -308,7 +308,7 @@ export const NewChatComponent = (props) => {
 		//add user to contact map
 		setContacts((contacts) =>{
 			const newContacts = new Map(contacts);
-			const thiscontact = ContactCreator(newcontactid,props.username,getImage(),"They/Them");
+			const thiscontact = ContactCreator(newcontactid,props.name,getImage(),"They/Them");
 			newContacts.set(newcontactid,thiscontact)
 			return newContacts;
 		});
@@ -331,7 +331,7 @@ export const NewChatComponent = (props) => {
 	    <View style={ChatComponentStyles.chatComp}>
 			<ProfileButton profileSize={GlobalStyle.contactProfileSize} profileSource={getImage()}/>
 			<View style={ChatComponentStyles.miniChat}>
-				<Text style={ChatComponentStyles.userName}>{props.username}</Text>
+				<Text style={ChatComponentStyles.userName}>{props.name}</Text>
 			</View>
 	    </View>
 	</TouchableHighlight>

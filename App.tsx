@@ -25,7 +25,7 @@ import * as SecureStore from 'expo-secure-store';
 import MainScreenComponent from './MainScreenComponent';
 import MainSettingScreenComponent from './MainSettingScreenComponent';
 import ChatScreenComponent from './ChatScreenComponent';
-import ChatSettingScreenComponent from './ChatSettingScreenComponent';
+import {RegisterUserComponent,ChatSettingScreenComponent} from './ChatSettingScreenComponent';
 import NewChatScreenComponent from './NewChatScreenComponent';
 import SettingOptionsComponent from './SettingOptionsComponent';
 import * as SplashScreen from 'expo-splash-screen';
@@ -59,12 +59,12 @@ from './Context';
 
 
 //contact creation function
-function ContactCreator(map:Map<string,Contact>,id:string,username:string,profilepic:ImageSourcePropType,pronouns:string){
-	map.set(id,{id,username,profilepic,pronouns})
+function ContactCreator(map:Map<string,Contact>,id:string,name:string,picture:ImageSourcePropType,details:string){
+	map.set(id,{id,name,picture,details})
 }
 //chat creation function
-function ChatCreator(map:Map<string,Chat>,id:string,contactids:string[],messages:ProcessedChatMessage[],chatname:string,chatpic:ImageSourcePropType,description:string){
-	map.set(id,{id,contactids,messages,chatname,chatpic,description})
+function ChatCreator(map:Map<string,Chat>,id:string,contactids:string[],messages:ProcessedChatMessage[],name:string,picture:ImageSourcePropType,details:string){
+	map.set(id,{id,contactids,messages,name,picture,details})
 }
 //message creation function
 
@@ -102,7 +102,7 @@ const altId = "1d4070bf-7ada-46bd-8b7c-c8b8e0507dec"
 //please don't doxx me.
 const serverip = "68.198.220.163:8000"
 //generate websocket connection on app start
-const initialws = new WebSocket('ws://'+serverip+'/'+initialUserId)
+const initialws = new WebSocket('ws://'+serverip+'/'+'loading')
 //signal protocol address (currently unused)
 const userAddress = new SignalProtocolAddress(initialUserId, 1);
 
@@ -142,25 +142,6 @@ ChatCreator(chatMap,"1",[initialUserId,"1","4"], [
 	],"Test Group chat", GlobalStyle.defaultprofile,"A test Chat")
 
 
-}
-
-
-const TestComponent = (props) => {
-	const {contacts,setContacts,userid,setUserId,} = useContext(ContactContext);
-	const {userStore,createUserIdentity} = useContext(SignalContext);
-	return(
-			<Button title="Create Account" onPress={()=>{
-				ContactCreator(contactMap,initialUserId,"TestUser",GlobalStyle.defaultprofile,"They/Them")
-				setContacts((contacts)=>{
-					const newcontactmap = new Map<string,Contact>();
-					const newcontact:Contact = {id:initialUserId,username:"TestUser",profilepic:GlobalStyle.defaultprofile,pronouns:"They/Them"}
-					newcontactmap.set(initialUserId,newcontact);
-					return newcontactmap;
-				});
-				setUserId(initialUserId);
-				createUserIdentity();
-			}}/>
-	);
 }
 
 SplashScreen.preventAutoHideAsync();
@@ -253,13 +234,13 @@ function App() {
 	const [processedmessages,setProcessedMessages] = useState<Map<string,ProcessedChatMessage>>(new Map<string,ProcessedChatMessage>());
 	//signal storage state
 	const [userStore,setUserStore] = useState(new SignalProtocolStore());
-
+	const [ws,setWs] = useState<WebSocket>(initialws)
 
 	//creates the user identity and saves it to the persistent data
 	async function createUserIdentity():Promise<void>{ 
 		console.log("This actually ran")
 		await createID(userid, userStore);
-		//we have to override the json function to safe the array buffers in a different manner. Hopefully, they still work when loaded again
+		//we have to override the json function to save the array buffers in a different manner. Hopefully, they still work when loaded again
 		const stringifiedstore = JSON.stringify(userStore,function(k,v){
 			if (k == "pubKey" || k == "privKey"){
 				const buf = Buffer.from(v);
@@ -273,7 +254,7 @@ function App() {
 	};
 
 	//websocket state
-	const [ws,setWs] = useState<WebSocket>(initialws)
+	
 	const [appIsReady, setAppIsReady] = useState(false);
 	const [firsttimerun,setFirstTimeRun] = useState(true); 
 	//organize data for context providing
@@ -351,6 +332,9 @@ function App() {
 					//console.log(newuserstore);
 					setUserStore(newuserstore);
 				}
+				if (userid != ""){
+					setWs(new WebSocket('ws://'+serverip+'/'+userid))
+				}
 
 			}catch(e){
 				console.warn(e);
@@ -389,8 +373,8 @@ function App() {
 				SecureStore.setItemAsync(contact.id,JSON.stringify(contact));
 			})
 			SecureStore.setItemAsync('contactids',JSON.stringify(contactids));
-			//console.log("saving contactids as",contactids)
-			if (typeof contacts.get(userid) != "undefined"){
+			if(typeof contacts.get(userid) != "undefined")
+			{
 				setFirstTimeRun(false);
 			}
 		}
@@ -402,6 +386,7 @@ function App() {
 			if(userid != ""){
 				//console.log('saving the userid');
 				SecureStore.setItemAsync('userid',userid);
+				setWs(new WebSocket('ws://'+serverip+'/'+userid))
 			}else{
 				setFirstTimeRun(true);
 			}
@@ -444,11 +429,6 @@ function App() {
 
 	const onLayoutRootView = useCallback(async () => {
 		if (appIsReady) {
-		  // This tells the splash screen to hide immediately! If we call this after
-		  // `setAppIsReady`, then we may see a blank screen while the app is
-		  // loading its initial state and rendering its first pixels. So instead,
-		  // we hide the splash screen once we know the root view has already
-		  // performed layout.
 		  if (typeof contacts.get(userid) != "undefined"){
 			setFirstTimeRun(false);
 		  }
@@ -473,7 +453,7 @@ function App() {
 
 						<><StackNav.Screen 
 							name="Home"
-							component={TestComponent}
+							component={RegisterUserComponent}
 							/>
 						</>
 						:
@@ -481,7 +461,7 @@ function App() {
 						<StackNav.Screen 
 							name="Home"
 							component={MainScreenComponent} 
-							options={({ route }) => ({ title: (contacts.get(userid) as Contact).username })}
+							options={({ route }) => ({ title: (contacts.get(userid) as Contact).name })}
 						/>
 						<StackNav.Screen 
 							name="MainSettings"

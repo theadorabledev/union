@@ -12,16 +12,16 @@ export interface Chat{
 	id:string;
 	contactids:string[];
 	messages:ProcessedChatMessage[];
-	chatname:string;
-	chatpic:ImageSourcePropType;
-	description:string;
+	name:string;
+	picture:ImageSourcePropType;
+	details:string;
 }
 //contact interface
 export interface Contact{
 	id:string;
-	username:string;
-	profilepic:ImageSourcePropType;
-	pronouns:string;
+	name:string;
+	picture:ImageSourcePropType;
+	details:string;
 }
 //unencrypted chat interface
 export interface ProcessedChatMessage {
