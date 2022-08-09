@@ -131,7 +131,11 @@ function getChatName(chat){
 		})
 		console.log(contactnames)
 		contactnames.sort(function (a, b) {
-			return a.length - b.length;
+			if (a < b)
+  				return -1;
+			if ( b > a)
+  				return 1;
+			return 0;
 		});
 		//console.log(contactnames);
 		if(contactnames.toString().length > 30){

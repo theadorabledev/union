@@ -120,7 +120,7 @@ const MessageBoxComponent = (props) => {
 			}
 		}
 		//retrieve contact username 
-		let username = contacts.get(a.senderId).username
+		let username = contacts.get(a.senderId).name
 		//choose between send & recieve variations depending on sender id & user id comparison
 		if (a.senderId ==userid)
 		{	
