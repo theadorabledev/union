@@ -108,15 +108,15 @@ const userAddress = new SignalProtocolAddress(initialUserId, 1);
 
 //add user to contacts
 //ContactCreator(contactMap,initialUserId,"TestUser",GlobalStyle.defaultprofile,"They/Them")
+
+ContactCreator(contactMap,"1111","The Fool",GlobalStyle.defaultprofile,"They/Them")
+ContactCreator(contactMap,"1112","The Magician",GlobalStyle.defaultprofile,"They/Them")
+ContactCreator(contactMap,"1113","The Emperor",GlobalStyle.defaultprofile,"They/Them")
+ChatCreator(chatMap,"1",["1111","1112","1113"],[],"",GlobalStyle.defaultprofile,"")
 function debugData(){
-
-
 //generate debug contacts
-ContactCreator(contactMap,altId,"The Fool",GlobalStyle.defaultprofile,"They/Them")
-ContactCreator(contactMap,"1","The Magician",GlobalStyle.defaultprofile,"They/Them")
 ContactCreator(contactMap,"2","The High Priestess",GlobalStyle.defaultprofile,"They/Them")
 ContactCreator(contactMap,"3","The Empress",GlobalStyle.defaultprofile,"They/Them")
-ContactCreator(contactMap,"4","The Emperor",GlobalStyle.defaultprofile,"They/Them")
 ContactCreator(contactMap,"5","The Hierophant",GlobalStyle.defaultprofile,"They/Them")
 ContactCreator(contactMap,"6","The Lovers",GlobalStyle.defaultprofile,"They/Them")
 ContactCreator(contactMap,"7","The Chariot",GlobalStyle.defaultprofile,"They/Them")

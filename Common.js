@@ -129,20 +129,15 @@ function getChatName(chat){
 					return contacts.get(a).name;
 				}
 		})
-
+		console.log(contactnames)
 		contactnames.sort(function (a, b) {
 			return a.length - b.length;
 		});
 		//console.log(contactnames);
-		if(contactnames.length > 1){
-			if(contactnames.toString().length > 30){
-				return contactnames.toString().substring(0,27)+"..."
-			}
-			return contactnames.toString();
+		if(contactnames.toString().length > 30){
+			return contactnames.toString().substring(0,27)+"..."
 		}
-		else{
-			return "name not found";
-		}
+		return contactnames.toString();
 	}
 }
 
