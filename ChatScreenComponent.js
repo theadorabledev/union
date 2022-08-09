@@ -308,7 +308,7 @@ const ChatScreenComponent = ({route, navigation}) => {
 					paddingRight: 5,
 				}}>
 					<HeaderBackButton onPress={()=>{navigation.goBack()}}/>
-					<ProfileButton profileSize={GlobalStyle.userProfileSize} profileSource={chatpic} onPress={()=>{}}/>
+					<ProfileButton profileSize={GlobalStyle.userProfileSize} profileSource={chatpic} onPress={()=>{settingsNavigate}}/>
 				</View>
 			),
 		});

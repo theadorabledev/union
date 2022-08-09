@@ -206,6 +206,14 @@ export const ChatComponent = (props) => {
 				id:props.chatId,
 				ischat:true,
 			})
+		}else{
+			navigation.navigate('ChatSettings', 
+			{
+				id:chat.contactids.find(function(value){
+					return value != userid;
+				}),
+				ischat:false,
+			})
 		}
 		
 	}
@@ -237,7 +245,7 @@ export const ChatComponent = (props) => {
 				newChat:props.isNewChat,
 				chatId:props.chatId,
 				chatpic:chatpic,
-				settingsNavigate:(settingsNavigate),
+				settingsNavigate:settingsNavigate,
 			})
 		}
 		onLongPress ={()=>{
