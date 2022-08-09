@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "@craftzdog/react-native-buffer": "^6.0.5",
+    "@freakycoder/react-native-bounceable": "^1.0.2",
     "@privacyresearch/libsignal-protocol-typescript": "^0.0.15",
     "@react-navigation/native": "^6.0.10",
     "@react-navigation/native-stack": "^6.6.2",
@@ -22,6 +23,7 @@
     "react-native-mmkv": "^2.4.3",
     "react-native-navbar": "^2.1.0",
     "react-native-paper": "^4.12.4",
+    "react-native-poll": "^0.1.2",
     "react-native-quick-base64": "^2.0.5",
     "react-native-safe-area-context": "4.2.4",
     "react-native-screens": "~3.11.1",

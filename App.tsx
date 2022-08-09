@@ -146,7 +146,6 @@ ChatCreator(chatMap,"1",[initialUserId,"1","4"], [
 
 SplashScreen.preventAutoHideAsync();
 
-
 function App() {
 
 	function makeKeyId(){
@@ -404,7 +403,7 @@ function App() {
 
 
 	//resets data probably should implemet it better
-	//delData(chats, contacts);
+	//delData();
 
 	//on recieve message from server
 	ws.onmessage = (e) => {
