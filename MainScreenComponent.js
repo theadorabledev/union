@@ -1,7 +1,7 @@
 /* A file to hold components used within the main screen */
 import React, { useState,useContext,useEffect } from 'react';
 import { format, compareAsc } from 'date-fns'
-import { View, Text, ScrollView, Button, Image, TouchableOpacity, TouchableHighlight,TouchableWithoutFeedback,Modal} from "react-native";
+import { View, Text, ScrollView, Button,TextInput, Image, TouchableOpacity, TouchableHighlight,TouchableWithoutFeedback,Modal} from "react-native";
 import NavigationBar from 'react-native-navbar';
 import { useNavigation } from '@react-navigation/native';
 
@@ -89,9 +89,11 @@ const MessagesListComponent = (props) => {
     const {userStore,createUserIdentity,serverip} = useContext(SignalContext)
     const display = "Change Account"
     let empty = (chats.size == 0)
+	const [debugid,setDebugId] = useState("");
 	const [showmodal,setShowModal] = useState(false);
 	const [selectedchatid,setSelectedChatId] = useState("");
 	const [showdebugmenu,setShowDebugMenu] = useState(false);
+	
 	const chatarray = [...chats.entries()].sort((a,b)=>{
 		const a_messagearray = a[1].messages;
 		const b_messagearray = b[1].messages;
@@ -138,6 +140,17 @@ const MessagesListComponent = (props) => {
 				}
 			}
 			/>
+			<TextInput style={{height:40}} onChangeText={newDebugId=>setDebugId(newDebugId)} onSubmitEditing={()=>{
+				setUserId(debugid);
+				setContacts((contacts)=>{
+					const newcontacts = new Map(contacts);
+					const getusercontact = newcontacts.get(userid);
+					getusercontact.id = debugid;
+					newcontacts.delete(userid);
+					newcontacts.set(debugid,getusercontact);
+					return newcontacts;
+				});
+			}}/>
 			<Button
 				title="Reset Websocket"
 				color = {GlobalStyle.highlightcolor}
