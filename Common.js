@@ -114,6 +114,9 @@ export const ContextMenu =(props)=> {
 function getChatName(chat){
 	const {contacts,setContacts,userid,setUserId} = useContext(ContactContext)
 	if (chat.name != ""){
+		if(chat.name.length > 30){
+			return chat.name.substring(0,27)+"..."
+		}
 		return chat.name;
 	}
 	else{
@@ -132,8 +135,14 @@ function getChatName(chat){
 		});
 		//console.log(contactnames);
 		if(contactnames.length > 1){
+			if(contactnames.toString().length > 30){
+				return contactnames.toString().substring(0,27)+"..."
+			}
 			return contactnames.toString();
 		}else if(contactnames.length>0){
+			if(contactnames[0].length > 30){
+				return contactnames[0].substring(0,27)+"..."
+			}
 			return contactnames[0];
 		}else{
 			return "name not found";
@@ -198,16 +207,7 @@ export const ChatComponent = (props) => {
 				ischat:true,
 			})
 		}
-		else{
-			const dmid = chat.contactids.find((contactid)=>{
-				return contactid != userid;
-			});
-			navigation.navigate('ChatSettings', 
-			{
-				id:dmid,
-				ischat:false,
-			})
-		}
+		
 	}
 	//return JSX object that displays contents & time of last message
     const lastMessage = () => {
@@ -237,7 +237,7 @@ export const ChatComponent = (props) => {
 				newChat:props.isNewChat,
 				chatId:props.chatId,
 				chatpic:chatpic,
-				settingsNavigate:settingsNavigate,
+				settingsNavigate:(settingsNavigate),
 			})
 		}
 		onLongPress ={()=>{
@@ -258,33 +258,13 @@ export const ChatComponent = (props) => {
 
 
 //used to create new contact object (needs to be replaced with typescript compatable format)
-function ContactCreator(id,name,picture,details){
+export function ContactCreator(id,name,picture,details){
 	return{id,name,picture,details};
 }
 //used to create new chat object (needs to be replaced with typescript compatable format)
-function ChatCreator(id,contactids,messages,name,picture,details){
+export function ChatCreator(id,contactids,messages,name,picture,details){
 	return {id,contactids,messages,name,picture,details};
 }
-
-
-export const ContactComponent = (props) => {
-	const {contacts,setContacts,userid,setUserId} = useContext(ContactContext)
-	const contact = contacts.get(props.id);
-
-	return (
-		<TouchableHighlight 
-			onPress={newContactChat}
-					underlayColor = {GlobalStyle.highlightcolor}>
-			<View style={ChatComponentStyles.chatComp}>
-				<ProfileButton profileSize={GlobalStyle.contactProfileSize} profileSource={getImage()} onPress={()=>{alert("Take user to contact's settings")}}/>
-				<View style={ChatComponentStyles.miniChat}>
-					<Text style={ChatComponentStyles.userName}>{props.username}</Text>
-				</View>
-			</View>
-		</TouchableHighlight>
-		);
-}
-
 
 //Displays devices contact data with options to create new contact & chat if user presses
 //pass props.username, props.uri 
@@ -330,6 +310,41 @@ export const NewChatComponent = (props) => {
 			    underlayColor = {GlobalStyle.highlightcolor}>
 	    <View style={ChatComponentStyles.chatComp}>
 			<ProfileButton profileSize={GlobalStyle.contactProfileSize} profileSource={getImage()}/>
+			<View style={ChatComponentStyles.miniChat}>
+				<Text style={ChatComponentStyles.userName}>{props.name}</Text>
+			</View>
+	    </View>
+	</TouchableHighlight>
+    );
+};
+
+
+export const ContactInfoComponent = (props) => {
+	const isSelected = ()=>{
+		if(props.selectedcontacts.includes(props.id)){
+			return {backgroundColor:GlobalStyle.highlightcolor}
+		}else{
+			return {}
+		}
+	}
+    return (
+	<TouchableHighlight 
+			underlayColor = {GlobalStyle.highlightcolor}
+			onPress={()=>{
+				props.setSelectedContacts((contacts)=>{
+					const newcontacts = [...contacts];
+					if (newcontacts.includes(props.id)){
+						const result = newcontacts.filter(function(value){return value != props.id});
+						return result;
+					}else{
+						newcontacts.push(props.id);
+						return newcontacts;
+					}
+				})
+			}}
+	>
+	    <View style={[ChatComponentStyles.chatComp,isSelected()]}>
+			<ProfileButton profileSize={GlobalStyle.contactProfileSize} profileSource={props.picture}/>
 			<View style={ChatComponentStyles.miniChat}>
 				<Text style={ChatComponentStyles.userName}>{props.name}</Text>
 			</View>
