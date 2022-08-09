@@ -139,12 +139,8 @@ function getChatName(chat){
 				return contactnames.toString().substring(0,27)+"..."
 			}
 			return contactnames.toString();
-		}else if(contactnames.length>0){
-			if(contactnames[0].length > 30){
-				return contactnames[0].substring(0,27)+"..."
-			}
-			return contactnames[0];
-		}else{
+		}
+		else{
 			return "name not found";
 		}
 	}
