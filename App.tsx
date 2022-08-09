@@ -100,7 +100,7 @@ const initialUserId = "47769a91-2d07-4580-8828-5913cf821623";
 //debug id for testing purposes
 const altId = "1d4070bf-7ada-46bd-8b7c-c8b8e0507dec"
 //please don't doxx me.
-const serverip = "68.198.220.163:8000"
+const serverip = "98.14.55.86:8000"
 //generate websocket connection on app start
 const initialws = new WebSocket('ws://'+serverip+'/'+'loading')
 //signal protocol address (currently unused)
