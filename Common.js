@@ -11,6 +11,7 @@ import { useNavigation } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
 
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { EvilIcons } from '@expo/vector-icons';
 import {FontAwesome} from '@expo/vector-icons';
 
 import {GlobalStyle} from './Styles.js';
@@ -32,6 +33,15 @@ export const UserButton = ({onPress}) => {
 	    <FontAwesome name="user" size={GlobalStyle.userProfileSize} color="black" />
 	</TouchableOpacity>
     );
+}
+
+// Right Arrow
+export const RightArrow = ({ onPress }) => {
+	return (
+	  <TouchableOpacity onPress={() => onPress()} >
+		<EvilIcons name="chevron-right" size={GlobalStyle.iconSize} color="black" />
+	  </TouchableOpacity>
+	);
 }
 
 //Settings icon which triggers menu popup

@@ -5,7 +5,7 @@ import NavigationBar from 'react-native-navbar';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { createStackNavigator } from '@react-navigation/stack';
 import { HeaderBackButton } from '@react-navigation/elements';
-import {HomeButton, SettingsButton,PhoneButton,ProfileButton,ContextMenu} from './Common.js';  // in Common.js create Homebutton
+import {HomeButton, SettingsButton,PhoneButton,ProfileButton,ContextMenu,RightArrow } from './Common.js';  // in Common.js create Homebutton
 import {GlobalStyle} from './Styles.js';
 import {ContactContext} from './Context';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -206,33 +206,102 @@ export const Account = () => {
 }
 
 
+const options = {
+	appearance: { theme: 'Theme', chatColor: 'Chat Color & Wallpaper' },
+	notifications: { sound: 'Message Sound', show: 'Show', register: 'Re-register push notifications' },
+	privacy: { blocked: 'Blocked', defaultTimer: 'Default Timer for new chats', advanced: 'Advanced' },
+	help: { supportCenter: 'Support Center', contactUs: 'Contact Us', terms: 'Terms & Privacy Policy' }
+};
+  
+const stylesCommonComponent = StyleSheet.create({
+	horizontalAlign: {
+		display: "flex",
+		flexDirection: "row",
+		alignItems: "center",
+		justifyContent: "space-between",
+		marginTop: 20,
+		borderBottomWidth: 1,
+		borderBottomColor: GlobalStyle.pinklightcolor,
+		paddingLeft: 20,
+		paddingRight: 20,
+		paddingBottom: 20
+	}
+})
+  
 export const Appearance = () => {
-    return (
-	<View>
-	    <Text> This is the Appearance inner component</Text>
-	</View>
-    )
+	const { appearance } = options;
+	return (
+	  <View>
+		<View style={stylesCommonComponent.horizontalAlign}>
+		  <Text>{appearance.theme}</Text>
+		  <RightArrow onPress={() => alert('Change app Theme')} />
+		</View>
+		<View style={stylesCommonComponent.horizontalAlign}>
+		  <Text>{appearance.chatColor}</Text>
+		  <RightArrow onPress={() => alert('Change Chat Color & Wallpaper')} />
+		</View>
+	  </View>
+	)
 }
+
 export const Notifications = () => {
-    return (
-	<View>
-	    <Text> This is the Notifications inner component</Text>
-	</View>
-    )
+	const { notifications } = options;
+	return (
+	  <View>
+		<View style={stylesCommonComponent.horizontalAlign}>
+		  <Text>{notifications.sound}</Text>
+		  <RightArrow onPress={() => alert('Change Message Sound')} />
+		</View>
+		<View style={stylesCommonComponent.horizontalAlign}>
+		  <Text>{notifications.show}</Text>
+		  <RightArrow onPress={() => alert('Show or Update Notifications')} />
+		</View>
+		<View style={stylesCommonComponent.horizontalAlign}>
+		  <Text>{notifications.register}</Text>
+		  <RightArrow onPress={() => alert('Update or Re-register push notifications')} />
+		</View>
+	  </View>
+	)
 }
+
 export const Privacy = () => {
-    return (
-	<View>
-	    <Text> This is the Privacy inner component</Text>
-	</View>
-    )
+	const { privacy } = options;
+	return (
+	  <View>
+		<View style={stylesCommonComponent.horizontalAlign}>
+		  <Text>{privacy.blocked}</Text>
+		  <RightArrow onPress={() => alert('Show list of Blocked Users')} />
+		</View>
+		<View style={stylesCommonComponent.horizontalAlign}>
+		  <Text>{privacy.defaultTimer}</Text>
+		  <RightArrow onPress={() => alert('Update or Show Default Timer for new chats')} />
+		</View>
+		<View style={stylesCommonComponent.horizontalAlign}>
+		  <Text>{privacy.advanced}</Text>
+		  <RightArrow onPress={() => alert('Advanced Privacy Settings')} />
+		</View>
+	  </View>
+	)
 }
+
 export const Help = () => {
-    return (
-	<View>
-	    <Text> This is the Help inner component</Text>
-	</View>
-    )
+	const { help } = options;
+	return (
+	  <View>
+		<View style={stylesCommonComponent.horizontalAlign}>
+		  <Text>{help.supportCenter}</Text>
+		  <RightArrow onPress={() => alert('Support Center Information')} />
+		</View>
+		<View style={stylesCommonComponent.horizontalAlign}>
+		  <Text>{help.contactUs}</Text>
+		  <RightArrow onPress={() => alert('Contact Us for Help')} />
+		</View>
+		<View style={stylesCommonComponent.horizontalAlign}>
+		  <Text>{help.terms}</Text>
+		  <RightArrow onPress={() => alert('Read Terms & Privacy Policy')} />
+		</View>
+	  </View>
+	)
 }
 
 
