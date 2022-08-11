@@ -13,9 +13,13 @@ import { HeaderBackButton } from '@react-navigation/elements';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
 import {SettingsButton,PhoneButton,ProfileButton,ContextMenu} from './Common.js';
-import {ChatContext,ContactContext,MessageCreator} from './Context';
+import {ChatContext,ContactContext,MessageCreator,vote } from './Context';
 import {GlobalStyle} from './Styles.js';
+
+//poll stuff
 import Modal from "react-native-modal";
+import { LeafPoll, Result } from 'react-leaf-polls'
+import 'react-leaf-polls/dist/index'
 
 
 
@@ -197,9 +201,23 @@ const keyboardStyle = StyleSheet.create(
 		icon:
 		{
 			marginHorizontal: 5,
+		},
+		pollTheme:
+		{
+			textColor: 'black',
+			mainColor: '#00B87B',
+			backgroundColor: 'rgb(255,255,255)',
+			alignment: 'center'
 		}
 	}
 );
+
+//persitant data
+const ResData = [
+	{ id: 0, text:'Answer 1', votes: 0 },
+	{ id: 1, text:'Answer 2', votes: 0 },
+	{ id: 2, text:'Answer 3', votes: 0 }
+  ]
 
 // Displays a keyboard which allows the user to write messages
 // TODO: Connect to messaging API
@@ -258,19 +276,26 @@ const KeyboardComponent = (props) => {
     return (
 		<View style ={keyboardStyle.outer}>
 			<Button title="P" onPress={toggleModal} />
-			<Modal 
-			isVisible={isModalVisible} 
-			backdropColor={"pink"} 
-			backdropOpacity={.35}
-			onBackdropPress={() => setModalVisible(false)}
-			//onModalWillShow = {function} on show will construct the poll with text data
-			>
-        		<View style={{ flex: 1 }}>
-          			<Text>Poll will go here</Text>
-
-          			<Button title="Hide modal" onPress={toggleModal} />
-        		</View>
-      		</Modal>
+				<Modal 
+					isVisible={isModalVisible} 
+					backdropColor={"pink"} 
+					backdropOpacity={.35}
+					onBackdropPress={() => setModalVisible(false)}
+					//onModalWillShow = {function} on show will construct the poll with text data
+					>
+        			<View style={{ flex: 1 }}>
+						<Text>Poll will go here</Text>
+						{/* <LeafPoll
+							type = {"multiple"}
+							question={'What you wanna ask?'}
+							results={ResData}
+							theme={keyboardStyle.pollTheme}
+							//onVote={vote}
+							isVoted={false}
+						/> */}
+						<Button title="Hide modal" onPress={toggleModal} />
+        			</View>
+      			</Modal>
 			<View style={keyboardStyle.container}> 
 			<TextInput
 				style={keyboardStyle.input}
@@ -283,8 +308,8 @@ const KeyboardComponent = (props) => {
 				<Ionicons name='paper-plane' size={24} color={GlobalStyle.highlightcolor} style={keyboardStyle.icon}/>
 			</TouchableOpacity>
 
+			</View>
 		</View>
-	</View>
     );
 }
 

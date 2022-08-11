@@ -88,27 +88,17 @@ export const SignalContext = React.createContext({
 	serverip:"string",
 });
 
-//make the modal component
-// import Modal from "react-native-modal";
+//poll components
+import {Result } from 'react-leaf-polls'
 
-// function ModalComp(){
-// 	const [isModalVisible, setModalVisible] = useState(false);
+// Persistent data array (typically fetched from the server)
+// export const ResData = [
+// 	{ id: 0,text: , votes: 0 },
+// 	{ id: 1,text: ,votes: 0 },
+//   ]
 
-// 	const toggleModal = () => {
-// 	  setModalVisible(!isModalVisible);
-// 	};
-  
-// 	return (
-// 	  <View>
-// 	   setModalVisible(!isModalVisible)
-// 		<Modal isVisible={isModalVisible}>
-// 		  <View style={{ flex: 1 }}>
-// 			<Text>Hello!</Text>
-// 			<Button title="Hide modal" onPress={toggleModal} />
-// 		  </View>
-// 		</Modal>
-// 	  </View>
-// 	);
-// }
-
-// export default ModalComp;
+  //
+  export function vote(item: Result, results: Result[]) {
+	// Here you probably want to manage
+	// and return the modified data to the server.
+  }
