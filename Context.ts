@@ -1,5 +1,5 @@
-import React, {Dispatch,useState} from 'react';
-import {ImageSourcePropType} from 'react-native';
+import React, {Dispatch,useEffect,useState} from 'react';
+import {ImageSourcePropType, Button, Text, View} from 'react-native';
 import { SignalProtocolStore } from "./storage-type";
 import uuid from 'react-native-uuid';
 import {
@@ -87,3 +87,28 @@ export const SignalContext = React.createContext({
 	createUserIdentity: async () => {},
 	serverip:"string",
 });
+
+//make the modal component
+// import Modal from "react-native-modal";
+
+// function ModalComp(){
+// 	const [isModalVisible, setModalVisible] = useState(false);
+
+// 	const toggleModal = () => {
+// 	  setModalVisible(!isModalVisible);
+// 	};
+  
+// 	return (
+// 	  <View>
+// 	   setModalVisible(!isModalVisible)
+// 		<Modal isVisible={isModalVisible}>
+// 		  <View style={{ flex: 1 }}>
+// 			<Text>Hello!</Text>
+// 			<Button title="Hide modal" onPress={toggleModal} />
+// 		  </View>
+// 		</Modal>
+// 	  </View>
+// 	);
+// }
+
+// export default ModalComp;

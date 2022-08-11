@@ -15,6 +15,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import {SettingsButton,PhoneButton,ProfileButton,ContextMenu} from './Common.js';
 import {ChatContext,ContactContext,MessageCreator} from './Context';
 import {GlobalStyle} from './Styles.js';
+import Modal from "react-native-modal";
 
 
 
@@ -207,7 +208,10 @@ const KeyboardComponent = (props) => {
 	const {chats,setChats,ws} = useContext(ChatContext)
 	const {contacts,setContacts,userid} = useContext(ContactContext)
 	const [text,setText] = useState('');
-
+	const [isModalVisible, setModalVisible] = useState(false); //modal show
+	const toggleModal = () => {
+		setModalVisible(!isModalVisible);
+	  };
 	//auto hide/show keyboard 
     useEffect(() => {
 		const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
@@ -253,6 +257,20 @@ const KeyboardComponent = (props) => {
 	}
     return (
 		<View style ={keyboardStyle.outer}>
+			<Button title="P" onPress={toggleModal} />
+			<Modal 
+			isVisible={isModalVisible} 
+			backdropColor={"pink"} 
+			backdropOpacity={.35}
+			onBackdropPress={() => setModalVisible(false)}
+			//onModalWillShow = {function} on show will construct the poll with text data
+			>
+        		<View style={{ flex: 1 }}>
+          			<Text>Poll will go here</Text>
+
+          			<Button title="Hide modal" onPress={toggleModal} />
+        		</View>
+      		</Modal>
 			<View style={keyboardStyle.container}> 
 			<TextInput
 				style={keyboardStyle.input}
@@ -270,7 +288,6 @@ const KeyboardComponent = (props) => {
     );
 }
 
-
 // Displays the Chat Screen between two users
 const ChatScreenComponent = ({route, navigation}) => {
 
@@ -279,7 +296,6 @@ const ChatScreenComponent = ({route, navigation}) => {
 	{text:"Settings", handler:() => navigation.navigate('ChatSettings')},
 	{text:"Search", handler:()=> {alert("Search conversation function")}},
 	{text:"Add to friends", handler:()=> {alert("Add contact to friends list")}},
-	{text:"Make Poll", handler:()=> {alert("make a new poll")}},
     ]
 	const {chatId,chatpic,settingsNavigate} = route.params;
     React.useLayoutEffect(() => {
