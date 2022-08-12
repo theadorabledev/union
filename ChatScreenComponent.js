@@ -363,7 +363,7 @@ const ChatScreenComponent = ({route, navigation}) => {
     const titlename = route.params.username.length > 14 ?  route.params.username.substring(0,13) + "..." : route.params.username
 	const [barvisible,setBarVisible] = useState(false);
     const chatOptions = [
-	{text:"Settings", handler:() => navigation.navigate('ChatSettings')},
+	{text:"Settings", handler:() => {settingsNavigate()}},
 	{text:"Search", handler:()=> {setBarVisible(true)}},
 	{text:"Add to friends", handler:()=> {alert("Add contact to friends list")}},
     ]

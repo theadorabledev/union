@@ -32,7 +32,7 @@ const stylesUser = StyleSheet.create(
 	  //margin: 20,
 	  height:128,
 	  width:128,
-	  borderRadius: 50,
+	  borderRadius: 64,
 	},
 	innerContainer:
 	{
@@ -92,24 +92,30 @@ const ImagePickerComponent = (props) => {
 	};
 
 	return(
-		<TouchableHighlight 
-			style={stylesUser.image}
-			onPress={pickImage}
-		>
-			{
-				props.image 
-				?
-					<Image
-						style={stylesUser.image}
-						source={{ uri: props.image }}
-					/>
-				:
-					<Image
-						style={stylesUser.image}
-						source={props.profileSource}
-					/>
-			}
-		</TouchableHighlight>
+		<View style={{
+			backgroundColor:"white",
+			padding:5,
+			borderRadius:74
+		}}>
+			<TouchableHighlight 
+				style={stylesUser.image}
+				onPress={pickImage}
+			>
+				{
+					props.image 
+					?
+						<Image
+							style={stylesUser.image}
+							source={{ uri: props.image }}
+						/>
+					:
+						<Image
+							style={stylesUser.image}
+							source={props.profileSource}
+						/>
+				}
+			</TouchableHighlight>
+		</View>
     );
 }
 
@@ -132,7 +138,15 @@ const UpdateSettingsScreen = (props) => {
 		style={stylesUser.background}
 		/>
 		<View style={{flex:3,width:"80%",minHeight:100,alignItems: "center",justifyContent:"center"}}>
-			{props.canedit?	<ImagePickerComponent image={image} setImage={setImage} profileSource ={props.element.picture}/> : <Image style={stylesUser.image} source ={props.element.picture}/>}
+			{props.canedit?	
+			<ImagePickerComponent image={image} setImage={setImage} profileSource ={props.element.picture}/> 
+			:<View style={{
+				backgroundColor:"white",
+				padding:5,
+				borderRadius:74
+			}}>
+				<Image style={stylesUser.image} source ={props.element.picture}/>
+			</View>}
 		</View>
 		<View style={{height:200, width:"80%",minHeight:200,justifyContent: 'space-evenly',alignItems:"center"}}>
 			<Text style={stylesUser.label}>{props.fields[0].formatname}</Text>
@@ -196,6 +210,8 @@ const RegisterUserComponent = ({navigation}) => {
 			})
 			setUserId(element.id);
 			createUserIdentity();
+		}else{
+			alert("Account must have a username")
 		}
 	}
 
@@ -214,9 +230,19 @@ const RegisterUserComponent = ({navigation}) => {
 // Returns the settings screen displayed on the main page
 const ChatSettingScreenComponent = ({route,navigation}) => {
     React.useLayoutEffect(() => {
-	navigation.setOptions({
-	    title: "Chat Settings"
-	});
+		if(ischat){
+			navigation.setOptions({
+				title: "Chat Settings"
+			});
+		}else if(canedit){
+			navigation.setOptions({
+				title: "Update Account Settings"
+			});
+		}else{
+			navigation.setOptions({
+				title: "Contact Details"
+			});
+		}
     }, [navigation]);
 
 	const {contacts,setContacts,userid} = useContext(ContactContext);
@@ -225,11 +251,12 @@ const ChatSettingScreenComponent = ({route,navigation}) => {
 	const chatfields = [{name:"chatname",formatname:"Set Chat Name"},{name:"description",formatname:"Set Chat Description"},{name:"chatpic",formatname:""}];
 	const {id,ischat} = route.params;
 
+
 	let canedit = ischat;
 	if (userid==id){
 		canedit = true;
 	}
-	
+
 	function updateMap(map,maphandler,settingsfieldone,settingsfieldtwo,image){
 		maphandler((map)=>{
 			console.log(settingsfieldone);

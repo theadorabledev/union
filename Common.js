@@ -94,30 +94,6 @@ export const SettingProfileButton = (props) => {
 }
 
 
-export const PasswordUnlockScreen = () =>{
-	const {ispasswordlock,setLockState,isapplock,setAppLock,password,setPassword} = useContext(PasswordContext);
-	const [temppassword,setTempPassword] = useState("");
-	return(
-		<>
-			<TextInput
-				placeholder="enter password"
-				placeholderTextColor="#003f5c"
-				textAlign="center"
-				secureTextEntry={true}
-				value={temppassword}
-				onChangeText={newpassword=>setTempPassword(newpassword)}
-						/>
-			<Button title="Check Password" onPress={()=>{
-				if(temppassword == password){
-					setAppLock(false);
-				}else{
-					alert("WRONG PASSWORD DUMFUCK")
-				}
-			}} />
-		</>
-	)
-}
-
 
 //context menu wrapper
 export const ContextMenu =(props)=> {
