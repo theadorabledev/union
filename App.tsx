@@ -56,8 +56,6 @@ import {
 from './Context';
 
 
-
-
 //contact creation function
 function ContactCreator(map:Map<string,Contact>,id:string,username:string,profilepic:ImageSourcePropType,pronouns:string){
     map.set(id,{id,username,profilepic,pronouns})
@@ -67,8 +65,6 @@ function ChatCreator(map:Map<string,Chat>,id:string,contactids:string[],messages
     map.set(id,{id,contactids,messages,chatname,chatpic,description})
 }
 //message creation function
-
-
 
 export async function save(key:string, value:any) {
     await SecureStore.setItemAsync(key, value);
@@ -148,7 +144,7 @@ function debugData(){
 const TestComponent = (props) => {
     const {contacts,setContacts,userid,setUserId,} = useContext(ContactContext);
     const {userStore,createUserIdentity} = useContext(SignalContext);
-    return(
+    return (
 	<Button
 	    title="Create Account"
 	    onPress={()=>{
@@ -160,7 +156,13 @@ const TestComponent = (props) => {
 		    return newcontactmap;
 		});
 		setUserId(initialUserId);
-		createUserIdentity();
+
+		const t = (async () => {
+		    const v = await createUserIdentity()
+		    console.log(v);
+		    return v;
+		})();
+		console.log(t);
 	    }}/>
     );
 }
@@ -178,54 +180,6 @@ function App() {
 	  (key: string, value: any) => {store.put(key, value)};
     // storage.set(key, value)
     
-    //signal id creation function
-    const createID = async (name: string, store: SignalProtocolStore) => {
-	const registrationId = KeyHelper.generateRegistrationId()
-	storeSomewhereSafe(store)(`registrationID`, registrationId)
-	//storage.set(`registrationID`, registrationId)
-
-	const identityKeyPair = await KeyHelper.generateIdentityKeyPair()
-	const view = Buffer.from(identityKeyPair.privKey);
-	storeSomewhereSafe(store)('identityKey', identityKeyPair)
-	//storage.set('identityKey', JSON.stringify(identityKeyPair))
-	const baseKeyId = makeKeyId()
-	const preKey = await KeyHelper.generatePreKey(baseKeyId)
-	store.storePreKey(`${baseKeyId}`, preKey.keyPair)
-	
-	//storage.set(`${baseKeyId}`, JSON.stringify(preKey.keyPair))
-
-	const signedPreKeyId = makeKeyId()
-	const signedPreKey = await KeyHelper.generateSignedPreKey(identityKeyPair, signedPreKeyId)
-	store.storeSignedPreKey(signedPreKeyId, signedPreKey.keyPair)
-	
-	//storage.set(`${signedPreKeyId}`, JSON.stringify(signedPreKey.keyPair))
-	
-	// Now we register this with the server or other directory so all users can see them.
-
-	/*
-	  Everything here needs to be reimplemented when signal server is ready
-
-
-	  const publicSignedPreKey: SignedPublicPreKeyType = {
-	  keyId: signedPreKeyId,
-	  publicKey: signedPreKey.keyPair.pubKey,
-	  signature: signedPreKey.signature,
-	  }
-
-	  const publicPreKey: PreKeyType = {
-	  keyId: preKey.keyId,
-	  publicKey: preKey.keyPair.pubKey,
-	  }
-
-	  directory.storeKeyBundle(name, {
-	  registrationId,
-	  identityPubKey: identityKeyPair.pubKey,
-	  signedPreKey: publicSignedPreKey,
-	  oneTimePreKeys: [publicPreKey],
-	  })
-	*/
-	//save('firsttimerun', false);
-    }
     //call id creation function
 
 
@@ -255,34 +209,140 @@ function App() {
     //signal storage state
     const [userStore,setUserStore] = useState(new SignalProtocolStore());
 
+    const [tvar,setTvar] = useState<string>(""); /* </string> */
 
-    //creates the user identity and saves it to the persistent data
-    async function createUserIdentity():Promise<void>{ 
-	console.log("This actually ran")
-	await createID(userid, userStore);
-	//we have to override the json function to safe the array buffers in a different manner. Hopefully, they still work when loaded again
-	const stringifiedstore = JSON.stringify(userStore,function(k,v){
-	    if (k == "pubKey" || k == "privKey"){
-		const buf = Buffer.from(v);
-		console.log(buf.toJSON())
-		return Buffer.from(v).toJSON();
-	    }
-	    return v;
+    //signal id creation function
+    const createID = async (name: string, store: SignalProtocolStore) => {
+
+	const registrationId = KeyHelper.generateRegistrationId()
+	storeSomewhereSafe(store)(`registrationID`, registrationId)
+	//storage.set(`registrationID`, registrationId)
+
+	const identityKeyPair = await KeyHelper.generateIdentityKeyPair()
+	const view = Buffer.from(identityKeyPair.privKey);
+	storeSomewhereSafe(store)('identityKey', identityKeyPair)
+	//storage.set('identityKey', JSON.stringify(identityKeyPair))
+	const baseKeyId = makeKeyId()
+	const preKey = await KeyHelper.generatePreKey(baseKeyId)
+	store.storePreKey(`${baseKeyId}`, preKey.keyPair)
+	
+	//storage.set(`${baseKeyId}`, JSON.stringify(preKey.keyPair))
+
+	const signedPreKeyId = makeKeyId()
+	const signedPreKey = await KeyHelper.generateSignedPreKey(identityKeyPair, signedPreKeyId)
+	store.storeSignedPreKey(signedPreKeyId, signedPreKey.keyPair)
+
+	console.log(store);
+
+	
+	const publicSignedPreKey: SignedPublicPreKeyType = {
+	    keyId: signedPreKeyId,
+	    publicKey: Buffer.from(signedPreKey.keyPair.pubKey).toJSON(),
+	    signature: Buffer.from(signedPreKey.signature).toJSON(),
+	}
+
+	const publicPreKey: PreKeyType = {
+	    keyId: preKey.keyId,
+	    publicKey: Buffer.from(preKey.keyPair.pubKey).toJSON(),
+	}
+
+	return  JSON.stringify({
+	    registrationId: registrationId,
+	    identityPubKey: Buffer.from(identityKeyPair.pubKey).toJSON(),
+	    signedPreKey: publicSignedPreKey,
+	    oneTimePreKeys: [publicPreKey],
 	});
-	await SecureStore.setItemAsync('userstore',stringifiedstore);
-	console.log(stringifiedstore);
+	
+	
+	//storage.set(`${signedPreKeyId}`, JSON.stringify(signedPreKey.keyPair))
+	
+	// Now we register this with the server or other directory so all users can see them.
+
+	/*
+	  Everything here needs to be reimplemented when signal server is ready
+
+
+	  const publicSignedPreKey: SignedPublicPreKeyType = {
+	  keyId: signedPreKeyId,
+	  publicKey: signedPreKey.keyPair.pubKey,
+	  signature: signedPreKey.signature,
+	  }
+
+	  const publicPreKey: PreKeyType = {
+	  keyId: preKey.keyId,
+	  publicKey: preKey.keyPair.pubKey,
+	  }
+
+	  directory.storeKeyBundle(name, {
+	  registrationId,
+	  identityPubKey: identityKeyPair.pubKey,
+	  signedPreKey: publicSignedPreKey,
+	  oneTimePreKeys: [publicPreKey],
+	  })
+	*/
+	//save('firsttimerun', false);
+    }
+    
+    //creates the user identity and saves it to the persistent data
+    const createUserIdentity = async () => {
+
+	try {
+	    setTvar("123");
+	    console.log("This actually ran")
+	    //await createID(userid, userStore);
+	    const idInfo = await createID(userid, userStore);
+	    //we have to override the json function to safe the array buffers in a different manner. Hopefully, they still work when loaded again
+	    const stringifiedstore = JSON.stringify(userStore,function(k,v){
+		if (k == "pubKey" || k == "privKey"){
+		    const buf = Buffer.from(v);
+		    return Buffer.from(v).toJSON();
+		}
+		return v;
+	    });
+	    
+	    await SecureStore.setItemAsync('userstore',stringifiedstore);
+	    console.log("stringified store");
+	    console.log(stringifiedstore);
+	    console.log("id");
+	    console.log(idInfo);
+	    console.log("here");
+	    console.log(JSON.stringify(idInfo))
+
+	    const fetchReq = await fetch("http://167.99.43.209:443/registerKeyBundle/911-911-1912", {
+                method: 'POST',
+                headers: {
+		    'Content-Type': 'application/json;charset=utf-8'
+		},
+		body: idInfo
+            });
+	    const data = await fetchReq.json();
+	    console.log(data);
+	    console.log("That was data");
+
+
+	    // const serverBundles = await fetch("http://167.99.43.209:443/getFullKeyBundle/911-911-1912");
+	    // const bundles = await serverBundles.json();
+	    // console.log("bunfles");
+	    // console.log(bundles);
+	    
+	    console.log(idInfo);
+
+	    
+	    return "test";
+	} catch (e) {
+	    console.log(e);
+	}
+
     };
 
     //websocket state
     const [ws,setWs] = useState<WebSocket>(initialws) /* </WebSocket> */
     const [appIsReady, setAppIsReady] = useState(false);
-    const [firsttimerun,setFirstTimeRun] = useState(true); 
+    const [firstTimeRun,setFirstTimeRun] = useState(true); 
     //organize data for context providing
     const chatState = {chats,setChats,ws,setWs,processedmessages,setProcessedMessages};
     const contactState = {contacts,setContacts,userid,setUserId,resetContactData:delData};
     const signalState = {userStore,createUserIdentity,serverip}
-
-
 
 
     //console.log("New Web Socket Connection: ",ws);
@@ -362,6 +422,17 @@ function App() {
 	}
 	prepare();
     },[])
+
+    useEffect(() => {
+	console.log(firstTimeRun);
+	console.log(tvar);
+	if(firstTimeRun){
+	    createUserIdentity();
+	    console.log("First!");
+	    console.log(tvar);
+	}
+    }, [])
+    
     useEffect(()=>{
 	if (appIsReady) {
 	    const chatids:string[] = [];
@@ -470,7 +541,7 @@ function App() {
 		    <SignalContext.Provider value={signalState}>
 			<ContactContext.Provider value={contactState}>
 			    <StackNav.Navigator>
-				{ (firsttimerun)?
+				{ (firstTimeRun)?
 
 				  <><StackNav.Screen 
 					name="Home"
@@ -513,6 +584,7 @@ function App() {
 		    </SignalContext.Provider>
 		</ChatContext.Provider>
 	    </NavigationContainer>
+	    <TestComponent/>
 	</View>
     );
 }
