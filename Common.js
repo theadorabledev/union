@@ -147,7 +147,7 @@ function getChatName(chat){
   				return 1;
 			return 0;
 		});
-		//console.log(contactnames);
+		console.log(contactnames);
 		if(contactnames.toString().length > 30){
 			return contactnames.toString().substring(0,27)+"..."
 		}

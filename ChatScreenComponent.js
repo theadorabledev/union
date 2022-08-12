@@ -20,6 +20,7 @@ import {GlobalStyle} from './Styles.js';
 import Modal from "react-native-modal";
 import { LeafPoll, Result } from 'react-leaf-polls'
 import 'react-leaf-polls/dist/index'
+import { FlatList } from 'react-native-gesture-handler';
 
 
 
@@ -62,40 +63,52 @@ const ChatStyles = StyleSheet.create(
 
 // Message bubble which displays the text of a message
 const MessageBubble = (props) => {
+	const {contacts,setContacts,userid} = useContext(ContactContext)
+	const previousindex = props.data.findIndex(function(currentValue){return currentValue == props.item})-1;
+	let showname = true;
+	if (previousindex > -1){
+		if (props.item.senderId == props.data[previousindex].senderId){
+			showname = false
+		}
+	}
+	let username = contacts.get(props.item.senderId).name;
+	const issend = (props.item.senderId ==userid)
+	{	
+
     return(
 		<View style=
 		{[
 		  ChatStyles.message,
-		  props.send ? ChatStyles.send : ChatStyles.recieve
+		  issend ? ChatStyles.send : ChatStyles.recieve
 		]}>
 			<View style=
 			{[
 				ChatStyles.cloud,
-				{backgroundColor: props.send ? GlobalStyle.highlightcolor : GlobalStyle.pinklightcolor}
+				{backgroundColor: issend ? GlobalStyle.highlightcolor : GlobalStyle.pinklightcolor}
 			]}>
 				{
-					props.showname
+					showname
 					?
 						<Text style=
 						{[
 							ChatStyles.text,
-							{color: props.send ? 'white': 'white'}
+							{color: issend ? 'white': 'white'}
 						]}>
-							{props.name}
+							{username}
 						</Text>
 					:
 						null
 				}
 
 				{
-					props.text
+					props.item.message
 					?
 						<Text style=
 						{[
 							ChatStyles.text,
-							{color: props.send ? 'white': 'white'}
+							{color: issend ? 'white': 'white'}
 						]}>
-							{props.text}
+							{props.item.message}
 						</Text>
 					:
 						null
@@ -103,6 +116,7 @@ const MessageBubble = (props) => {
 	    	</View>
 		</View>
     )
+}
 }
 
 // Container for the messages, updated with state variable, displays "No messages" if chat message array is empty.
@@ -113,60 +127,35 @@ const MessageBoxComponent = (props) => {
 	//get value to determine if chat is currently empty
     let empty = (chats.get(props.chatId).messages.length == 0)
 	//get scroll view reference to allow for autoscrolling the scrollview
-	const scrollViewRef = useRef();
+	//const scrollViewRef = useRef();
 	//create message bubble components
-    let textComponents = chats.get(props.chatId).messages.map((a, i) => 
-	{
-		//check if consecutive messages are being displayed and hide the sender name if so.
-		let showname = true;
-		if ( i > 0) {
-			if (a.senderId == chats.get(props.chatId).messages[i-1].senderId){
-				showname = false
-			}
-		}
-		//retrieve contact username 
-		let username = contacts.get(a.senderId).name
-		//choose between send & recieve variations depending on sender id & user id comparison
-		if (a.senderId ==userid)
-		{	
-			return <MessageBubble
-					send
-					key={i}
-					text = {a.message}
-					showname ={showname}
-					name={username}
-				/>;
-		}
-		else
-		{
-			return <MessageBubble
-					recieve
-					key={i}
-					text = {a.message}
-					showname ={showname}
-					name={username}
-				/>;		
-		}
-	});
+
+	const data = chats.get(props.chatId).messages;
+
+	const renderItem = ({item}) =>(
+		<MessageBubble
+			send
+			key={item.messageId}
+			item = {item}
+			data ={data}
+		/>
+		)
+
 	//need fragment for ternary comparison
     return (
 		<>
 			{
 				empty 
 				?
-					<ScrollView
-						ref={scrollViewRef}
-						onContentSizeChange={() => scrollViewRef.current.scrollToEnd({ animated: true })}
-					>
+					<ScrollView>
 						<Text>No messages</Text>
 					</ScrollView>
 				:
-					<ScrollView
-						ref={scrollViewRef}
-						onContentSizeChange={() => scrollViewRef.current.scrollToEnd({ animated: true })}
-					>
-						{textComponents}
-					</ScrollView>
+					<FlatList
+						data={data}
+						renderItem={renderItem}
+						keyExtractor={item=>item.messageId}
+					/>
 			}
 		</>
     );
@@ -263,7 +252,11 @@ const KeyboardComponent = (props) => {
 					if (arr[index]!=userid)
 					{
 						message.recieverId=arr[index]
+						try{
 						ws.send(JSON.stringify(message))
+						}catch(e){
+							console.log(e);
+						}
 					}
 				})
 				newChats.set(props.chatId,thischat)
