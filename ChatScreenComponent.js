@@ -1,6 +1,6 @@
 /* A Screen to hold components used to display chat messages. */
 import React, { useState,useEffect,useContext,useRef} from 'react';
-import { View, Text, ScrollView, Button, Image, TouchableOpacity, TouchableHighlight, Keyboard, TextInput, StyleSheet, Alert } from "react-native";
+import { View, Text, ScrollView, Button, Image, TouchableOpacity, TouchableHighlight, Keyboard, TextInput, StyleSheet, Alert} from "react-native";
 import NavigationBar from 'react-native-navbar';
 import { render } from 'react-dom';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -18,10 +18,8 @@ import {GlobalStyle} from './Styles.js';
 
 //poll stuff
 import Modal from "react-native-modal";
-import { LeafPoll, Result } from 'react-leaf-polls'
-import 'react-leaf-polls/dist/index'
-
-
+import { LeafPoll, Result } from 'react-leaf-polls';
+import 'react-leaf-polls/dist/index';
 
 
 
@@ -273,19 +271,20 @@ const KeyboardComponent = (props) => {
 		Keyboard.dismiss();
 		setText("");
 	}
+
     return (
 		<View style ={keyboardStyle.outer}>
 			<Button title="P" onPress={toggleModal} />
-				<Modal 
-					isVisible={isModalVisible} 
-					backdropColor={"pink"} 
-					backdropOpacity={.35}
-					onBackdropPress={() => setModalVisible(false)}
-					//onModalWillShow = {function} on show will construct the poll with text data
-					>
-        			<View style={{ flex: 1 }}>
-						<Text>Poll will go here</Text>
-						{/* <LeafPoll
+			<Modal
+				isVisible={isModalVisible} 
+				backdropColor={"pink"} 
+				backdropOpacity={.35}
+				onBackdropPress={() => setModalVisible(false)}
+				//onModalWillShow = {function} on show will construct the poll with text data
+			>
+        		<View style={{ flex: 1 }}>
+					<Text>Poll will go here</Text>
+					{/* <LeafPoll
 							type = {"multiple"}
 							question={'What you wanna ask?'}
 							results={ResData}
@@ -294,8 +293,9 @@ const KeyboardComponent = (props) => {
 							isVoted={false}
 						/> */}
 						<Button title="Hide modal" onPress={toggleModal} />
-        			</View>
-      			</Modal>
+						</View>
+					  </Modal>
+
 			<View style={keyboardStyle.container}> 
 			<TextInput
 				style={keyboardStyle.input}
