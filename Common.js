@@ -99,7 +99,7 @@ export const ContextMenu =(props)=> {
     const hideMenu = () => setVisible(false);
     const showMenu = () => setVisible(true);
     const menuOptions = props.options.map((a,i) => {
-	return <MenuItem key={i} onPress={a.handler}>{a.text}</MenuItem>
+	return <MenuItem key={i} onPress={()=>{a.handler();hideMenu();}}>{a.text}</MenuItem>
     });
 
     return (

@@ -102,6 +102,7 @@ const MessagesListComponent = (props) => {
 		}
 	})
 
+	//const chatItem = ({item,setSelectedChatId,setShowModal})
 	let chatComponents = 
 	chatarray.map((a)=>{
 		//rconsole.log("logging a",a);

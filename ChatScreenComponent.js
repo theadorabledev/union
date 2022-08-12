@@ -119,11 +119,43 @@ const MessageBubble = (props) => {
 }
 }
 
+const MessageSearchBar = (props) =>{
+	if(props.barstate.barvisible){
+	return (
+		<View style = {keyboardStyle.outer}>
+		<View style={keyboardStyle.container}> 
+		  <TextInput
+			autoCapitalize="none"
+			autoCorrect={false}
+			clearButtonMode="always"
+			value={props.query}
+			onChangeText={queryText => props.handleSearch(queryText)}
+			placeholder="Search"
+			style={keyboardStyle.input}
+		  />
+		  	<TouchableOpacity onPress={()=>{
+				
+				props.barstate.setBarVisible(false)
+				props.handleSearch("");
+				}}>
+				<Ionicons name='close-circle' size={24} color={GlobalStyle.highlightcolor} style={keyboardStyle.icon}/>
+			</TouchableOpacity>
+		</View>
+		</View>
+	  );
+	}else{
+		return <View></View>
+	}
+}
+
 // Container for the messages, updated with state variable, displays "No messages" if chat message array is empty.
 const MessageBoxComponent = (props) => {
-
+	const [filterdata,setFilterData] = useState([]);
+	const [filtertext,setFilterText] = useState("");
 	const {chats,setChats} = useContext(ChatContext)
-	const {contacts,setContacts,userid} = useContext(ContactContext)
+	const {contacts,setContacts,userid} = useContext(ContactContext);
+
+
 	//get value to determine if chat is currently empty
     let empty = (chats.get(props.chatId).messages.length == 0)
 	//get scroll view reference to allow for autoscrolling the scrollview
@@ -131,13 +163,31 @@ const MessageBoxComponent = (props) => {
 	//create message bubble components
 
 	const data = chats.get(props.chatId).messages;
+	//const filterdata = data.filter((message)=>{
+	//	if(message.message.toLowerCase().includes('h')){
+	//		return true;
+	//	}
+	//})
+	//setFilterData(data);
+	useEffect(()=>{
+		const newfilterdata = data.filter((message)=>{
+			if(message.message.toLowerCase().includes(filtertext)){
+				return true;
+			}
+		})
+		setFilterData((data)=>{
+			return newfilterdata;
+		});
+	},[filtertext])
+
+
 
 	const renderItem = ({item}) =>(
 		<MessageBubble
 			send
 			key={item.messageId}
-			item = {item}
-			data ={data}
+			item={item}
+			data={data}
 		/>
 		)
 
@@ -152,9 +202,10 @@ const MessageBoxComponent = (props) => {
 					</ScrollView>
 				:
 					<FlatList
-						data={data}
+						data={filterdata}
 						renderItem={renderItem}
 						keyExtractor={item=>item.messageId}
+						ListHeaderComponent={<MessageSearchBar handleSearch={setFilterText}query={filtertext}barstate ={props.barstate}/>}
 					/>
 			}
 		</>
@@ -310,9 +361,10 @@ const KeyboardComponent = (props) => {
 const ChatScreenComponent = ({route, navigation}) => {
 
     const titlename = route.params.username.length > 14 ?  route.params.username.substring(0,13) + "..." : route.params.username
+	const [barvisible,setBarVisible] = useState(false);
     const chatOptions = [
 	{text:"Settings", handler:() => navigation.navigate('ChatSettings')},
-	{text:"Search", handler:()=> {alert("Search conversation function")}},
+	{text:"Search", handler:()=> {setBarVisible(true)}},
 	{text:"Add to friends", handler:()=> {alert("Add contact to friends list")}},
     ]
 	const {chatId,chatpic,settingsNavigate} = route.params;
@@ -349,7 +401,7 @@ const ChatScreenComponent = ({route, navigation}) => {
     }, [navigation]);
     return (
 		<View style={{flex:1,flexDirection: "column"}}>
-			<MessageBoxComponent chatId={chatId}/>
+			<MessageBoxComponent chatId={chatId} barstate={{barvisible,setBarVisible}}/>
 			<KeyboardComponent chatId={chatId}/>
 		</View>
     );
