@@ -4,6 +4,7 @@ var Buffer = require("@craftzdog/react-native-buffer").Buffer;
 import { 
 	View, 
 	Text, 
+	TextInput,
 	ScrollView, 
 	Button, 
 	Image,
@@ -29,6 +30,7 @@ import {RegisterUserComponent,ChatSettingScreenComponent} from './ChatSettingScr
 import {NewChatScreenComponent,NewGroupChatScreenComponent} from './NewChatScreenComponent';
 import SettingOptionsComponent from './SettingOptionsComponent';
 import * as SplashScreen from 'expo-splash-screen';
+import {PasswordUnlockScreen} from './SettingOptionsComponent';
 //import global style
 import {GlobalStyle} from './Styles.js';
 
@@ -49,6 +51,7 @@ import {
 	ChatContext,
 	ContactContext,
 	SignalContext,
+	PasswordContext,
 	Chat,
 	Contact,
 	ProcessedChatMessage,
@@ -90,6 +93,9 @@ async function removeValue(key:string){
 }
 
 
+
+
+
 //create stack navigator
 const StackNav = createNativeStackNavigator();
 //create maps for contact & chat storage
@@ -109,10 +115,10 @@ const userAddress = new SignalProtocolAddress(initialUserId, 1);
 //add user to contacts
 //ContactCreator(contactMap,initialUserId,"TestUser",GlobalStyle.defaultprofile,"They/Them")
 
-ContactCreator(contactMap,"1111","The Fool",GlobalStyle.defaultprofile,"They/Them")
-ContactCreator(contactMap,"1112","The Magician",GlobalStyle.defaultprofile,"They/Them")
-ContactCreator(contactMap,"1113","The Emperor",GlobalStyle.defaultprofile,"They/Them")
-ChatCreator(chatMap,"1",["1111","1112","1113"],[],"",GlobalStyle.defaultprofile,"")
+//ContactCreator(contactMap,"1111","The Fool",GlobalStyle.defaultprofile,"They/Them")
+//ContactCreator(contactMap,"1112","The Magician",GlobalStyle.defaultprofile,"They/Them")
+//ContactCreator(contactMap,"1113","The Emperor",GlobalStyle.defaultprofile,"They/Them")
+//ChatCreator(chatMap,"1",["1111","1112","1113"],[],"",GlobalStyle.defaultprofile,"")
 function debugData(){
 //generate debug contacts
 ContactCreator(contactMap,"2","The High Priestess",GlobalStyle.defaultprofile,"They/Them")
@@ -256,10 +262,14 @@ function App() {
 	
 	const [appIsReady, setAppIsReady] = useState(false);
 	const [firsttimerun,setFirstTimeRun] = useState(true); 
+	const [ispasswordlock,setLockState] = useState(false); 
+	const [isapplock,setAppLock] = useState(false);
+	const [password,setPassword] = useState("");
 	//organize data for context providing
 	const chatState = {chats,setChats,ws,setWs,processedmessages,setProcessedMessages};
 	const contactState = {contacts,setContacts,userid,setUserId,resetContactData:delData};
 	const signalState = {userStore,createUserIdentity,serverip}
+	const passwordState = {ispasswordlock,setLockState,isapplock,setAppLock,password,setPassword}
 
 
 
@@ -279,7 +289,14 @@ function App() {
 				else{
 					setFirstTimeRun(true);
 				}
-
+				const pass = await SecureStore.getItemAsync('password');
+				if(pass!=null){
+					setLockState(true);
+					setAppLock(true)
+					setPassword(pass);
+				}else{
+					setLockState(false);
+				}
 				const chatidjson = await SecureStore.getItemAsync('chatids')
 				if(chatidjson != null){
 					const chatids:string[] = JSON.parse(chatidjson);
@@ -447,51 +464,64 @@ function App() {
 		<ChatContext.Provider value={chatState}>
 			<SignalContext.Provider value={signalState}>
 				<ContactContext.Provider value={contactState}>
-					<StackNav.Navigator>
-						{ (firsttimerun)?
+					<PasswordContext.Provider value={passwordState}>
+						<StackNav.Navigator>
+							{ (firsttimerun)?
 
-						<><StackNav.Screen 
-							name="UserRegister"
-							component={RegisterUserComponent}
-							/>
-						</>
-						:
-						<>
-						<StackNav.Screen 
-							name="Home"
-							component={MainScreenComponent} 
-							options={({ route }) => ({ title: (contacts.get(userid) as Contact).name })}
-						/>
-						<StackNav.Screen 
-							name="MainSettings"
-							component={MainSettingScreenComponent}
-						/>
-						<StackNav.Screen 
-							name="ChatScreen"
-							component={ChatScreenComponent}
-							options={({ route }) => ({ title: "Typescript placeholder" })}
-						/>
-						<StackNav.Screen 
-							name="ChatSettings"
-							component={ChatSettingScreenComponent}
-						/>
-						<StackNav.Screen 
-							name="NewChatScreen"
-							component={NewChatScreenComponent}
-						/>
+							<><StackNav.Screen 
+								name="UserRegister"
+								component={RegisterUserComponent}
+								/>
+							</>
+							:
+							<>
+								{ (isapplock)?
 
-						<StackNav.Screen 
-							name="NewGroupChatScreen"
-							component={NewGroupChatScreenComponent}
-						/>
+								<><StackNav.Screen 
+									name="PasswordUnlock"
+									component={PasswordUnlockScreen}
+									/>
+								</>
+								:
+								<>
+								<StackNav.Screen 
+									name="Home"
+									component={MainScreenComponent} 
+									options={({ route }) => ({ title: (contacts.get(userid) as Contact).name })}
+								/>
+								<StackNav.Screen 
+									name="MainSettings"
+									component={MainSettingScreenComponent}
+								/>
+								<StackNav.Screen 
+									name="ChatScreen"
+									component={ChatScreenComponent}
+									options={({ route }) => ({ title: "Typescript placeholder" })}
+								/>
+								<StackNav.Screen 
+									name="ChatSettings"
+									component={ChatSettingScreenComponent}
+								/>
+								<StackNav.Screen 
+									name="NewChatScreen"
+									component={NewChatScreenComponent}
+								/>
 
-						<StackNav.Screen 
-							name="SettingOptions"
-							component={SettingOptionsComponent}
-						/>
-						</>
-						}
-					</StackNav.Navigator>
+								<StackNav.Screen 
+									name="NewGroupChatScreen"
+									component={NewGroupChatScreenComponent}
+								/>
+
+								<StackNav.Screen 
+									name="SettingOptions"
+									component={SettingOptionsComponent}
+								/>
+								</>
+								}
+							</>
+							}
+						</StackNav.Navigator>
+					</PasswordContext.Provider>
 				</ContactContext.Provider>
 			</SignalContext.Provider>
 		</ChatContext.Provider>

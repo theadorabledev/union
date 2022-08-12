@@ -3,7 +3,7 @@
 */
 
 import React, { useState,useContext } from 'react';
-import { View, Text, ScrollView, Button, Image, TouchableOpacity, TouchableHighlight } from "react-native";
+import { View, Text, ScrollView,TextInput,Button, Image, TouchableOpacity, TouchableHighlight } from "react-native";
 import { Menu, MenuItem, MenuDivider } from 'react-native-material-menu';
 import uuid from 'react-native-uuid';
 import { format,isSameDay,parseISO} from 'date-fns'
@@ -15,7 +15,7 @@ import { EvilIcons } from '@expo/vector-icons';
 import {FontAwesome} from '@expo/vector-icons';
 
 import {GlobalStyle} from './Styles.js';
-import {ChatContext,ContactContext,SignalContext} from './Context.ts';
+import {ChatContext,ContactContext,SignalContext,PasswordContext} from './Context.ts';
 
 // Home button to navigate to MainScreenComponent
 export const HomeButton = ({onPress}) => {
@@ -93,13 +93,15 @@ export const SettingProfileButton = (props) => {
 	)
 }
 
+
+
 //context menu wrapper
 export const ContextMenu =(props)=> {
     const [visible, setVisible] = useState(false);
     const hideMenu = () => setVisible(false);
     const showMenu = () => setVisible(true);
     const menuOptions = props.options.map((a,i) => {
-	return <MenuItem key={i} onPress={a.handler}>{a.text}</MenuItem>
+	return <MenuItem key={i} onPress={()=>{a.handler();hideMenu();}}>{a.text}</MenuItem>
     });
 
     return (
@@ -147,7 +149,7 @@ function getChatName(chat){
   				return 1;
 			return 0;
 		});
-		//console.log(contactnames);
+		console.log(contactnames);
 		if(contactnames.toString().length > 30){
 			return contactnames.toString().substring(0,27)+"..."
 		}

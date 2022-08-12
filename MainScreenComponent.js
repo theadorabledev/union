@@ -102,6 +102,7 @@ const MessagesListComponent = (props) => {
 		}
 	})
 
+	//const chatItem = ({item,setSelectedChatId,setShowModal})
 	let chatComponents = 
 	chatarray.map((a)=>{
 		//rconsole.log("logging a",a);
@@ -126,7 +127,7 @@ const MessagesListComponent = (props) => {
     return (
 	<>
 		{
-		(true)
+		(false)
 		?
 		<>
 			<Dropdown
@@ -184,27 +185,28 @@ const MessagesListComponent = (props) => {
 						alignItems: "center",
 						marginTop: 22
 					}}>
-					
-						<View style={
-							{margin: 20,
-							backgroundColor: "white",
-							borderRadius: 20,
-							padding: 35,
-							alignItems: "center",
-							shadowColor: "#000",
-							shadowOffset: {
-							width: 0,
-							height: 2
-							},
-							shadowOpacity: 0.25,
-							shadowRadius: 4,
-							elevation: 5
-						}}>
-							<Button title="Delete Chat?" onPress={()=>{
-								deleteChat(selectedchatid);
-								setShowModal(!showmodal)}
-								}/>
-						</View>
+						<TouchableHighlight onPress={() => {
+							deleteChat(selectedchatid);
+							setShowModal(!showmodal)}}
+							underlayColor = {GlobalStyle.highlightcolor}
+							style={
+								{margin: 20,
+								backgroundColor: "white",
+								borderRadius: 20,
+								padding: 35,
+								alignItems: "center",
+								shadowColor: "#000",
+								shadowOffset: {
+								width: 0,
+								height: 2
+								},
+								shadowOpacity: 0.25,
+								shadowRadius: 4,
+								elevation: 5
+							}}
+							>
+								<Text>Delete Chat?</Text>
+						</TouchableHighlight>
 					
 					</View>
 				</TouchableWithoutFeedback>

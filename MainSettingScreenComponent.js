@@ -85,11 +85,11 @@ const User = (props) => {
 }
 
 const settingOptions = [
-    {text: "Account", icon:icons.account, component:1},
-    {text: "Appearance", icon:icons.appearance, component:2},
-    {text: "Notifications", icon:icons.notification, component:3},
-    {text: "Privacy", icon:icons.privacy, component:4},
-    {text: "Help", icon:icons.help, component:5},
+    {text: "Account", icon:icons.account, component:0},
+    {text: "Appearance", icon:icons.appearance, component:1},
+    {text: "Notifications", icon:icons.notification, component:2},
+    {text: "Privacy", icon:icons.privacy, component:3},
+    {text: "Help", icon:icons.help, component:4},
 ]
 
 // Wrapper for settings options

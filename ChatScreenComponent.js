@@ -18,8 +18,11 @@ import {GlobalStyle} from './Styles.js';
 
 //poll stuff
 import Modal from "react-native-modal";
-import { LeafPoll, Result } from 'react-leaf-polls';
-import 'react-leaf-polls/dist/index';
+import { LeafPoll, Result } from 'react-leaf-polls'
+import 'react-leaf-polls/dist/index'
+import { FlatList } from 'react-native-gesture-handler';
+
+
 
 
 
@@ -60,40 +63,52 @@ const ChatStyles = StyleSheet.create(
 
 // Message bubble which displays the text of a message
 const MessageBubble = (props) => {
+	const {contacts,setContacts,userid} = useContext(ContactContext)
+	const previousindex = props.data.findIndex(function(currentValue){return currentValue == props.item})-1;
+	let showname = true;
+	if (previousindex > -1){
+		if (props.item.senderId == props.data[previousindex].senderId){
+			showname = false
+		}
+	}
+	let username = contacts.get(props.item.senderId).name;
+	const issend = (props.item.senderId ==userid)
+	{	
+
     return(
 		<View style=
 		{[
 		  ChatStyles.message,
-		  props.send ? ChatStyles.send : ChatStyles.recieve
+		  issend ? ChatStyles.send : ChatStyles.recieve
 		]}>
 			<View style=
 			{[
 				ChatStyles.cloud,
-				{backgroundColor: props.send ? GlobalStyle.highlightcolor : GlobalStyle.pinklightcolor}
+				{backgroundColor: issend ? GlobalStyle.highlightcolor : GlobalStyle.pinklightcolor}
 			]}>
 				{
-					props.showname
+					showname
 					?
 						<Text style=
 						{[
 							ChatStyles.text,
-							{color: props.send ? 'white': 'white'}
+							{color: issend ? 'white': 'white'}
 						]}>
-							{props.name}
+							{username}
 						</Text>
 					:
 						null
 				}
 
 				{
-					props.text
+					props.item.message
 					?
 						<Text style=
 						{[
 							ChatStyles.text,
-							{color: props.send ? 'white': 'white'}
+							{color: issend ? 'white': 'white'}
 						]}>
-							{props.text}
+							{props.item.message}
 						</Text>
 					:
 						null
@@ -102,69 +117,96 @@ const MessageBubble = (props) => {
 		</View>
     )
 }
+}
+
+const MessageSearchBar = (props) =>{
+	if(props.barstate.barvisible){
+	return (
+		<View style = {keyboardStyle.outer}>
+		<View style={keyboardStyle.container}> 
+		  <TextInput
+			autoCapitalize="none"
+			autoCorrect={false}
+			clearButtonMode="always"
+			value={props.query}
+			onChangeText={queryText => props.handleSearch(queryText)}
+			placeholder="Search"
+			style={keyboardStyle.input}
+		  />
+		  	<TouchableOpacity onPress={()=>{
+				
+				props.barstate.setBarVisible(false)
+				props.handleSearch("");
+				}}>
+				<Ionicons name='close-circle' size={24} color={GlobalStyle.highlightcolor} style={keyboardStyle.icon}/>
+			</TouchableOpacity>
+		</View>
+		</View>
+	  );
+	}else{
+		return <View></View>
+	}
+}
 
 // Container for the messages, updated with state variable, displays "No messages" if chat message array is empty.
 const MessageBoxComponent = (props) => {
-
+	const [filterdata,setFilterData] = useState([]);
+	const [filtertext,setFilterText] = useState("");
 	const {chats,setChats} = useContext(ChatContext)
-	const {contacts,setContacts,userid} = useContext(ContactContext)
+	const {contacts,setContacts,userid} = useContext(ContactContext);
+
+
 	//get value to determine if chat is currently empty
     let empty = (chats.get(props.chatId).messages.length == 0)
 	//get scroll view reference to allow for autoscrolling the scrollview
-	const scrollViewRef = useRef();
+	//const scrollViewRef = useRef();
 	//create message bubble components
-    let textComponents = chats.get(props.chatId).messages.map((a, i) => 
-	{
-		//check if consecutive messages are being displayed and hide the sender name if so.
-		let showname = true;
-		if ( i > 0) {
-			if (a.senderId == chats.get(props.chatId).messages[i-1].senderId){
-				showname = false
+
+	const data = chats.get(props.chatId).messages;
+	//const filterdata = data.filter((message)=>{
+	//	if(message.message.toLowerCase().includes('h')){
+	//		return true;
+	//	}
+	//})
+	//setFilterData(data);
+	useEffect(()=>{
+		const newfilterdata = data.filter((message)=>{
+			if(message.message.toLowerCase().includes(filtertext)){
+				return true;
 			}
-		}
-		//retrieve contact username 
-		let username = contacts.get(a.senderId).name
-		//choose between send & recieve variations depending on sender id & user id comparison
-		if (a.senderId ==userid)
-		{	
-			return <MessageBubble
-					send
-					key={i}
-					text = {a.message}
-					showname ={showname}
-					name={username}
-				/>;
-		}
-		else
-		{
-			return <MessageBubble
-					recieve
-					key={i}
-					text = {a.message}
-					showname ={showname}
-					name={username}
-				/>;		
-		}
-	});
+		})
+		setFilterData((data)=>{
+			return newfilterdata;
+		});
+	},[filtertext])
+
+
+
+	const renderItem = ({item}) =>(
+		<MessageBubble
+			send
+			key={item.messageId}
+			item={item}
+			data={data}
+		/>
+		)
+
 	//need fragment for ternary comparison
     return (
 		<>
 			{
 				empty 
 				?
-					<ScrollView
-						ref={scrollViewRef}
-						onContentSizeChange={() => scrollViewRef.current.scrollToEnd({ animated: true })}
-					>
+					<ScrollView>
 						<Text>No messages</Text>
 					</ScrollView>
 				:
-					<ScrollView
-						ref={scrollViewRef}
-						onContentSizeChange={() => scrollViewRef.current.scrollToEnd({ animated: true })}
-					>
-						{textComponents}
-					</ScrollView>
+					<FlatList
+						data={filterdata}
+						renderItem={renderItem}
+						keyExtractor={item=>item.messageId}
+						ListHeaderComponent={<MessageSearchBar handleSearch={setFilterText}query={filtertext}barstate ={props.barstate}/>}
+					/>
 			}
 		</>
     );
@@ -261,7 +303,11 @@ const KeyboardComponent = (props) => {
 					if (arr[index]!=userid)
 					{
 						message.recieverId=arr[index]
+						try{
 						ws.send(JSON.stringify(message))
+						}catch(e){
+							console.log(e);
+						}
 					}
 				})
 				newChats.set(props.chatId,thischat)
@@ -317,9 +363,10 @@ const KeyboardComponent = (props) => {
 const ChatScreenComponent = ({route, navigation}) => {
 
     const titlename = route.params.username.length > 14 ?  route.params.username.substring(0,13) + "..." : route.params.username
+	const [barvisible,setBarVisible] = useState(false);
     const chatOptions = [
-	{text:"Settings", handler:() => navigation.navigate('ChatSettings')},
-	{text:"Search", handler:()=> {alert("Search conversation function")}},
+	{text:"Settings", handler:() => {settingsNavigate()}},
+	{text:"Search", handler:()=> {setBarVisible(true)}},
 	{text:"Add to friends", handler:()=> {alert("Add contact to friends list")}},
     ]
 	const {chatId,chatpic,settingsNavigate} = route.params;
@@ -356,7 +403,7 @@ const ChatScreenComponent = ({route, navigation}) => {
     }, [navigation]);
     return (
 		<View style={{flex:1,flexDirection: "column"}}>
-			<MessageBoxComponent chatId={chatId}/>
+			<MessageBoxComponent chatId={chatId} barstate={{barvisible,setBarVisible}}/>
 			<KeyboardComponent chatId={chatId}/>
 		</View>
     );

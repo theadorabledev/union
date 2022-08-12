@@ -63,7 +63,7 @@ const contacttype: Dispatch<React.SetStateAction<Map<string, Contact>>> = () =>{
 const processedmessagetype: Dispatch<React.SetStateAction<Map<string, ProcessedChatMessage>>> = () =>{};
 const websockettype: React.Dispatch<React.SetStateAction<WebSocket>> = () => {};
 const stringhandlertype: React.Dispatch<React.SetStateAction<string>> = () => {};
-
+const booleanhandlertype: React.Dispatch<React.SetStateAction<boolean>> = () => {};
 //provides the chat state & websocket states to the rest of the app
 export const ChatContext = React.createContext({
 	chats: new Map<string,Chat>(),
@@ -88,8 +88,17 @@ export const SignalContext = React.createContext({
 	serverip:"string",
 });
 
+export const PasswordContext = React.createContext({
+	ispasswordlock:false,
+	setLockState:booleanhandlertype,
+	isapplock:false,
+	setAppLock:booleanhandlertype,
+	password: "string",
+	setPassword: stringhandlertype,
+})
 //poll components
 import {Result } from 'react-leaf-polls'
+import { BinaryPollProps } from 'react-leaf-polls/dist/components/BinaryPoll/BinaryPoll';
 
 // Persistent data array (typically fetched from the server)
 // export const ResData = [
