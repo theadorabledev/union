@@ -3,7 +3,7 @@
 */
 
 import React, { useState,useContext } from 'react';
-import { View, Text, ScrollView, Button, Image, TouchableOpacity, TouchableHighlight } from "react-native";
+import { View, Text, ScrollView,TextInput,Button, Image, TouchableOpacity, TouchableHighlight } from "react-native";
 import { Menu, MenuItem, MenuDivider } from 'react-native-material-menu';
 import uuid from 'react-native-uuid';
 import { format,isSameDay,parseISO} from 'date-fns'
@@ -15,7 +15,7 @@ import { EvilIcons } from '@expo/vector-icons';
 import {FontAwesome} from '@expo/vector-icons';
 
 import {GlobalStyle} from './Styles.js';
-import {ChatContext,ContactContext,SignalContext} from './Context.ts';
+import {ChatContext,ContactContext,SignalContext,PasswordContext} from './Context.ts';
 
 // Home button to navigate to MainScreenComponent
 export const HomeButton = ({onPress}) => {
@@ -92,6 +92,32 @@ export const SettingProfileButton = (props) => {
 			/>
 	)
 }
+
+
+export const PasswordUnlockScreen = () =>{
+	const {ispasswordlock,setLockState,isapplock,setAppLock,password,setPassword} = useContext(PasswordContext);
+	const [temppassword,setTempPassword] = useState("");
+	return(
+		<>
+			<TextInput
+				placeholder="enter password"
+				placeholderTextColor="#003f5c"
+				textAlign="center"
+				secureTextEntry={true}
+				value={temppassword}
+				onChangeText={newpassword=>setTempPassword(newpassword)}
+						/>
+			<Button title="Check Password" onPress={()=>{
+				if(temppassword == password){
+					setAppLock(false);
+				}else{
+					alert("WRONG PASSWORD DUMFUCK")
+				}
+			}} />
+		</>
+	)
+}
+
 
 //context menu wrapper
 export const ContextMenu =(props)=> {
