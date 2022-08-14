@@ -156,13 +156,6 @@ const TestComponent = (props) => {
 		    return newcontactmap;
 		});
 		setUserId(initialUserId);
-
-		const t = (async () => {
-		    const v = await createUserIdentity()
-		    console.log(v);
-		    return v;
-		})();
-		console.log(t);
 	    }}/>
     );
 }
@@ -288,7 +281,7 @@ function App() {
 
 	try {
 	    setTvar("123");
-	    console.log("This actually ran")
+	    console.log("CREATING USER IDENTITY")
 	    //await createID(userid, userStore);
 	    const idInfo = await createID(userid, userStore);
 	    //we have to override the json function to safe the array buffers in a different manner. Hopefully, they still work when loaded again
@@ -301,29 +294,22 @@ function App() {
 	    });
 	    
 	    await SecureStore.setItemAsync('userstore',stringifiedstore);
-	    console.log("stringified store");
-	    console.log(stringifiedstore);
-	    console.log("id");
-	    console.log(idInfo);
-	    console.log("here");
-	    console.log(JSON.stringify(idInfo))
 
-	    const fetchReq = await fetch("http://167.99.43.209:443/registerKeyBundle/911-911-1912", {
-                method: 'POST',
-                headers: {
+	    console.log("REGISTERING USER");
+	    const registerUserResult = await fetch("http://167.99.43.209:443/registerKeyBundle/911-911-1912", {
+		method: "POST",
+		body: idInfo,
+		headers: {
 		    'Content-Type': 'application/json;charset=utf-8'
-		},
-		body: idInfo
-            });
-	    const data = await fetchReq.json();
-	    console.log(data);
-	    console.log("That was data");
+		}
+	    });
+	    console.log("Result:");
+	    console.log(registerUserResult);
 
-
-	    // const serverBundles = await fetch("http://167.99.43.209:443/getFullKeyBundle/911-911-1912");
-	    // const bundles = await serverBundles.json();
-	    // console.log("bunfles");
-	    // console.log(bundles);
+	    console.log("RETRIEVING INFO FOR USER")
+	    const serverBundles = await fetch("http://167.99.43.209:443/getFullKeyBundle/911-911-1912");
+	    const bundles = await serverBundles.json();
+	    console.log(bundles);
 	    
 	    console.log(idInfo);
 
@@ -424,12 +410,21 @@ function App() {
     },[])
 
     useEffect(() => {
-	console.log(firstTimeRun);
-	console.log(tvar);
-	if(firstTimeRun){
-	    createUserIdentity();
-	    console.log("First!");
+	try{
+	    console.log(firstTimeRun);
 	    console.log(tvar);
+	    if(firstTimeRun){
+		const cui = async () => {
+		    console.log("RUN ON USER CREATION");
+		    const r = await createUserIdentity();
+		    console.log(r);
+		};
+		cui();
+		console.log("First!");
+		console.log(tvar);
+	    }
+	} catch (err) {
+	    console.log(err)
 	}
     }, [])
     
