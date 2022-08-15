@@ -22,6 +22,7 @@ import RNPoll, { IChoice } from "react-native-poll";
 import RNAnimated from "react-native-animated-component";
 
 import { FlatList } from 'react-native-gesture-handler';
+import { set } from 'date-fns';
 
 
 
@@ -253,19 +254,39 @@ const keyboardStyle = StyleSheet.create(
 	}
 );
 
-//persitant data
-const ResData = [
-	{ id: 0, text:'Answer 1', votes: 0 },
-	{ id: 1, text:'Answer 2', votes: 0 },
-	{ id: 2, text:'Answer 3', votes: 0 }
-  ]
+// //persitant data replaced with function 
+// const Choices: Array<IChoice> = [
+// 	{ id: 1, choice: "Choice 1", votes: 3 },
+// 	{ id: 2, choice: "Choice 2", votes: 3 },
+// 	{ id: 3, choice: "Choice 3", votes: 3 },
+// 	{ id: 4, choice: "Choice 4", votes: 3 },
+//   ];
 
-const Choices: Array<IChoice> = [
-	{ id: 1, choice: "Choice 1", votes: 3 },
-	{ id: 2, choice: "Choice 2", votes: 3 },
-	{ id: 3, choice: "Choice 3", votes: 3 },
-	{ id: 4, choice: "Choice 4", votes: 3 },
-  ];
+//function to fetch votes
+function getVotes(){
+	//fetch total votes from server
+	return 12;
+}
+
+//function to fetch array data for poll
+function getChoices(){
+	//fetch data , constructing for now
+	const Choices: Array<IChoice> = [
+		{ id: 1, choice: "Choice 1", votes: 3 },
+		{ id: 2, choice: "Choice 2", votes: 3 },
+		{ id: 3, choice: "Choice 3", votes: 3 },
+		{ id: 4, choice: "Choice 4", votes: 3 },
+	  ];
+	return Choices
+}
+
+const Choices = getChoices();
+
+//function to fetch poll title
+
+//function to take text data and format it ino title and options
+
+
 
 // Displays a keyboard which allows the user to write messages
 // TODO: Connect to messaging API
@@ -278,6 +299,10 @@ const KeyboardComponent = (props) => {
 	const toggleModal = () => {
 		setModalVisible(!isModalVisible);
 	  };
+	//set voting state
+	const [isVoted, setVoted] = useState(false);
+	//set vote count
+	const TotalVotes = getVotes();
 	//auto hide/show keyboard 
     useEffect(() => {
 		const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
@@ -339,17 +364,20 @@ const KeyboardComponent = (props) => {
         		<View style={{ flex: 1 }}>
 					<Text>Poll title</Text>
 					<RNPoll
-						totalVotes={13}
+						totalVotes={TotalVotes}
 						choices={Choices}
-						onChoicePress={(selectedChoice: IChoice) =>
+						hasBeenVoted = {isVoted}
+						onChoicePress={(selectedChoice: IChoice) =>{
 							console.log("SelectedChoice: ", selectedChoice)
+							setVoted(true)
+						}
 						}
 						appearFrom="bottom"
   						animationDuration={750}
 						PollContainer={RNAnimated}
 						PollItemContainer={RNAnimated}
 					/>
-						<Button title="Hide modal" onPress={toggleModal} />
+						<Button title="Hide Poll" onPress={toggleModal} />
 						</View>
 					  </Modal>
 
