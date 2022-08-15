@@ -1,6 +1,7 @@
 /* A file to hold components used within the Setting option screen. */
 import React, { useState,useContext } from 'react';
-import { View, Text, TextInput, ScrollView, Button, Image, TouchableOpacity, TouchableHighlight, StyleSheet } from "react-native";
+import { View, Text, TextInput, ScrollView, Button, Image, TouchableOpacity, TouchableHighlight, StyleSheet, Switch } from "react-native";
+import {useTheme} from '../theme/ThemeProvider';
 import NavigationBar from 'react-native-navbar';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -11,6 +12,75 @@ import {ContactContext,PasswordContext} from './Context';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as SecureStore from 'expo-secure-store';
 const defaultprofile = require('./assets/profilepicsquaresmall.png')  // should be Homebutton
+
+
+
+import {useColorScheme} from 'react-native-appearance';
+import {lightColors, darkColors} from './colorThemes';
+
+export const ThemeContext = React.createContext({
+    isDark: false,
+    colors: lightColors,
+    setScheme: () => {},
+});
+
+export const ThemeProvider = (props) => {
+    const colorScheme = useColorScheme();
+
+    const [isDark, setIsDark] = React.useState(colorScheme === "dark");
+
+    React.useEffect(() => {
+        setIsDark(colorScheme === "dark");
+    }, [colorScheme]);
+
+    const defaultTheme = {
+        isDark,
+        colors: isDark ? darkColors : lightColors,
+        setScheme: (scheme) => setIsDark(scheme === "dark"),
+    };
+
+  return (
+        <ThemeContext.Provider value={defaultTheme}>
+            {props.children}
+        </ThemeContext.Provider>
+    );
+};
+
+export const useTheme = () => React.useContext(ThemeContext);
+
+// Light theme colors
+export const lightColors = {
+	background: '#FFFFFF',
+	primary: '#512DA8',
+	text: '#121212',
+	error: '#D32F2F',
+  };
+  
+  // Dark theme colors
+  export const darkColors = {
+	background: '#121212',
+	primary: '#B39DDB',
+	text: '#FFFFFF',
+	error: '#EF9A9A',
+  };
+
+  
+export const Toggle = () => {
+	const {setScheme, isDark} = useTheme();
+
+	const toggleScheme = () => {
+		isDark ? setScheme('light') : setScheme('dark');
+	}
+
+	return (
+		<Switch value={isDark} onValueChange={toggleScheme}/>
+	);
+}
+
+
+
+
+
 
 const stylesAccount = StyleSheet.create({
 
@@ -201,6 +271,10 @@ export const Appearance = () => {
 		<View style={stylesCommonComponent.horizontalAlign}>
 		  <Text>{appearance.chatColor}</Text>
 		  <RightArrow onPress={() => alert('Change Chat Color & Wallpaper')} />
+		</View>
+		<View style={stylesCommonComponent.horizontalAlign}>
+		  <Toggle>Toggle Theme</Toggle>
+		  <RightArrow onPress={() => alert('Tap to Toggle Theme')} />
 		</View>
 	  </View>
 	)

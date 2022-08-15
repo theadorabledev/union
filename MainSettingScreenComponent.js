@@ -1,6 +1,7 @@
 /* A file to hold components used within the main settings screen. */
 import React, { useState,useContext } from 'react';
-import { View, Text, TextInput, ScrollView, Button, Image, TouchableOpacity, TouchableHighlight, StyleSheet, useWindowDimensions } from "react-native";
+import { View, Text, TextInput, ScrollView, Button, Image, TouchableOpacity, TouchableHighlight, StyleSheet, useWindowDimensions, StatusBar } from "react-native";
+import {useTheme} from '../theme/ThemeProvider';
 import { useNavigation } from '@react-navigation/native';
 import NavigationBar from 'react-native-navbar';
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -126,6 +127,18 @@ const OptionList = () => {
     );
 }
 
+
+export const ThemeScreen = () => {
+    const {colors, isDark} = useTheme();
+
+    return (
+        <>
+            <StatusBar animated barStyle={isDark ? "light-content" : "dark-content"}/>
+        </>
+    );
+}
+
+
 // Returns the settings screen displayed on the main page
 const MainSettingScreenComponent = ({navigation}) => {
     const {contacts,setContacts,userid} = useContext(ContactContext)
@@ -138,6 +151,7 @@ const MainSettingScreenComponent = ({navigation}) => {
 	<View>
 	    <User/>
 	    <OptionList/>
+		<ThemeScreen/>
 	</View>
     );
 }
