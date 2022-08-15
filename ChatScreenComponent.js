@@ -18,8 +18,9 @@ import {GlobalStyle} from './Styles.js';
 
 //poll stuff
 import Modal from "react-native-modal";
-import { LeafPoll, Result } from 'react-leaf-polls'
-import 'react-leaf-polls/dist/index'
+import RNPoll, { IChoice } from "react-native-poll";
+import RNAnimated from "react-native-animated-component";
+
 import { FlatList } from 'react-native-gesture-handler';
 
 
@@ -259,6 +260,13 @@ const ResData = [
 	{ id: 2, text:'Answer 3', votes: 0 }
   ]
 
+const Choices: Array<IChoice> = [
+	{ id: 1, choice: "Choice 1", votes: 3 },
+	{ id: 2, choice: "Choice 2", votes: 3 },
+	{ id: 3, choice: "Choice 3", votes: 3 },
+	{ id: 4, choice: "Choice 4", votes: 3 },
+  ];
+
 // Displays a keyboard which allows the user to write messages
 // TODO: Connect to messaging API
 const KeyboardComponent = (props) => {
@@ -329,15 +337,18 @@ const KeyboardComponent = (props) => {
 				//onModalWillShow = {function} on show will construct the poll with text data
 			>
         		<View style={{ flex: 1 }}>
-					<Text>Poll will go here</Text>
-					{/* <LeafPoll
-							type = {"multiple"}
-							question={'What you wanna ask?'}
-							results={ResData}
-							theme={keyboardStyle.pollTheme}
-							//onVote={vote}
-							isVoted={false}
-						/> */}
+					<Text>Poll title</Text>
+					<RNPoll
+						totalVotes={13}
+						choices={Choices}
+						onChoicePress={(selectedChoice: IChoice) =>
+							console.log("SelectedChoice: ", selectedChoice)
+						}
+						appearFrom="bottom"
+  						animationDuration={750}
+						PollContainer={RNAnimated}
+						PollItemContainer={RNAnimated}
+					/>
 						<Button title="Hide modal" onPress={toggleModal} />
 						</View>
 					  </Modal>
