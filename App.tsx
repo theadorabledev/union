@@ -104,9 +104,9 @@ const initialUserId = "47769a91-2d07-4580-8828-5913cf821623";
 //debug id for testing purposes
 const altId = "1d4070bf-7ada-46bd-8b7c-c8b8e0507dec"
 //please don't doxx me.
-const serverip = "98.14.55.86:8000"
+const serverip = "192.168.0.194"
 //generate websocket connection on app start
-const initialws = new WebSocket('ws://'+serverip+'/'+'loading')
+const initialws = new WebSocket('ws://'+serverip+':8000/'+'loading')
 //signal protocol address (currently unused)
 const userAddress = new SignalProtocolAddress(initialUserId, 1);
 
@@ -197,118 +197,87 @@ function App() {
 
     //signal id creation function
     const createID = async (name: string, store: SignalProtocolStore) => {
+		const registrationId = KeyHelper.generateRegistrationId()
+		storeSomewhereSafe(store)(`registrationID`, registrationId)
+		//storage.set(`registrationID`, registrationId)
 
-	const registrationId = KeyHelper.generateRegistrationId()
-	storeSomewhereSafe(store)(`registrationID`, registrationId)
-	//storage.set(`registrationID`, registrationId)
+		const identityKeyPair = await KeyHelper.generateIdentityKeyPair()
+		const view = Buffer.from(identityKeyPair.privKey);
+		storeSomewhereSafe(store)('identityKey', identityKeyPair)
+		//storage.set('identityKey', JSON.stringify(identityKeyPair))
+		const baseKeyId = makeKeyId()
+		const preKey = await KeyHelper.generatePreKey(baseKeyId)
+		store.storePreKey(`${baseKeyId}`, preKey.keyPair)
+		
+		//storage.set(`${baseKeyId}`, JSON.stringify(preKey.keyPair))
 
-	const identityKeyPair = await KeyHelper.generateIdentityKeyPair()
-	const view = Buffer.from(identityKeyPair.privKey);
-	storeSomewhereSafe(store)('identityKey', identityKeyPair)
-	//storage.set('identityKey', JSON.stringify(identityKeyPair))
-	const baseKeyId = makeKeyId()
-	const preKey = await KeyHelper.generatePreKey(baseKeyId)
-	store.storePreKey(`${baseKeyId}`, preKey.keyPair)
-	
-	//storage.set(`${baseKeyId}`, JSON.stringify(preKey.keyPair))
+		const signedPreKeyId = makeKeyId()
+		const signedPreKey = await KeyHelper.generateSignedPreKey(identityKeyPair, signedPreKeyId)
+		store.storeSignedPreKey(signedPreKeyId, signedPreKey.keyPair)
 
-	const signedPreKeyId = makeKeyId()
-	const signedPreKey = await KeyHelper.generateSignedPreKey(identityKeyPair, signedPreKeyId)
-	store.storeSignedPreKey(signedPreKeyId, signedPreKey.keyPair)
+		console.log(store);
 
-	console.log(store);
+		
+		const publicSignedPreKey: SignedPublicPreKeyType = {
+			keyId: signedPreKeyId,
+			publicKey: Buffer.from(signedPreKey.keyPair.pubKey).toJSON(),
+			signature: Buffer.from(signedPreKey.signature).toJSON(),
+		}
 
-	
-	const publicSignedPreKey: SignedPublicPreKeyType = {
-	    keyId: signedPreKeyId,
-	    publicKey: Buffer.from(signedPreKey.keyPair.pubKey).toJSON(),
-	    signature: Buffer.from(signedPreKey.signature).toJSON(),
-	}
+		const publicPreKey: PreKeyType = {
+			keyId: preKey.keyId,
+			publicKey: Buffer.from(preKey.keyPair.pubKey).toJSON(),
+		}
 
-	const publicPreKey: PreKeyType = {
-	    keyId: preKey.keyId,
-	    publicKey: Buffer.from(preKey.keyPair.pubKey).toJSON(),
-	}
-
-	return  JSON.stringify({
-	    registrationId: registrationId,
-	    identityPubKey: Buffer.from(identityKeyPair.pubKey).toJSON(),
-	    signedPreKey: publicSignedPreKey,
-	    oneTimePreKeys: [publicPreKey],
-	});
-	
-	
-	//storage.set(`${signedPreKeyId}`, JSON.stringify(signedPreKey.keyPair))
-	
-	// Now we register this with the server or other directory so all users can see them.
-
-	/*
-	  Everything here needs to be reimplemented when signal server is ready
-
-
-	  const publicSignedPreKey: SignedPublicPreKeyType = {
-	  keyId: signedPreKeyId,
-	  publicKey: signedPreKey.keyPair.pubKey,
-	  signature: signedPreKey.signature,
-	  }
-
-	  const publicPreKey: PreKeyType = {
-	  keyId: preKey.keyId,
-	  publicKey: preKey.keyPair.pubKey,
-	  }
-
-	  directory.storeKeyBundle(name, {
-	  registrationId,
-	  identityPubKey: identityKeyPair.pubKey,
-	  signedPreKey: publicSignedPreKey,
-	  oneTimePreKeys: [publicPreKey],
-	  })
-	*/
-	//save('firsttimerun', false);
+		return  JSON.stringify({
+			registrationId: registrationId,
+			identityPubKey: Buffer.from(identityKeyPair.pubKey).toJSON(),
+			signedPreKey: publicSignedPreKey,
+			oneTimePreKeys: [publicPreKey],
+		});
     }
     
     //creates the user identity and saves it to the persistent data
     const createUserIdentity = async () => {
+		try {
+			setTvar("123");
+			console.log("CREATING USER IDENTITY")
+			//await createID(userid, userStore);
+			const idInfo = await createID(userid, userStore);
+			//we have to override the json function to safe the array buffers in a different manner. Hopefully, they still work when loaded again
+			const stringifiedstore = JSON.stringify(userStore,function(k,v){
+			if (k == "pubKey" || k == "privKey"){
+				const buf = Buffer.from(v);
+				return Buffer.from(v).toJSON();
+			}
+			return v;
+			});
+			
+			await SecureStore.setItemAsync('userstore',stringifiedstore);
 
-	try {
-	    setTvar("123");
-	    console.log("CREATING USER IDENTITY")
-	    //await createID(userid, userStore);
-	    const idInfo = await createID(userid, userStore);
-	    //we have to override the json function to safe the array buffers in a different manner. Hopefully, they still work when loaded again
-	    const stringifiedstore = JSON.stringify(userStore,function(k,v){
-		if (k == "pubKey" || k == "privKey"){
-		    const buf = Buffer.from(v);
-		    return Buffer.from(v).toJSON();
+			console.log("REGISTERING USER");
+			const registerUserResult = await fetch("http://"+serverip+":443/registerKeyBundle/911-911-1912", {
+			method: "POST",
+			body: idInfo,
+			headers: {
+				'Content-Type': 'application/json;charset=utf-8'
+			}
+			});
+			console.log("Result:");
+			console.log(registerUserResult);
+
+			console.log("RETRIEVING INFO FOR USER")
+			const serverBundles = await fetch("http://"+serverip+":443/getFullKeyBundle/911-911-1912");
+			const bundles = await serverBundles.json();
+			console.log(bundles);
+			
+			console.log(idInfo);
+
+			
+			return "test";
+		} catch (e) {
+			console.log(e);
 		}
-		return v;
-	    });
-	    
-	    await SecureStore.setItemAsync('userstore',stringifiedstore);
-
-	    console.log("REGISTERING USER");
-	    const registerUserResult = await fetch("http://167.99.43.209:443/registerKeyBundle/911-911-1912", {
-		method: "POST",
-		body: idInfo,
-		headers: {
-		    'Content-Type': 'application/json;charset=utf-8'
-		}
-	    });
-	    console.log("Result:");
-	    console.log(registerUserResult);
-
-	    console.log("RETRIEVING INFO FOR USER")
-	    const serverBundles = await fetch("http://167.99.43.209:443/getFullKeyBundle/911-911-1912");
-	    const bundles = await serverBundles.json();
-	    console.log(bundles);
-	    
-	    console.log(idInfo);
-
-	    
-	    return "test";
-	} catch (e) {
-	    console.log(e);
-	}
 
     };
 
@@ -330,7 +299,7 @@ function App() {
     //console.log("New Web Socket Connection: ",ws);
     useEffect(() => {
 	async function prepare(){	
-	    try{
+	try{
 		const userid = await SecureStore.getItemAsync('userid')
 		if(userid!=null && userid != ""){
 		    setUserId(userid);
@@ -432,13 +401,6 @@ function App() {
     }, [])
 
 
-
-
-
-	//resets data probably should implemet it better
-	//delData();
-
-	//on recieve message from server
 	ws.onmessage = (e) => {
 		//parse json string
 		let msgData = JSON.parse(e.data);
@@ -522,23 +484,23 @@ function App() {
 
     //on recieve message from server
     ws.onmessage = (e) => {
-	//parse json string
-	let msgData = JSON.parse(e.data);
-	console.log("Recieved: ", msgData);
-	//get chatid
-	let chatId:string = msgData.chatId
-	console.log(chatId)
-	//push message to chat map & update state
-	setChats((chats) =>{
-	    const newChats = new Map(chats);
-	    const thischat = newChats.get(chatId);
-	    if (typeof thischat != undefined){
-		const tschat = thischat as Chat;
-		tschat.messages.push(msgData)
-		newChats.set(chatId,tschat)
-	    }	
-	    return newChats;
-	})
+		//parse json string
+		let msgData = JSON.parse(e.data);
+		console.log("Recieved: ", msgData);
+		//get chatid
+		let chatId:string = msgData.chatId
+		console.log(chatId)
+		//push message to chat map & update state
+		setChats((chats) =>{
+			const newChats = new Map(chats);
+			const thischat = newChats.get(chatId);
+			if (typeof thischat != undefined){
+			const tschat = thischat as Chat;
+			tschat.messages.push(msgData)
+			newChats.set(chatId,tschat)
+			}	
+			return newChats;
+		})
     };
 
 
