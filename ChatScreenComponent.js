@@ -267,6 +267,8 @@ function getVotes(){
 	//fetch total votes from server
 	return 12;
 }
+//set vote count
+const TotalVotes = getVotes();
 
 //function to fetch array data for poll
 function getChoices(){
@@ -282,6 +284,11 @@ function getChoices(){
 
 const Choices = getChoices();
 
+function getPollTitle(){
+	//fetch poll title from server
+	return "Poll Title";
+}
+const PollTitle = getPollTitle();
 //function to fetch poll title
 
 //function to take text data and format it ino title and options
@@ -301,8 +308,8 @@ const KeyboardComponent = (props) => {
 	  };
 	//set voting state
 	const [isVoted, setVoted] = useState(false);
-	//set vote count
-	const TotalVotes = getVotes();
+	
+	//
 	//auto hide/show keyboard 
     useEffect(() => {
 		const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
@@ -362,7 +369,7 @@ const KeyboardComponent = (props) => {
 				//onModalWillShow = {function} on show will construct the poll with text data
 			>
         		<View style={{ flex: 1 }}>
-					<Text>Poll title</Text>
+					<Text> {PollTitle} </Text>
 					<RNPoll
 						totalVotes={TotalVotes}
 						choices={Choices}
@@ -378,7 +385,8 @@ const KeyboardComponent = (props) => {
 						PollItemContainer={RNAnimated}
 					/>
 						<Button title="Hide Poll" onPress={toggleModal} />
-						</View>
+						<Button title="New Poll" onPress={() => {alert("new poll")}} />
+				</View>
 					  </Modal>
 
 			<View style={keyboardStyle.container}> 
