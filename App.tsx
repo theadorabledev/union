@@ -192,11 +192,18 @@ function App() {
     const [processedmessages,setProcessedMessages] = useState<Map<string,ProcessedChatMessage>>(new Map<string,ProcessedChatMessage>());
     //signal storage state
     const [userStore,setUserStore] = useState(new SignalProtocolStore());
-
     const [tvar,setTvar] = useState<string>(""); /* </string> */
+    //websocket state
+    const [ws,setWs] = useState<WebSocket>(initialws) /* </WebSocket> */
+    const [appIsReady, setAppIsReady] = useState(false);
+    const [firstTimeRun,setFirstTimeRun] = useState(true); 
+	const [ispasswordlock,setLockState] = useState(false); 
+	const [isapplock,setAppLock] = useState(false);
+	const [password,setPassword] = useState("");
+	//organize data for context providing
 
-    //signal id creation function
-    const createID = async (name: string, store: SignalProtocolStore) => {
+	//signal id creation function
+	const createID = async (name: string, store: SignalProtocolStore) => {
 		const registrationId = KeyHelper.generateRegistrationId()
 		storeSomewhereSafe(store)(`registrationID`, registrationId)
 		//storage.set(`registrationID`, registrationId)
@@ -231,19 +238,25 @@ function App() {
 
 		return  JSON.stringify({
 			registrationId: registrationId,
+			username:name,
 			identityPubKey: Buffer.from(identityKeyPair.pubKey).toJSON(),
 			signedPreKey: publicSignedPreKey,
 			oneTimePreKeys: [publicPreKey],
 		});
-    }
-    
-    //creates the user identity and saves it to the persistent data
-    const createUserIdentity = async () => {
+	}
+	
+	//creates the user identity and saves it to the persistent data
+	const createUserIdentity = async () => {
 		try {
 			setTvar("123");
 			console.log("CREATING USER IDENTITY")
 			//await createID(userid, userStore);
-			const idInfo = await createID(userid, userStore);
+			console.log(userid);
+			const usercontact = contacts.get(userid);
+			if (usercontact == null){
+				return;
+			}
+			const idInfo = await createID(usercontact.name, userStore);
 			//we have to override the json function to safe the array buffers in a different manner. Hopefully, they still work when loaded again
 			const stringifiedstore = JSON.stringify(userStore,function(k,v){
 			if (k == "pubKey" || k == "privKey"){
@@ -279,16 +292,9 @@ function App() {
 			console.log(e);
 		}
 
-    };
+	};
+	
 
-    //websocket state
-    const [ws,setWs] = useState<WebSocket>(initialws) /* </WebSocket> */
-    const [appIsReady, setAppIsReady] = useState(false);
-    const [firstTimeRun,setFirstTimeRun] = useState(true); 
-	const [ispasswordlock,setLockState] = useState(false); 
-	const [isapplock,setAppLock] = useState(false);
-	const [password,setPassword] = useState("");
-	//organize data for context providing
 
     const chatState = {chats,setChats,ws,setWs,processedmessages,setProcessedMessages};
     const contactState = {contacts,setContacts,userid,setUserId,resetContactData:delData};
@@ -303,7 +309,7 @@ function App() {
 		const userid = await SecureStore.getItemAsync('userid')
 		if(userid!=null && userid != ""){
 		    setUserId(userid);
-		    setFirstTimeRun(false);
+		    //setFirstTimeRun(false);
 		}else if(userid == ""){
 		    setFirstTimeRun(true);
 		}
@@ -381,23 +387,24 @@ function App() {
     },[])
 
     useEffect(() => {
-	try{
-	    console.log(firstTimeRun);
-	    console.log(tvar);
-	    if(firstTimeRun){
-		const cui = async () => {
-		    console.log("RUN ON USER CREATION");
-		    const r = await createUserIdentity();
-		    console.log(r);
-		};
-		cui();
-		console.log("First!");
-		console.log(tvar);
-	    }
-	} catch (err) {
-	    console.log(err)
-
-	}
+		if (appIsReady) {
+			try{
+				console.log(firstTimeRun);
+				console.log(tvar);
+				if(firstTimeRun){
+				const cui = async () => {
+					console.log("RUN ON USER CREATION");
+					//const r = await createUserIdentity();
+					//console.log(r);
+				};
+				cui();
+				console.log("First!");
+				console.log(tvar);
+				}
+			} catch (err) {
+				console.log(err)
+			}
+		}
     }, [])
 
 
@@ -443,18 +450,22 @@ function App() {
 
 
     useEffect(()=>{
-	if (appIsReady) {
-	    const contactids:string[] = [];
-	    contacts.forEach((contact)=>{
-		contactids.push(contact.id);
-		SecureStore.setItemAsync(contact.id,JSON.stringify(contact));
-	    })
-	    SecureStore.setItemAsync('contactids',JSON.stringify(contactids));
-	    //console.log("saving contactids as",contactids)
-	    if (typeof contacts.get(userid) != "undefined"){
-		setFirstTimeRun(false);
-	    }
-	}
+		if (appIsReady) {
+			const contactids:string[] = [];
+			contacts.forEach((contact)=>{
+			contactids.push(contact.id);
+			SecureStore.setItemAsync(contact.id,JSON.stringify(contact));
+			})
+			SecureStore.setItemAsync('contactids',JSON.stringify(contactids));
+			//console.log("saving contactids as",contactids)
+			if (typeof contacts.get(userid) != "undefined"){
+				const cui = async () => {
+					const r = await createUserIdentity();
+				}
+				cui();
+				setFirstTimeRun(false);
+			}
+		}
     }
 	      ,[contacts])
 
@@ -505,7 +516,7 @@ function App() {
 
 
 	
-
+	//this actually handles the first time run thingy
 	const onLayoutRootView = useCallback(async () => {
 		if (appIsReady) {
 		  if (typeof contacts.get(userid) != "undefined"){
