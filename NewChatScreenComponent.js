@@ -47,6 +47,7 @@ const NewChatScreenComponent = ({navigation}) => {
 	// Wrapper for ChatComponent that appears as a possilbe contact in the NewChatScreen
 	return <NewChatComponent
 		name={item.username}
+		id={item.address}
 		pronouns={item.pronouns?item.pronouns:"They/Them"}
 		image={GlobalStyle.defaultprofile}
 		messages={[]}

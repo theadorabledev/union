@@ -305,7 +305,7 @@ export const NewChatComponent = (props) => {
 	function newContactChat(){
 		console.log("Create Contact");
 		//create new contact id
-		const newcontactid = uuid.v4();
+		const newcontactid = props.id
 		//add user to contact map
 		setContacts((contacts) =>{
 			const newContacts = new Map(contacts);

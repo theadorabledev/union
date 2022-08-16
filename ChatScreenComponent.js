@@ -13,7 +13,7 @@ import { HeaderBackButton } from '@react-navigation/elements';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
 import {SettingsButton,PhoneButton,ProfileButton,ContextMenu,MessageSearchBar} from './Common.js';
-import {ChatContext,ContactContext,MessageCreator,vote } from './Context';
+import {ChatContext,ContactContext,SignalContext,MessageCreator,vote } from './Context';
 import {GlobalStyle,useTheme,keyboardStyle} from './Styles.js';
 
 //poll stuff
@@ -202,6 +202,7 @@ const KeyboardComponent = (props) => {
 	const {contacts,setContacts,userid} = useContext(ContactContext)
 	const [text,setText] = useState('');
 	const [isModalVisible, setModalVisible] = useState(false); //modal show
+	const {userStore,createUserIdentity,serverip} = useContext(SignalContext);
 	const {colors,isDark} = useTheme();
 	const toggleModal = () => {
 		setModalVisible(!isModalVisible);
@@ -234,13 +235,20 @@ const KeyboardComponent = (props) => {
 				const thischat = newChats.get(props.chatId)
 				const message = MessageCreator(trimtext,userid,props.chatId)
 				thischat.messages.push(message)
-				thischat.contactids.forEach((currentValue, index, arr)=>
+				thischat.contactids.forEach(async(currentValue, index, arr)=>
 				{
 					if (arr[index]!=userid)
 					{
 						message.recieverId=arr[index]
 						try{
-						//ws.send(JSON.stringify(message))
+							const serverBundles = await fetch("http://"+serverip+":443/storeMessage/"+message.recieverId,
+							{
+								method: "POST",
+								body: JSON.stringify(message),
+								headers: {
+									'Content-Type': 'application/json;charset=utf-8'
+								}
+							});
 						}catch(e){
 							console.log(e);
 						}
