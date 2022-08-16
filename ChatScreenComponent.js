@@ -269,7 +269,7 @@ const keyboardStyle = StyleSheet.create(
 		{
 			backgroundColor: '#def4fa',
 			flexDirection: 'row',
-			marginRight:230,
+			marginRight:50,
 			padding: 10,
 			borderRadius: 30,
 			margin: 5,
@@ -283,13 +283,20 @@ const keyboardStyle = StyleSheet.create(
 			borderRadius: 30,
 			margin: 4,
 		},
+		pollButtonsTheme:
+		{
+			flexDirection: 'column',
+			alignSelf: 'center',
+			padding: 5,
+			margin: 5,
+		},
 	}
 );
 
 //function to fetch votes
 function getVotes(){
 	//fetch total votes from server
-	return 12;
+	return 0;
 }
 // //set vote count
 // const TotalVotes = getVotes();
@@ -297,12 +304,13 @@ function getVotes(){
 //function to fetch array data for poll
 function getChoices(){
 	//fetch data , constructing for now
-	const Choices: Array<IChoice> = [
-		{ id: 1, choice: "Choice 1", votes: 3 },
-		{ id: 2, choice: "Choice 2", votes: 3 },
-		{ id: 3, choice: "Choice 3", votes: 3 },
-		{ id: 4, choice: "Choice 4", votes: 3 },
-	  ];
+	// const Choices: Array<IChoice> = [
+	// 	{ id: 1, choice: "Choice 1", votes: 3 },
+	// 	{ id: 2, choice: "Choice 2", votes: 3 },
+	// 	{ id: 3, choice: "Choice 3", votes: 3 },
+	// 	{ id: 4, choice: "Choice 4", votes: 3 },
+	//   ];
+		const Choices:Array<IChoice> = [];
 	return Choices
 }
 
@@ -445,9 +453,12 @@ const KeyboardComponent = (props) => {
 						PollItemContainer={RNAnimated}
 					/>
 				</View>
-					
-					 <Button title="Hide Poll" onPress={toggleModal} />
-					 <Button title="New Poll" onPress={() => setNewPoll(!isNewPoll)} />
+					<View style ={keyboardStyle.pollButtonsTheme}>
+					<Button title="Hide Poll" onPress={toggleModal} />
+					</View>
+					<View style ={keyboardStyle.pollButtonsTheme}>
+					<Button title="New Poll" onPress={() => setNewPoll(!isNewPoll)} />
+					</View>
 					 {isNewPoll && 
 					 <View> 
 						<View style ={keyboardStyle.newPollTheme}>
