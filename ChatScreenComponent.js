@@ -246,11 +246,43 @@ const keyboardStyle = StyleSheet.create(
 		},
 		pollTheme:
 		{
-			textColor: 'black',
-			mainColor: '#00B87B',
-			backgroundColor: 'rgb(255,255,255)',
-			alignment: 'center'
-		}
+			backgroundColor: '#e6f4f7',
+			flexDirection: 'column',
+			borderRadius: 15,
+		},
+		innerModal:
+		{
+			flex:1,
+			flexDirection:'column',
+			backgroundColor: '#def4faa',
+			padding: 3 ,
+			marginBottom: 300 ,
+		},
+		pollTitleTheme:
+		{
+			fontWeight: '500',
+			textAlign: 'left',
+			color: 'black',
+			fontSize: 20
+		},
+		titleContainer:
+		{
+			backgroundColor: '#def4fa',
+			flexDirection: 'row',
+			marginRight:230,
+			padding: 10,
+			borderRadius: 30,
+			margin: 5,
+		},
+		newPollTheme:
+		{
+			backgroundColor: '#edf5f7',
+			flexDirection: 'column',
+			marginRight:30,
+			padding: 10,
+			borderRadius: 30,
+			margin: 4,
+		},
 	}
 );
 
@@ -354,10 +386,7 @@ const KeyboardComponent = (props) => {
 	}
 	
 	
-	//new poll submitting
-	const onPressTitle = () => {
-		Keyboard.dismiss();
-	}
+	//format string input to data array
 	const onPressChoices = () => {
 		let choicesTemp: Array<IChoice> =[];
 		let optionsArr:Array<String> = textChoices.split(",");
@@ -379,26 +408,33 @@ const KeyboardComponent = (props) => {
 		setTotalVotes(0);
 		setPollTitle(pollTitle);
 		setChoices(choicesTemp);
+		setVoted(false);
+		setModalVisible(false);
+		setNewPoll(false);
 	}
 	
 
     return (
 		<View style ={keyboardStyle.outer}>
-			<Button title="P" onPress={toggleModal} />
+			<Button title="P" onPress={toggleModal} style={keyboardStyle.icon} />
 			<Modal
 				isVisible={isModalVisible} 
 				backdropColor={"pink"} 
 				backdropOpacity={.7}
 				onBackdropPress={() => setModalVisible(false)}
+				style= {keyboardStyle.innerModal}
 				//onModalWillShow = {function} on show will construct the poll with text data
 			>
-        		<View style={{ flex: 1 }}> 
-					<Text> {PollTitle} </Text>
+        		<View style ={keyboardStyle.titleContainer}>
+					<Text style = {keyboardStyle.pollTitleTheme}> {PollTitle} </Text>
+				</View>
+				<View style ={keyboardStyle.pollTheme}>
 					<RNPoll
 						totalVotes={TotalVotes}
 						choices={Choices}
 						hasBeenVoted = {isVoted}
 						onChoicePress={(selectedChoice: IChoice) =>{
+							setTotalVotes(TotalVotes + 1);
 							console.log("SelectedChoice: ", selectedChoice)
 							setVoted(true)
 						}
@@ -408,11 +444,13 @@ const KeyboardComponent = (props) => {
 						PollContainer={RNAnimated}
 						PollItemContainer={RNAnimated}
 					/>
+				</View>
+					
 					 <Button title="Hide Poll" onPress={toggleModal} />
 					 <Button title="New Poll" onPress={() => setNewPoll(!isNewPoll)} />
 					 {isNewPoll && 
 					 <View> 
-						<View>
+						<View style ={keyboardStyle.newPollTheme}>
 							<TextInput
 							placeholder='Poll Title...'
 							onChangeText={newText=>setTextTitle(newText)}
@@ -420,7 +458,7 @@ const KeyboardComponent = (props) => {
 							//onSubmitEditing = {onPressTitle}
 							/>
 						</View>
-						<View>
+						<View style ={keyboardStyle.newPollTheme}>
 						<TextInput
 							placeholder='Options seperated by commas'
 							onChangeText={newText=>setTextChoices(newText)}
@@ -429,8 +467,6 @@ const KeyboardComponent = (props) => {
 						/>
 						</View>
 					</View> }
-			
-				</View>
 			</Modal>
 
 			<View style={keyboardStyle.container}> 
