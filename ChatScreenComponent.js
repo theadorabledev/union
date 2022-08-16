@@ -1,6 +1,6 @@
 /* A Screen to hold components used to display chat messages. */
 import React, { useState,useEffect,useContext,useRef} from 'react';
-import { View, Text, ScrollView, Button, Image, TouchableOpacity, TouchableHighlight, Keyboard, TextInput, StyleSheet, Alert } from "react-native";
+import { View, Text, ScrollView, Button, Image, TouchableOpacity, TouchableHighlight, Keyboard, TextInput, StyleSheet, Alert} from "react-native";
 import NavigationBar from 'react-native-navbar';
 import { render } from 'react-dom';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -18,9 +18,11 @@ import {GlobalStyle,useTheme,keyboardStyle} from './Styles.js';
 
 //poll stuff
 import Modal from "react-native-modal";
-import { LeafPoll, Result } from 'react-leaf-polls'
-import 'react-leaf-polls/dist/index'
+import RNPoll, { IChoice } from "react-native-poll";
+import RNAnimated from "react-native-animated-component";
+
 import { FlatList } from 'react-native-gesture-handler';
+import { set } from 'date-fns';
 
 
 
@@ -192,14 +194,114 @@ const MessageBoxComponent = (props) => {
     );
 }
 
+// Styles for the keyboard
+const keyboardStyle = StyleSheet.create(
+	{
+		outer:
+		{
+			flexDirection: 'row',
+			margin: 5,
+		},
+		container:
+		{
+			backgroundColor: 'white',
+			flexDirection: 'row',
+			flex: 1,
+			marginRight:10,
+			padding: 10,
+			borderRadius: 50,
+		},
+		input:{
+			flex: 1,
+			marginHorizontal:10,
+		},
+		status:
+		{
+			padding: 10,
+			textAlign: "center"
+		},
+		icon:
+		{
+			marginHorizontal: 5,
+		},
+		pollTheme:
+		{
+			backgroundColor: '#e6f4f7',
+			flexDirection: 'column',
+			borderRadius: 15,
+		},
+		innerModal:
+		{
+			flex:1,
+			flexDirection:'column',
+			backgroundColor: '#def4faa',
+			padding: 3 ,
+			marginBottom: 300 ,
+		},
+		pollTitleTheme:
+		{
+			fontWeight: '500',
+			textAlign: 'left',
+			color: 'black',
+			fontSize: 20
+		},
+		titleContainer:
+		{
+			backgroundColor: '#def4fa',
+			flexDirection: 'row',
+			marginRight:50,
+			padding: 10,
+			borderRadius: 30,
+			margin: 5,
+		},
+		newPollTheme:
+		{
+			backgroundColor: '#edf5f7',
+			flexDirection: 'column',
+			marginRight:30,
+			padding: 10,
+			borderRadius: 30,
+			margin: 4,
+		},
+		pollButtonsTheme:
+		{
+			flexDirection: 'column',
+			alignSelf: 'center',
+			padding: 5,
+			margin: 5,
+		},
+	}
+);
 
+//function to fetch votes
+function getVotes(){
+	//fetch total votes from server
+	return 0;
+}
+// //set vote count
+// const TotalVotes = getVotes();
 
-//persitant data
-const ResData = [
-	{ id: 0, text:'Answer 1', votes: 0 },
-	{ id: 1, text:'Answer 2', votes: 0 },
-	{ id: 2, text:'Answer 3', votes: 0 }
-  ]
+//function to fetch array data for poll
+function getChoices(){
+	//fetch data , constructing for now
+	// const Choices: Array<IChoice> = [
+	// 	{ id: 1, choice: "Choice 1", votes: 3 },
+	// 	{ id: 2, choice: "Choice 2", votes: 3 },
+	// 	{ id: 3, choice: "Choice 3", votes: 3 },
+	// 	{ id: 4, choice: "Choice 4", votes: 3 },
+	//   ];
+		const Choices:Array<IChoice> = [];
+	return Choices
+}
+
+// const Choices = getChoices();
+
+function getPollTitle(){
+	//fetch poll title from server
+	return "Poll Title";
+}
+// const PollTitle = getPollTitle();
+
 
 // Displays a keyboard which allows the user to write messages
 // TODO: Connect to messaging API
@@ -214,6 +316,17 @@ const KeyboardComponent = (props) => {
 	const toggleModal = () => {
 		setModalVisible(!isModalVisible);
 	  };
+	//set voting state
+	const [isVoted, setVoted] = useState(false);
+	//new poll state
+	const [isNewPoll,setNewPoll]= useState(false);
+	//text input for polol title and choices
+	const [textTitle,setTextTitle] = useState('');
+	const [textChoices,setTextChoices] = useState('');
+	//values for votes,title,data
+	const [TotalVotes,setTotalVotes]= useState(getVotes());
+	const [Choices, setChoices] = useState(getChoices());
+	const [PollTitle, setPollTitle] = useState(getPollTitle());
 	//auto hide/show keyboard 
     useEffect(() => {
 		const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
@@ -268,30 +381,95 @@ const KeyboardComponent = (props) => {
 		Keyboard.dismiss();
 		setText("");
 	}
+	
+	
+	//format string input to data array
+	const onPressChoices = () => {
+		let choicesTemp: Array<IChoice> =[];
+		let optionsArr:Array<String> = textChoices.split(",");
+		optionsArr.forEach(formatHelper);
+		createPoll(textTitle, choicesTemp);
+		setTextChoices("");
+		setTextTitle("");
+		Keyboard.dismiss();
+		//helper function for formatting
+		function formatHelper(index, value:String, array){
+			choicesTemp.push({ id: value, choice: index, votes: 0 });
+		}
+	}
+	//function to take text data and format it into title and options
+	function createPoll(pollTitle:String, choicesTemp: Array<IChoice>){
+		//upload data to server
+		//sends title, data array, and total votes set to 0
+		//for now will directly change for testing
+		setTotalVotes(0);
+		setPollTitle(pollTitle);
+		setChoices(choicesTemp);
+		setVoted(false);
+		setModalVisible(false);
+		setNewPoll(false);
+	}
+	
+
     return (
 		<View style ={keyboardStyle.outer}>
-			<Button title="P" onPress={toggleModal} />
-				<Modal 
-					isVisible={isModalVisible} 
-					backdropColor={"pink"} 
-					backdropOpacity={.35}
-					onBackdropPress={() => setModalVisible(false)}
-					//onModalWillShow = {function} on show will construct the poll with text data
-					>
-        			<View style={{ flex: 1 }}>
-						<Text>Poll will go here</Text>
-						{/* <LeafPoll
-							type = {"multiple"}
-							question={'What you wanna ask?'}
-							results={ResData}
-							theme={keyboardStyle.pollTheme}
-							//onVote={vote}
-							isVoted={false}
-						/> */}
-						<Button title="Hide modal" onPress={toggleModal} />
-        			</View>
-      			</Modal>
-			<View style={{...keyboardStyle.container,backgroundColor:colors.backgroundalt}}> 
+			<Button title="P" onPress={toggleModal} style={keyboardStyle.icon} />
+			<Modal
+				isVisible={isModalVisible} 
+				backdropColor={"pink"} 
+				backdropOpacity={.7}
+				onBackdropPress={() => setModalVisible(false)}
+				style= {keyboardStyle.innerModal}
+				//onModalWillShow = {function} on show will construct the poll with text data
+			>
+        		<View style ={keyboardStyle.titleContainer}>
+					<Text style = {keyboardStyle.pollTitleTheme}> {PollTitle} </Text>
+				</View>
+				<View style ={keyboardStyle.pollTheme}>
+					<RNPoll
+						totalVotes={TotalVotes}
+						choices={Choices}
+						hasBeenVoted = {isVoted}
+						onChoicePress={(selectedChoice: IChoice) =>{
+							setTotalVotes(TotalVotes + 1);
+							console.log("SelectedChoice: ", selectedChoice)
+							setVoted(true)
+						}
+						}
+						appearFrom="bottom"
+  						animationDuration={750}
+						PollContainer={RNAnimated}
+						PollItemContainer={RNAnimated}
+					/>
+				</View>
+					<View style ={keyboardStyle.pollButtonsTheme}>
+					<Button title="Hide Poll" onPress={toggleModal} />
+					</View>
+					<View style ={keyboardStyle.pollButtonsTheme}>
+					<Button title="New Poll" onPress={() => setNewPoll(!isNewPoll)} />
+					</View>
+					 {isNewPoll && 
+					 <View> 
+						<View style ={keyboardStyle.newPollTheme}>
+							<TextInput
+							placeholder='Poll Title...'
+							onChangeText={newText=>setTextTitle(newText)}
+							value={textTitle}
+							//onSubmitEditing = {onPressTitle}
+							/>
+						</View>
+						<View style ={keyboardStyle.newPollTheme}>
+						<TextInput
+							placeholder='Options seperated by commas'
+							onChangeText={newText=>setTextChoices(newText)}
+							value={textChoices}
+							onSubmitEditing = {onPressChoices}
+						/>
+						</View>
+					</View> }
+			</Modal>
+
+			<View style={keyboardStyle.container}> 
 			<TextInput
 				style={{...keyboardStyle.input,color:colors.text}}
 				placeholder='Press here…'

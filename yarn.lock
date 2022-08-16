@@ -1407,10 +1407,10 @@
     find-up "^5.0.0"
     js-yaml "^4.1.0"
 
-"@freakycoder/react-native-bounceable@^1.0.2":
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/@freakycoder/react-native-bounceable/-/react-native-bounceable-1.0.2.tgz#4943ab027bbfc687798665f16e67a0184c07a560"
-  integrity sha512-kk3DeR6Cq4hOuJeoDuaFKA47pbW1fgqHogJwrYIvr1GvZ7j+fusbAslOIZFnLdbUg5mIXfKg+WpGt51S4Ya5fg==
+"@freakycoder/react-native-bounceable@^1.0.3":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@freakycoder/react-native-bounceable/-/react-native-bounceable-1.0.3.tgz#79de6fa99fb8357a5e52cc095ecdb1786f4b1514"
+  integrity sha512-+iMq2tnqxCwFjitbPUz9nZ+VfJ8OU9waIlDJAAsoq1229QEwCmERCNy5zVtDsz75q3i4FLXX/n7fimdMzmP21A==
 
 "@gar/promisify@^1.0.1":
   version "1.1.3"
@@ -5870,6 +5870,11 @@ react-native-animatable@1.3.3:
   integrity sha512-2ckIxZQAsvWn25Ho+DK3d1mXIgj7tITkrS4pYDvx96WyOttSvzzFeQnM2od0+FUMzILbdHDsDEqZvnz1DYNQ1w==
   dependencies:
     prop-types "^15.7.2"
+
+react-native-animated-component@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/react-native-animated-component/-/react-native-animated-component-0.2.0.tgz#b0f94475060a37876c68f61835110ddd24439bb9"
+  integrity sha512-j4No+yTPEX9Dw6r6N4N0VjESeYlfVLRsLrx+WdOoepDIHjFksxCyOneYOegjvUfTFqjPpkK4d+hgI4V+o/vgMg==
 
 react-native-codegen@^0.0.17:
   version "0.0.17"
