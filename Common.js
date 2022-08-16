@@ -314,7 +314,7 @@ export const NewChatComponent = (props) => {
 			return newContacts;
 		});
 		//generate new chat
-		const newchatid = uuid.v4();
+		const newchatid = uuid.v4().replace(/-/g,"").substring(0,24);
 		//this should send information to the server to generate the actual chat and make sure the uuid's match between users, but one thing at a time.
 		const getnewchat =ChatCreator(newchatid,[userid,newcontactid],[],"",GlobalStyle.defaultprofile,"");
 		setChats((chats) => {

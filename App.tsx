@@ -105,7 +105,7 @@ const initialUserId = "47769a91-2d07-4580-8828-5913cf821623";
 //debug id for testing purposes
 const altId = "1d4070bf-7ada-46bd-8b7c-c8b8e0507dec"
 //please don't doxx me.
-const serverip = "192.168.0.194"
+const serverip = "167.99.43.209"
 //generate websocket connection on app start
 const initialws = new WebSocket('ws://'+serverip+':8000/'+'loading')
 //signal protocol address (currently unused)
@@ -574,9 +574,7 @@ function App() {
 										<StackNav.Screen 
 											name="Home"
 											component={MainScreenComponent} 
-											options={({ route }) => ({ title: (contacts.get(userid) as Contact).name, headerStyle: {
-												backgroundColor: colors.background,
-											  },})}
+											options={({ route }) => ({ title: (contacts.get(userid) as Contact).name})}
 										/>
 										<StackNav.Screen 
 											name="MainSettings"

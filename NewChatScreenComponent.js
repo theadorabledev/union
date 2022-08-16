@@ -107,7 +107,7 @@ const NewGroupChatScreenComponent = ({navigation}) => {
 				ListHeaderComponent={<Button title="Create Chat"onPress={()=>{
 					setChats((chats)=>{
 						const newchats = new Map(chats);
-						const newchatid = uuid.v4()
+						const newchatid = uuid.v4().replace(/-/g,"").substring(0,24)
 						const newchat = ChatCreator(newchatid,selectedcontacts,[],"",GlobalStyle.defaultprofile,"")
 						newchats.set(newchatid,newchat);
 						return newchats;

@@ -195,7 +195,7 @@ const RegisterUserComponent = ({navigation}) => {
     }, [navigation,colors]);
 	//const [account,SetAccount] = useState(id,name,picture,details};
 	const {contacts,setContacts,userid,setUserId} = useContext(ContactContext);
-	const [userinfo,setUserInfo] = useState({id:uuid.v4(),name:"",picture:GlobalStyle.defaultprofile,details:""})
+	const [userinfo,setUserInfo] = useState({id:uuid.v4().replace(/-/g,"").substring(0,24),name:"",picture:GlobalStyle.defaultprofile,details:""})
 	const contactfields = [{name:"username",formatname:"Username"},{name:"pronouns",formatname:"Pronouns"},{name:"profilepic",formatname:""}];
 	const {userStore,createUserIdentity,serverip} = useContext(SignalContext);
 	const onPress = (settingsfieldone,settingsfieldtwo,image) => {
