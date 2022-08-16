@@ -1,6 +1,7 @@
 /* A file to hold components used within the main screen */
 import React, { useState,useContext,useEffect } from 'react';
-import { View, Text, ScrollView, Button, Image, TouchableOpacity, TouchableHighlight } from "react-native";
+import { format, compareAsc } from 'date-fns'
+import { View, Text, ScrollView, Button,TextInput, Image, TouchableOpacity, TouchableHighlight,TouchableWithoutFeedback,Modal} from "react-native";
 import NavigationBar from 'react-native-navbar';
 import { useNavigation } from '@react-navigation/native';
 
@@ -11,13 +12,13 @@ import * as Contacts from "expo-contacts";
 
 import uuid from 'react-native-uuid';
 
-import {SettingsButton, ProfileButton, ChatComponent} from './Common.js';
+import {SettingsButton, ProfileButton,SettingProfileButton, ChatComponent} from './Common.js';
 
 import {GlobalStyle} from './Styles.js';
 
 
 
-import {ChatContext,ContactContext,SignalContext} from './Context.js';
+import {ChatContext,ContactContext,SignalContext} from './Context.ts';
 
 const MainScreenStyles = {
     chatComp: {
@@ -70,12 +71,6 @@ const MainScreenStyles = {
     },
 };
 
-let userprofilepic = GlobalStyle.defaultprofile;
-
-
-
-
-
 // A View to Dispay a default message for incoming users
 const NoContactsComponent = () => {
     return (
@@ -89,46 +84,137 @@ const NoContactsComponent = () => {
 // A component to display either all of someone's chats or the incoming (no contacts) screen
 const MessagesListComponent = (props) => {
     const {chats,setChats,ws,setWs} = useContext(ChatContext)
-	const {contacts,setContacts,userid,setUserId} = useContext(ContactContext)
-	
-	const {userStore,createUserIdentity,serverip} = useContext(SignalContext)
-	const display = "Change Account"
+    const {contacts,setContacts,userid,setUserId,resetContactData} = useContext(ContactContext)
+
+    const {userStore,createUserIdentity,serverip} = useContext(SignalContext)
+    const display = "Change Account"
     let empty = (chats.size == 0)
-    let chatComponents = []
-	chats.forEach((a, i) => {
-		chatComponents.push(<ChatComponent
-		   key={a.id}
-		   chatId={a.id}
-	       />)
-    });
+	const [debugid,setDebugId] = useState("");
+	const [showmodal,setShowModal] = useState(false);
+	const [selectedchatid,setSelectedChatId] = useState("");
+	const [showdebugmenu,setShowDebugMenu] = useState(false);
 	
-	let contactArray = [];
-	contacts.forEach((a,i)=>{
-		contactArray.push({value: a.id});
-	})
-	
-    return (
-	<>											
-	   <Dropdown
-        label={display}
-        data={contactArray}
-		onChangeText= {
-			(value,index,data)=>{
-			setUserId((userid)=>{
-					return value
-			})
-		    }
-											
+	const chatarray = [...chats.entries()].sort((a,b)=>{
+		const a_messagearray = a[1].messages;
+		const b_messagearray = b[1].messages;
+		if (a_messagearray.length > 0 && b_messagearray.length > 0){
+			return compareAsc(new Date(b_messagearray[b_messagearray.length-1].date),new Date(a_messagearray[a_messagearray.length-1].date));
 		}
-      />
-	    <Button title="Reset Websocket" color = {GlobalStyle.highlightcolor} onPress={()=>{setWs(new WebSocket('ws://'+serverip+'/'+userid))}}/>		
-		
+	})
+
+	//const chatItem = ({item,setSelectedChatId,setShowModal})
+	let chatComponents = 
+	chatarray.map((a)=>{
+		//rconsole.log("logging a",a);
+		return(
+		<ChatComponent
+			key={a[0]}
+			chatId={a[0]}
+			setShowModal={setShowModal}
+			setSelectedChatId={setSelectedChatId}
+		/>)
+	})
+    let contactArray = [];
+    contacts.forEach((a,i)=>{
+		contactArray.push({value: a.id});
+    })
+	function deleteChat(id){
+		setChats((chats)=>{
+			const newChats = new Map(chats);
+			newChats.delete(id)
+			return newChats;
+		})}
+    return (
+	<>
+		{
+		(false)
+		?
+		<>
+			<Dropdown
+			label={display}
+			data={contactArray}
+			onChangeText= {
+				(value,index,data)=>{
+				setUserId((userid)=>{
+					return value
+				})
+				}
+			}
+			/>
+			<TextInput style={{height:40}} onChangeText={newDebugId=>setDebugId(newDebugId)} onSubmitEditing={()=>{
+				setUserId(debugid);
+				setContacts((contacts)=>{
+					const newcontacts = new Map(contacts);
+					const getusercontact = newcontacts.get(userid);
+					getusercontact.id = debugid;
+					newcontacts.delete(userid);
+					newcontacts.set(debugid,getusercontact);
+					return newcontacts;
+				});
+			}}/>
+			<Button
+				title="Reset Websocket"
+				color = {GlobalStyle.highlightcolor}
+				onPress={()=>{setWs(new WebSocket('ws://'+serverip+'/'+userid))}}
+			/>
+
+			<Button
+				title="Reset ContactData"
+				color = {GlobalStyle.highlightcolor}
+				onPress={resetContactData}
+			/>
+		</>:<></>
+		}
 	    {empty ?
 	     <NoContactsComponent/>
 	     :
+		 <>
+			<Modal
+				animationType="slide"
+				transparent={true}
+				visible={showmodal}
+				onRequestClose={() => {
+				alert("Modal has been closed.");
+				setShowModal(!showmodal);
+			}}
+			>
+				<TouchableWithoutFeedback onPress={() => setShowModal(!showmodal)}>
+					<View style={{
+						flex: 1,
+						justifyContent: "center",
+						alignItems: "center",
+						marginTop: 22
+					}}>
+						<TouchableHighlight onPress={() => {
+							deleteChat(selectedchatid);
+							setShowModal(!showmodal)}}
+							underlayColor = {GlobalStyle.highlightcolor}
+							style={
+								{margin: 20,
+								backgroundColor: "white",
+								borderRadius: 20,
+								padding: 35,
+								alignItems: "center",
+								shadowColor: "#000",
+								shadowOffset: {
+								width: 0,
+								height: 2
+								},
+								shadowOpacity: 0.25,
+								shadowRadius: 4,
+								elevation: 5
+							}}
+							>
+								<Text>Delete Chat?</Text>
+						</TouchableHighlight>
+					
+					</View>
+				</TouchableWithoutFeedback>
+			</Modal>
 	     <ScrollView>
 		 {chatComponents}
 	     </ScrollView>
+		 </>
 	    }
 	</>
     );
@@ -146,16 +232,20 @@ export const NewChatButton = (props) => {
 
 // Displays the main screen, all the chats the user is engaged in
 const MainScreenComponent = ({navigation}) => {
+	const {contacts,setContacts,userid} = useContext(ContactContext)
     useEffect(() => {
 	navigation.setOptions({
+	    // Navigate you to the settings page
 	    headerRight: () => (
 		<SettingsButton onPress={() => navigation.navigate('MainSettings')}/>
 	    ),
+	    // Display user icon and take you to chat settings page
 	    headerLeft: () => (
-		<ProfileButton profileSize={GlobalStyle.userProfileSize} profileSource={userprofilepic}/>
+			<SettingProfileButton/>
 	    ),
 	});
     }, [navigation]);
+    
     return (
 	<>
 	    <View>
@@ -164,7 +254,5 @@ const MainScreenComponent = ({navigation}) => {
 	    <NewChatButton/>
 	</>
     );
-
 };
-
 export default MainScreenComponent;

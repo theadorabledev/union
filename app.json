@@ -1,0 +1,10 @@
+{
+  "expo": {
+    "name": "rn-app",
+    "slug": "rn-app",
+    "version": "1.0.0",
+	"splash": {
+		"image": "./assets/splash.png"
+	}
+  }
+}
