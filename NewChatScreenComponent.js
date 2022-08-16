@@ -11,16 +11,19 @@ import * as Contacts from "expo-contacts";
 
 import uuid from 'react-native-uuid';
 import { ChatContext,ContactContext } from './Context';
-import { GlobalStyle } from './Styles.js';
+import { GlobalStyle, useTheme } from './Styles.js';
 
 // Gets the contacts with phone numbers and displays them in a screen, loads only visible ones for performance
 
 
 
 const NewChatScreenComponent = ({navigation}) => {
+	const {colors,isdark} = useTheme();
     React.useLayoutEffect(() => {
 	navigation.setOptions({
-	    title: "Start a New Chat"
+	    title: "Start a New Chat",
+		headerStyle:{backgroundColor:colors.backgroundalt},
+		headerTintColor:colors.text,
 	});
     }, [navigation]);
     const [contacts, setContacts] = useState([]);
@@ -55,26 +58,30 @@ const NewChatScreenComponent = ({navigation}) => {
 	    />;
     };
     return (
-	<FlatList
-	    data={contacts}
-	    renderItem={renderItem}
-	    keyExtractor={keyExtractor}
-		ListHeaderComponent={<Button title="Create Group Chat"onPress={()=>{navigation.navigate('NewGroupChatScreen')}}/>}
-	/>
+		<View style={{backgroundColor:colors.background,flex:1}}>
+			<FlatList
+				data={contacts}
+				renderItem={renderItem}
+				keyExtractor={keyExtractor}
+				ListHeaderComponent={<Button title="Create Group Chat" onPress={()=>{navigation.navigate('NewGroupChatScreen')}}/>}
+			/>
+	</View>
     );
 }
 
 const NewGroupChatScreenComponent = ({navigation}) => {
     React.useLayoutEffect(() => {
 	navigation.setOptions({
-	    title: "Start a New Group Chat"
+	    title: "Start a New Group Chat",
+		headerStyle:{backgroundColor:colors.backgroundalt},
+		headerTintColor:colors.text,
 	});
     }, [navigation]);
 	
     const {chats,setChats} = useContext(ChatContext);
 	const {contacts,setContacts,userid} = useContext(ContactContext);
 	const [selectedcontacts,setSelectedContacts] = useState([userid]);
-
+	const {colors,isdark} = useTheme();
 	const contactdata = Array.from(contacts.values()).filter(function(value){
 		return value.id != userid;
 	})
@@ -95,21 +102,23 @@ const NewGroupChatScreenComponent = ({navigation}) => {
 	    />;
     };
     return (
-	<FlatList
-	    data={contactdata}
-	    renderItem={renderItem}
-	    keyExtractor={keyExtractor}
-		ListFooterComponent={<Button title="Create Chat"onPress={()=>{
-			setChats((chats)=>{
-				const newchats = new Map(chats);
-				const newchatid = uuid.v4()
-				const newchat = ChatCreator(newchatid,selectedcontacts,[],"",GlobalStyle.defaultprofile,"")
-				newchats.set(newchatid,newchat);
-				return newchats;
-			})
-			navigation.navigate('Home');
-		}}/>}
-	/>
+		<View style={{backgroundColor:colors.background,flex:1}}>
+			<FlatList
+				data={contactdata}
+				renderItem={renderItem}
+				keyExtractor={keyExtractor}
+				ListHeaderComponent={<Button title="Create Chat"onPress={()=>{
+					setChats((chats)=>{
+						const newchats = new Map(chats);
+						const newchatid = uuid.v4()
+						const newchat = ChatCreator(newchatid,selectedcontacts,[],"",GlobalStyle.defaultprofile,"")
+						newchats.set(newchatid,newchat);
+						return newchats;
+					})
+					navigation.navigate('Home');
+				}}/>}
+			/>
+	</View>
     );
 }
 

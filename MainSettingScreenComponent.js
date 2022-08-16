@@ -6,7 +6,7 @@ import NavigationBar from 'react-native-navbar';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import {UserButton, ProfileButton} from './Common.js';
-import {GlobalStyle} from './Styles.js';
+import {GlobalStyle,useTheme} from './Styles.js';
 import { UserScreen, Account, Appearance, Notifications, Privacy, Help } from './SettingOptionsComponent.js'
 import {ContactContext} from './Context.ts'
 const settingsIconSize=35;
@@ -61,6 +61,7 @@ const User = (props) => {
     const navigation = useNavigation();
     const {contacts,setContacts,userid} = useContext(ContactContext)
     const usercontact = contacts.get(userid)
+	const{colors,isdark} = useTheme();
     return(
 	<View style={MainSettingStyles.userInfoContainer}>
 	    <ProfileButton
@@ -77,8 +78,8 @@ const User = (props) => {
 			fieldtwo:"pronouns",
 			fieldthree:"profilepic",
 		})}>
-		<Text style={GlobalStyle.textTypes.H2}>{usercontact.name}  {usercontact.details}</Text>
-		<Text style={MainSettingStyles.phone}>{usercontact.id}</Text>
+		<Text style={{...GlobalStyle.textTypes.H2,color:colors.text}}>{usercontact.name}  {usercontact.details}</Text>
+		<Text style={{...MainSettingStyles.phone,color:colors.text}}>{usercontact.id}</Text>
 	    </TouchableOpacity>
 	</View>
     );
@@ -95,6 +96,7 @@ const settingOptions = [
 // Wrapper for settings options
 const Option = (props) => {
     const navigation = useNavigation();
+	const{colors,isdark} = useTheme();
     return (
 	<TouchableOpacity
 	    onPress={() =>
@@ -106,7 +108,7 @@ const Option = (props) => {
 	    }>
 	    <View style={MainSettingStyles.optionContainer}>
 		<MaterialCommunityIcons name={props.option.icon} style={MainSettingStyles.optionVector}/>
-		<Text style={GlobalStyle.textTypes.H3}>{props.option.text}</Text>
+		<Text style={{...GlobalStyle.textTypes.H3,color:colors.text}}>{props.option.text}</Text>
 	    </View>
 	</TouchableOpacity>
     );
@@ -129,13 +131,16 @@ const OptionList = () => {
 // Returns the settings screen displayed on the main page
 const MainSettingScreenComponent = ({navigation}) => {
     const {contacts,setContacts,userid} = useContext(ContactContext)
+	const{colors,isdark} = useTheme();
     React.useLayoutEffect(() => {
 	navigation.setOptions({
-	    title: "Settings"
+	    title: "Settings",
+		headerStyle:{backgroundColor:colors.backgroundalt},
+		headerTintColor:colors.text,
 	});
     }, [navigation]);
     return (
-	<View>
+	<View style={{flex:1,backgroundColor:colors.background}}>
 	    <User/>
 	    <OptionList/>
 	</View>

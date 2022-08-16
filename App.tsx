@@ -11,6 +11,7 @@ import {
 	ImageSourcePropType,  
 	TouchableOpacity, 
 	TouchableHighlight, 
+	useColorScheme,
 	AsyncStorage} 
 
 from "react-native";
@@ -33,7 +34,7 @@ import SettingOptionsComponent from './SettingOptionsComponent';
 import * as SplashScreen from 'expo-splash-screen';
 import {PasswordUnlockScreen} from './SettingOptionsComponent';
 //import global style
-import {GlobalStyle} from './Styles.js';
+import {GlobalStyle,ThemeProvider,useTheme} from './Styles.js';
 
 //import signal components
 import {
@@ -200,6 +201,8 @@ function App() {
 	const [ispasswordlock,setLockState] = useState(false); 
 	const [isapplock,setAppLock] = useState(false);
 	const [password,setPassword] = useState("");
+	const {colors, isDark} = useTheme();
+	const colorScheme = useColorScheme();
 	//organize data for context providing
 
 	//signal id creation function
@@ -527,81 +530,93 @@ function App() {
 		}
 	  }, [appIsReady]);
 
-
 	if (!appIsReady) {
 		return null;
 	}
+
+	const colortest = () => {
+		if (colorScheme == "dark"){
+			return GlobalStyle.darkColors
+		}else{
+			return GlobalStyle.lightColors
+		}
+	}
+
     //context providers allow pages to access all relevant information
     return (
-	<View style={{flex:1}} onLayout={onLayoutRootView}>
-	    <NavigationContainer>
-		<ChatContext.Provider value={chatState}>
-			<SignalContext.Provider value={signalState}>
-				<ContactContext.Provider value={contactState}>
-					<PasswordContext.Provider value={passwordState}>
-						<StackNav.Navigator>
-							{ (firstTimeRun)?
+		<ThemeProvider>
+			<View style={{flex:1,backgroundColor:colortest().background}} onLayout={onLayoutRootView}>
+				<NavigationContainer>
+				<ChatContext.Provider value={chatState}>
+					<SignalContext.Provider value={signalState}>
+						<ContactContext.Provider value={contactState}>
+							<PasswordContext.Provider value={passwordState}>
+								<StackNav.Navigator>
+									{ (firstTimeRun)?
 
-							<><StackNav.Screen 
-								name="UserRegister"
-								component={RegisterUserComponent}
-								/>
-							</>
-							:
-							<>
-								{ (isapplock)?
+									<><StackNav.Screen 
+										name="UserRegister"
+										component={RegisterUserComponent}
+										/>
+									</>
+									:
+									<>
+										{ (isapplock)?
 
-								<><StackNav.Screen 
-									name="PasswordUnlock"
-									component={PasswordUnlockScreen}
-									/>
-								</>
-								:
-								<>
-								<StackNav.Screen 
-									name="Home"
-									component={MainScreenComponent} 
-									options={({ route }) => ({ title: (contacts.get(userid) as Contact).name })}
-								/>
-								<StackNav.Screen 
-									name="MainSettings"
-									component={MainSettingScreenComponent}
-								/>
-								<StackNav.Screen 
-									name="ChatScreen"
-									component={ChatScreenComponent}
-									options={({ route }) => ({ title: "Typescript placeholder" })}
-								/>
-								<StackNav.Screen 
-									name="ChatSettings"
-									component={ChatSettingScreenComponent}
-								/>
-								<StackNav.Screen 
-									name="NewChatScreen"
-									component={NewChatScreenComponent}
-								/>
+										<><StackNav.Screen 
+											name="PasswordUnlock"
+											component={PasswordUnlockScreen}
+											/>
+										</>
+										:
+										<>
+										<StackNav.Screen 
+											name="Home"
+											component={MainScreenComponent} 
+											options={({ route }) => ({ title: (contacts.get(userid) as Contact).name, headerStyle: {
+												backgroundColor: colors.background,
+											  },})}
+										/>
+										<StackNav.Screen 
+											name="MainSettings"
+											component={MainSettingScreenComponent}
+										/>
+										<StackNav.Screen 
+											name="ChatScreen"
+											component={ChatScreenComponent}
+											options={({ route }) => ({ title: "Typescript placeholder" })}
+										/>
+										<StackNav.Screen 
+											name="ChatSettings"
+											component={ChatSettingScreenComponent}
+										/>
+										<StackNav.Screen 
+											name="NewChatScreen"
+											component={NewChatScreenComponent}
+										/>
 
-								<StackNav.Screen 
-									name="NewGroupChatScreen"
-									component={NewGroupChatScreenComponent}
-								/>
+										<StackNav.Screen 
+											name="NewGroupChatScreen"
+											component={NewGroupChatScreenComponent}
+										/>
 
-								<StackNav.Screen 
-									name="SettingOptions"
-									component={SettingOptionsComponent}
-								/>
-								</>
-								}
-							</>
-							}
-						</StackNav.Navigator>
-					</PasswordContext.Provider>
-				</ContactContext.Provider>
-			</SignalContext.Provider>
-		</ChatContext.Provider>
-	    </NavigationContainer>
+										<StackNav.Screen 
+											name="SettingOptions"
+											component={SettingOptionsComponent}
+										/>
+										</>
+										}
+									</>
+									}
+								</StackNav.Navigator>
+							</PasswordContext.Provider>
+						</ContactContext.Provider>
+					</SignalContext.Provider>
+				</ChatContext.Provider>
+				</NavigationContainer>
 
-	</View>
+			</View>
+	</ThemeProvider>
     );
 }
 

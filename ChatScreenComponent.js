@@ -14,7 +14,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 
 import {SettingsButton,PhoneButton,ProfileButton,ContextMenu} from './Common.js';
 import {ChatContext,ContactContext,MessageCreator,vote } from './Context';
-import {GlobalStyle} from './Styles.js';
+import {GlobalStyle,useTheme} from './Styles.js';
 
 //poll stuff
 import Modal from "react-native-modal";
@@ -178,7 +178,7 @@ const MessageBoxComponent = (props) => {
 		setFilterData((data)=>{
 			return newfilterdata;
 		});
-	},[filtertext])
+	},[filtertext,chats])
 
 
 
@@ -267,6 +267,7 @@ const KeyboardComponent = (props) => {
 	const {contacts,setContacts,userid} = useContext(ContactContext)
 	const [text,setText] = useState('');
 	const [isModalVisible, setModalVisible] = useState(false); //modal show
+	const {colors,isDark} = useTheme();
 	const toggleModal = () => {
 		setModalVisible(!isModalVisible);
 	  };
@@ -304,7 +305,7 @@ const KeyboardComponent = (props) => {
 					{
 						message.recieverId=arr[index]
 						try{
-						ws.send(JSON.stringify(message))
+						//ws.send(JSON.stringify(message))
 						}catch(e){
 							console.log(e);
 						}
@@ -340,10 +341,11 @@ const KeyboardComponent = (props) => {
 						<Button title="Hide modal" onPress={toggleModal} />
         			</View>
       			</Modal>
-			<View style={keyboardStyle.container}> 
+			<View style={{...keyboardStyle.container,backgroundColor:colors.backgroundalt}}> 
 			<TextInput
-				style={keyboardStyle.input}
+				style={{...keyboardStyle.input,color:colors.text}}
 				placeholder='Press here…'
+				placeholderTextColor={colors.textalt}
 				onChangeText={newText=>setText(newText)}
 				value={text}
 				multiline
@@ -367,10 +369,13 @@ const ChatScreenComponent = ({route, navigation}) => {
 	{text:"Search", handler:()=> {setBarVisible(true)}},
 	{text:"Add to friends", handler:()=> {alert("Add contact to friends list")}},
     ]
+	const {colors, isDark} = useTheme();
 	const {chatId,chatpic,settingsNavigate} = route.params;
     React.useLayoutEffect(() => {
 		navigation.setOptions({
 			title: titlename,
+			headerStyle:{backgroundColor:colors.backgroundalt},
+			headerTintColor:colors.text,
 			headerRight: () => (
 				// Settings Button
 				<View style={{
@@ -400,7 +405,7 @@ const ChatScreenComponent = ({route, navigation}) => {
 		});
     }, [navigation]);
     return (
-		<View style={{flex:1,flexDirection: "column"}}>
+		<View style={{flex:1,flexDirection: "column",backgroundColor:colors.background}}>
 			<MessageBoxComponent chatId={chatId} barstate={{barvisible,setBarVisible}}/>
 			<KeyboardComponent chatId={chatId}/>
 		</View>

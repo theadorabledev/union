@@ -14,7 +14,7 @@ import uuid from 'react-native-uuid';
 
 import {SettingsButton, ProfileButton,SettingProfileButton, ChatComponent} from './Common.js';
 
-import {GlobalStyle} from './Styles.js';
+import {GlobalStyle,useTheme} from './Styles.js';
 
 
 
@@ -127,7 +127,7 @@ const MessagesListComponent = (props) => {
     return (
 	<>
 		{
-		(true)
+		(false)
 		?
 		<>
 			<Dropdown
@@ -233,8 +233,11 @@ export const NewChatButton = (props) => {
 // Displays the main screen, all the chats the user is engaged in
 const MainScreenComponent = ({navigation}) => {
 	const {contacts,setContacts,userid} = useContext(ContactContext)
+	const {colors, isDark} = useTheme();
     useEffect(() => {
 	navigation.setOptions({
+		headerStyle:{backgroundColor:colors.backgroundalt},
+		headerTintColor:colors.text,
 	    // Navigate you to the settings page
 	    headerRight: () => (
 		<SettingsButton onPress={() => navigation.navigate('MainSettings')}/>
@@ -248,7 +251,7 @@ const MainScreenComponent = ({navigation}) => {
     
     return (
 	<>
-	    <View>
+	    <View style={{flex:1,backgroundColor:colors.background}}>
 		<MessagesListComponent/>
 	    </View>
 	    <NewChatButton/>
