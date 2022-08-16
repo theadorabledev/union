@@ -273,7 +273,7 @@ function App() {
 			await SecureStore.setItemAsync('userstore',stringifiedstore);
 
 			console.log("REGISTERING USER");
-			const registerUserResult = await fetch("http://"+serverip+":443/registerKeyBundle/"+userid.replace(/-/g,"").substring(0,24), {
+			const registerUserResult = await fetch("http://"+serverip+":443/registerKeyBundle/"+userid, {
 			method: "POST",
 			body: idInfo,
 			headers: {
@@ -284,7 +284,7 @@ function App() {
 			console.log(registerUserResult);
 
 			console.log("RETRIEVING INFO FOR USER")
-			const serverBundles = await fetch("http://"+serverip+":443/getFullKeyBundle/alek");
+			const serverBundles = await fetch("http://"+serverip+":443/getFullKeyBundle/"+contacts.get(userid).name);
 			const bundles = await serverBundles.json();
 			console.log(bundles);
 			
