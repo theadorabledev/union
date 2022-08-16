@@ -360,15 +360,15 @@ const KeyboardComponent = (props) => {
 	}
 	const onPressChoices = () => {
 		let choicesTemp: Array<IChoice> =[];
-		let optionsArr = textChoices.split(",");
+		let optionsArr:Array<String> = textChoices.split(",");
 		optionsArr.forEach(formatHelper);
 		createPoll(textTitle, choicesTemp);
 		setTextChoices("");
 		setTextTitle("");
 		Keyboard.dismiss();
 		//helper function for formatting
-		function formatHelper(index, value, array){
-			choicesTemp.push({ id: index, choice: value, votes: 0 });
+		function formatHelper(index, value:String, array){
+			choicesTemp.push({ id: value, choice: index, votes: 0 });
 		}
 	}
 	//function to take text data and format it into title and options
@@ -388,7 +388,7 @@ const KeyboardComponent = (props) => {
 			<Modal
 				isVisible={isModalVisible} 
 				backdropColor={"pink"} 
-				backdropOpacity={.35}
+				backdropOpacity={.7}
 				onBackdropPress={() => setModalVisible(false)}
 				//onModalWillShow = {function} on show will construct the poll with text data
 			>
