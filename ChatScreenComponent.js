@@ -119,7 +119,14 @@ const MessageBubble = (props) => {
 }
 }
 
-
+const NoMessages = () => {
+	const {colors,isDark} = useTheme();
+    return (
+	<View style={{flex:0.3,alignItems:"center",justifyContent:"center"}}>
+	    <Text style={{...GlobalStyle.textTypes.H2, color:colors.text, textAlign:"center"}}>You haven't set a message to this person.</Text>
+	</View>
+    );
+}
 
 // Container for the messages, updated with state variable, displays "No messages" if chat message array is empty.
 const MessageBoxComponent = (props) => {
@@ -171,7 +178,7 @@ const MessageBoxComponent = (props) => {
 				empty 
 				?
 					<ScrollView>
-						<Text>No messages</Text>
+						<NoMessages/>
 					</ScrollView>
 				:
 					<FlatList
