@@ -94,7 +94,7 @@ const MessagesListComponent = (props) => {
 	const [showmodal,setShowModal] = useState(false);
 	const [selectedchatid,setSelectedChatId] = useState("");
 	const [showdebugmenu,setShowDebugMenu] = useState(false);
-	
+	const {colors,isdark} = useTheme();
 	const chatarray = [...chats.entries()].sort((a,b)=>{
 		const a_messagearray = a[1].messages;
 		const b_messagearray = b[1].messages;
@@ -133,6 +133,8 @@ const MessagesListComponent = (props) => {
 		<>
 			<Dropdown
 			label={display}
+			containerStyle={colors.background}
+			textColor={colors.text}
 			data={contactArray}
 			onChangeText= {
 				(value,index,data)=>{
@@ -142,7 +144,7 @@ const MessagesListComponent = (props) => {
 				}
 			}
 			/>
-			<TextInput style={{height:40}} onChangeText={newDebugId=>setDebugId(newDebugId)} onSubmitEditing={()=>{
+			<TextInput style={{height:40,color:colors.text}} onChangeText={newDebugId=>setDebugId(newDebugId)} onSubmitEditing={()=>{
 				setUserId(debugid);
 				setContacts((contacts)=>{
 					const newcontacts = new Map(contacts);

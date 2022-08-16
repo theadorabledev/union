@@ -14,7 +14,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { EvilIcons } from '@expo/vector-icons';
 import {FontAwesome} from '@expo/vector-icons';
 
-import {GlobalStyle,useTheme} from './Styles.js';
+import {GlobalStyle,useTheme,keyboardStyle} from './Styles.js';
 import {ChatContext,ContactContext,SignalContext,PasswordContext} from './Context.ts';
 
 // Home button to navigate to MainScreenComponent
@@ -339,6 +339,34 @@ export const NewChatComponent = (props) => {
     );
 };
 
+export const MessageSearchBar = (props) =>{
+	if(props.barstate.barvisible){
+	return (
+		<View style = {keyboardStyle.outer}>
+		<View style={keyboardStyle.container}> 
+		  <TextInput
+			autoCapitalize="none"
+			autoCorrect={false}
+			clearButtonMode="always"
+			value={props.query}
+			onChangeText={queryText => props.handleSearch(queryText)}
+			placeholder="Search"
+			style={keyboardStyle.input}
+		  />
+		  	<TouchableOpacity onPress={()=>{
+				
+				props.barstate.setBarVisible(false)
+				props.handleSearch("");
+				}}>
+				<Ionicons name='close-circle' size={24} color={GlobalStyle.highlightcolor} style={keyboardStyle.icon}/>
+			</TouchableOpacity>
+		</View>
+		</View>
+	  );
+	}else{
+		return <View></View>
+	}
+}
 
 export const ContactInfoComponent = (props) => {
 	const {colors,isdark} = useTheme();

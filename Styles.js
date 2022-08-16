@@ -1,6 +1,6 @@
 
 import {useEffect,useState,createContext,useContext} from 'react'
-import { useColorScheme } from 'react-native';
+import { useColorScheme,StyleSheet } from 'react-native';
 export const GlobalStyle = {
 	userProfileSize: 40,
 	iconSize: 26,
@@ -45,7 +45,45 @@ export const GlobalStyle = {
 		error: '#EF9A9A',
 	  },
 }
-
+// Styles for the keyboard
+export const keyboardStyle = StyleSheet.create(
+	{
+		outer:
+		{
+			flexDirection: 'row',
+			margin: 5,
+		},
+		container:
+		{
+			backgroundColor: 'white',
+			flexDirection: 'row',
+			flex: 1,
+			marginRight:10,
+			padding: 10,
+			borderRadius: 50,
+		},
+		input:{
+			flex: 1,
+			marginHorizontal:10,
+		},
+		status:
+		{
+			padding: 10,
+			textAlign: "center"
+		},
+		icon:
+		{
+			marginHorizontal: 5,
+		},
+		pollTheme:
+		{
+			textColor: 'black',
+			mainColor: '#00B87B',
+			backgroundColor: 'rgb(255,255,255)',
+			alignment: 'center'
+		}
+	}
+);
 export const ThemeContext = createContext({
     isDark: false,
     colors: GlobalStyle.lightColors,

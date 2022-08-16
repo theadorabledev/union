@@ -12,9 +12,9 @@ import { HeaderBackButton } from '@react-navigation/elements';
 
 import Ionicons from '@expo/vector-icons/Ionicons';
 
-import {SettingsButton,PhoneButton,ProfileButton,ContextMenu} from './Common.js';
+import {SettingsButton,PhoneButton,ProfileButton,ContextMenu,MessageSearchBar} from './Common.js';
 import {ChatContext,ContactContext,MessageCreator,vote } from './Context';
-import {GlobalStyle,useTheme} from './Styles.js';
+import {GlobalStyle,useTheme,keyboardStyle} from './Styles.js';
 
 //poll stuff
 import Modal from "react-native-modal";
@@ -119,34 +119,7 @@ const MessageBubble = (props) => {
 }
 }
 
-const MessageSearchBar = (props) =>{
-	if(props.barstate.barvisible){
-	return (
-		<View style = {keyboardStyle.outer}>
-		<View style={keyboardStyle.container}> 
-		  <TextInput
-			autoCapitalize="none"
-			autoCorrect={false}
-			clearButtonMode="always"
-			value={props.query}
-			onChangeText={queryText => props.handleSearch(queryText)}
-			placeholder="Search"
-			style={keyboardStyle.input}
-		  />
-		  	<TouchableOpacity onPress={()=>{
-				
-				props.barstate.setBarVisible(false)
-				props.handleSearch("");
-				}}>
-				<Ionicons name='close-circle' size={24} color={GlobalStyle.highlightcolor} style={keyboardStyle.icon}/>
-			</TouchableOpacity>
-		</View>
-		</View>
-	  );
-	}else{
-		return <View></View>
-	}
-}
+
 
 // Container for the messages, updated with state variable, displays "No messages" if chat message array is empty.
 const MessageBoxComponent = (props) => {
@@ -212,45 +185,7 @@ const MessageBoxComponent = (props) => {
     );
 }
 
-// Styles for the keyboard
-const keyboardStyle = StyleSheet.create(
-	{
-		outer:
-		{
-			flexDirection: 'row',
-			margin: 5,
-		},
-		container:
-		{
-			backgroundColor: 'white',
-			flexDirection: 'row',
-			flex: 1,
-			marginRight:10,
-			padding: 10,
-			borderRadius: 50,
-		},
-		input:{
-			flex: 1,
-			marginHorizontal:10,
-		},
-		status:
-		{
-			padding: 10,
-			textAlign: "center"
-		},
-		icon:
-		{
-			marginHorizontal: 5,
-		},
-		pollTheme:
-		{
-			textColor: 'black',
-			mainColor: '#00B87B',
-			backgroundColor: 'rgb(255,255,255)',
-			alignment: 'center'
-		}
-	}
-);
+
 
 //persitant data
 const ResData = [

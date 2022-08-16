@@ -4,13 +4,13 @@ import { FlatList, View, Text, ScrollView, Button, Image, TouchableOpacity, Touc
 import NavigationBar from 'react-native-navbar';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
-import {ChatComponent,NewChatComponent,ContactInfoComponent,ChatCreator} from './Common.js';
+import {ChatComponent,NewChatComponent,ContactInfoComponent,ChatCreator,MessageSearchBar} from './Common.js';
 
 //import Contacts from 'react-native-contacts';
 import * as Contacts from "expo-contacts";
 
 import uuid from 'react-native-uuid';
-import { ChatContext,ContactContext } from './Context';
+import { ChatContext,ContactContext, SignalContext } from './Context';
 import { GlobalStyle, useTheme } from './Styles.js';
 
 // Gets the contacts with phone numbers and displays them in a screen, loads only visible ones for performance
@@ -19,6 +19,9 @@ import { GlobalStyle, useTheme } from './Styles.js';
 
 const NewChatScreenComponent = ({navigation}) => {
 	const {colors,isdark} = useTheme();
+	const {userStore,createUserIdentity,serverip} = useContext(SignalContext);
+	const [barvisible,setBarVisible] = useState(true);
+	const [filtertext,setFilterText] = useState("ale");
     React.useLayoutEffect(() => {
 	navigation.setOptions({
 	    title: "Start a New Chat",
@@ -30,20 +33,11 @@ const NewChatScreenComponent = ({navigation}) => {
     // Get contacts data
     useEffect(() => {
 	(async () => {
-	    const { status } = await Contacts.requestPermissionsAsync();
-	    if (status === "granted") {
-		const { data } = await Contacts.getContactsAsync({
-		    fields: [Contacts.PHONE_NUMBERS],
-			fields:[Contacts.Fields.id],
-			fields: [Contacts.Fields.Image],
-		});
-		if (data.length > 0) {
-		    setContacts(data);
-		    console.log(data[0]);
-		}
-	    }
+	    const serverBundles = await fetch("http://"+serverip+":443/getFullKeyBundle/"+filtertext);
+		const bundles = await serverBundles.json();
+		setContacts(bundles)
 	})();
-    }, []);
+    }, [filtertext]);
     // Gets the key from each item
     const keyExtractor = (item, idx) => {
 	return item?.id?.toString() || idx.toString();
@@ -52,8 +46,8 @@ const NewChatScreenComponent = ({navigation}) => {
     const renderItem = ({ item, index }) => {
 	// Wrapper for ChatComponent that appears as a possilbe contact in the NewChatScreen
 	return <NewChatComponent
-		name={item.name}
-		image={item.image}
+		name={item.username}
+		image={GlobalStyle.defaultprofile}
 		messages={[]}
 	    />;
     };
@@ -64,6 +58,7 @@ const NewChatScreenComponent = ({navigation}) => {
 				renderItem={renderItem}
 				keyExtractor={keyExtractor}
 				ListHeaderComponent={<Button title="Create Group Chat" onPress={()=>{navigation.navigate('NewGroupChatScreen')}}/>}
+				ListFooterComponent={<MessageSearchBar handleSearch={setFilterText} query={filtertext} barstate={{barvisible,setBarVisible}}/>}
 			/>
 	</View>
     );
