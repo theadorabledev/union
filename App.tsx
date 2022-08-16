@@ -106,6 +106,7 @@ const initialUserId = "47769a91-2d07-4580-8828-5913cf821623";
 const altId = "1d4070bf-7ada-46bd-8b7c-c8b8e0507dec"
 //please don't doxx me.
 const serverip = "167.99.43.209"
+//const serverip = "192.168.0.194"
 //generate websocket connection on app start
 const initialws = new WebSocket('ws://'+serverip+':8000/'+'loading')
 //signal protocol address (currently unused)
@@ -284,7 +285,7 @@ function App() {
 			console.log(registerUserResult);
 
 			console.log("RETRIEVING INFO FOR USER")
-			const serverBundles = await fetch("http://"+serverip+":443/getFullKeyBundle/"+contacts.get(userid).name);
+			const serverBundles = await fetch("http://"+serverip+":443/getFullKeyBundleByID/"+userid);
 			const bundles = await serverBundles.json();
 			console.log(bundles);
 			
