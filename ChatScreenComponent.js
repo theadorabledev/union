@@ -254,21 +254,13 @@ const keyboardStyle = StyleSheet.create(
 	}
 );
 
-// //persitant data replaced with function 
-// const Choices: Array<IChoice> = [
-// 	{ id: 1, choice: "Choice 1", votes: 3 },
-// 	{ id: 2, choice: "Choice 2", votes: 3 },
-// 	{ id: 3, choice: "Choice 3", votes: 3 },
-// 	{ id: 4, choice: "Choice 4", votes: 3 },
-//   ];
-
 //function to fetch votes
 function getVotes(){
 	//fetch total votes from server
 	return 12;
 }
-//set vote count
-const TotalVotes = getVotes();
+// //set vote count
+// const TotalVotes = getVotes();
 
 //function to fetch array data for poll
 function getChoices(){
@@ -282,17 +274,13 @@ function getChoices(){
 	return Choices
 }
 
-const Choices = getChoices();
+// const Choices = getChoices();
 
 function getPollTitle(){
 	//fetch poll title from server
 	return "Poll Title";
 }
-const PollTitle = getPollTitle();
-//function to fetch poll title
-
-//function to take text data and format it ino title and options
-
+// const PollTitle = getPollTitle();
 
 
 // Displays a keyboard which allows the user to write messages
@@ -308,8 +296,15 @@ const KeyboardComponent = (props) => {
 	  };
 	//set voting state
 	const [isVoted, setVoted] = useState(false);
-	
-	//
+	//new poll state
+	const [isNewPoll,setNewPoll]= useState(false);
+	//text input for polol title and choices
+	const [textTitle,setTextTitle] = useState('');
+	const [textChoices,setTextChoices] = useState('');
+	//values for votes,title,data
+	const [TotalVotes,setTotalVotes]= useState(getVotes());
+	const [Choices, setChoices] = useState(getChoices());
+	const [PollTitle, setPollTitle] = useState(getPollTitle());
 	//auto hide/show keyboard 
     useEffect(() => {
 		const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
@@ -357,6 +352,33 @@ const KeyboardComponent = (props) => {
 		Keyboard.dismiss();
 		setText("");
 	}
+	
+	
+	//new poll submitting
+	const onPressTitle = () => {
+		Keyboard.dismiss();
+	}
+	const onPressChoices = () => {
+		createPoll(textTitle, textChoices);
+		setTextChoices("");
+		setTextTitle("");
+		Keyboard.dismiss();
+	}
+	//function to take text data and format it into title and options
+	function createPoll(pollTitle:String, pollOptions:String){
+		//upload data to server
+		//sends title, data array, and total votes set to 0
+		//for now will directly change for testing
+		setTotalVotes(0);
+		setPollTitle(pollTitle);
+		setChoices([]);
+		let optionsArr = pollOptions.split(",");
+		optionsArr.forEach(formatHelper);
+	}
+	//helper function for formatting
+	function formatHelper(index, value, array){
+		Choices.push({ id: index, choice: value, votes: 0 });
+	}
 
     return (
 		<View style ={keyboardStyle.outer}>
@@ -368,7 +390,7 @@ const KeyboardComponent = (props) => {
 				onBackdropPress={() => setModalVisible(false)}
 				//onModalWillShow = {function} on show will construct the poll with text data
 			>
-        		<View style={{ flex: 1 }}>
+        		<View style={{ flex: 1 }}> 
 					<Text> {PollTitle} </Text>
 					<RNPoll
 						totalVotes={TotalVotes}
@@ -384,10 +406,30 @@ const KeyboardComponent = (props) => {
 						PollContainer={RNAnimated}
 						PollItemContainer={RNAnimated}
 					/>
-						<Button title="Hide Poll" onPress={toggleModal} />
-						<Button title="New Poll" onPress={() => {alert("new poll")}} />
+					 <Button title="Hide Poll" onPress={toggleModal} />
+					 <Button title="New Poll" onPress={() => setNewPoll(!isNewPoll)} />
+					 {isNewPoll && 
+					 <View> 
+						<View>
+							<TextInput
+							placeholder='Poll Title...'
+							onChangeText={newText=>setTextTitle(newText)}
+							value={textTitle}
+							//onSubmitEditing = {onPressTitle}
+							/>
+						</View>
+						<View>
+						<TextInput
+							placeholder='Options seperated by commas'
+							onChangeText={newText=>setTextChoices(newText)}
+							value={textChoices}
+							onSubmitEditing = {onPressChoices}
+						/>
+						</View>
+					</View> }
+			
 				</View>
-					  </Modal>
+			</Modal>
 
 			<View style={keyboardStyle.container}> 
 			<TextInput
