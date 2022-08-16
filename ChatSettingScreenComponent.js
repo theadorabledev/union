@@ -192,7 +192,7 @@ const RegisterUserComponent = ({navigation}) => {
 		headerStyle:{backgroundColor:colors.backgroundalt},
 		headerTintColor:colors.text,
 	});
-    }, [navigation]);
+    }, [navigation,colors]);
 	//const [account,SetAccount] = useState(id,name,picture,details};
 	const {contacts,setContacts,userid,setUserId} = useContext(ContactContext);
 	const [userinfo,setUserInfo] = useState({id:uuid.v4(),name:"",picture:GlobalStyle.defaultprofile,details:""})
@@ -257,7 +257,7 @@ const ChatSettingScreenComponent = ({route,navigation}) => {
 				headerTintColor:colors.text,
 			});
 		}
-    }, [navigation]);
+    }, [navigation,colors]);
 
 	const {contacts,setContacts,userid} = useContext(ContactContext);
 	const {chats,setChats} = useContext(ChatContext);

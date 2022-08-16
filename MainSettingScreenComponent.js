@@ -138,7 +138,7 @@ const MainSettingScreenComponent = ({navigation}) => {
 		headerStyle:{backgroundColor:colors.backgroundalt},
 		headerTintColor:colors.text,
 	});
-    }, [navigation]);
+    }, [navigation,colors]);
     return (
 	<View style={{flex:1,backgroundColor:colors.background}}>
 	    <User/>

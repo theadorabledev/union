@@ -338,7 +338,7 @@ const ChatScreenComponent = ({route, navigation}) => {
 				</View>
 			),
 		});
-    }, [navigation]);
+    }, [navigation,colors]);
     return (
 		<View style={{flex:1,flexDirection: "column",backgroundColor:colors.background}}>
 			<MessageBoxComponent chatId={chatId} barstate={{barvisible,setBarVisible}}/>

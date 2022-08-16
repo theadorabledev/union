@@ -237,20 +237,22 @@ export const NewChatButton = (props) => {
 const MainScreenComponent = ({navigation}) => {
 	const {contacts,setContacts,userid} = useContext(ContactContext)
 	const {colors, isDark} = useTheme();
-    useEffect(() => {
-	navigation.setOptions({
-		headerStyle:{backgroundColor:colors.backgroundalt},
-		headerTintColor:colors.text,
-	    // Navigate you to the settings page
-	    headerRight: () => (
-		<SettingsButton onPress={() => navigation.navigate('MainSettings')}/>
-	    ),
-	    // Display user icon and take you to chat settings page
-	    headerLeft: () => (
-			<SettingProfileButton/>
-	    ),
-	});
-    }, [navigation]);
+
+
+	React.useLayoutEffect(() => {
+		navigation.setOptions({
+			title: "Start a New Group Chat",
+			headerStyle:{backgroundColor:colors.backgroundalt},
+			headerTintColor:colors.text,
+			headerRight: () => (
+				<SettingsButton onPress={() => navigation.navigate('MainSettings')}/>
+			),
+				// Display user icon and take you to chat settings page
+			headerLeft: () => (
+				<SettingProfileButton/>
+			),
+		});
+		}, [navigation,colors]);
     
     return (
 	<>

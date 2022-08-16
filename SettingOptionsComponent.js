@@ -313,7 +313,7 @@ const SettingOptionsComponent = ({route, navigation}) => {
 			</View>
 		),
 	});
-    }, [navigation]);
+    }, [navigation,colors]);
 	
 
 	return (

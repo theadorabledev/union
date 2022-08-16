@@ -28,7 +28,7 @@ const NewChatScreenComponent = ({navigation}) => {
 		headerStyle:{backgroundColor:colors.backgroundalt},
 		headerTintColor:colors.text,
 	});
-    }, [navigation]);
+    }, [navigation,colors]);
     const [contacts, setContacts] = useState([]);
     // Get contacts data
     useEffect(() => {
@@ -47,6 +47,7 @@ const NewChatScreenComponent = ({navigation}) => {
 	// Wrapper for ChatComponent that appears as a possilbe contact in the NewChatScreen
 	return <NewChatComponent
 		name={item.username}
+		pronouns={item.pronouns?item.pronouns:"They/Them"}
 		image={GlobalStyle.defaultprofile}
 		messages={[]}
 	    />;
@@ -71,7 +72,7 @@ const NewGroupChatScreenComponent = ({navigation}) => {
 		headerStyle:{backgroundColor:colors.backgroundalt},
 		headerTintColor:colors.text,
 	});
-    }, [navigation]);
+    }, [navigation,colors]);
 	
     const {chats,setChats} = useContext(ChatContext);
 	const {contacts,setContacts,userid} = useContext(ContactContext);

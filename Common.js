@@ -309,7 +309,7 @@ export const NewChatComponent = (props) => {
 		//add user to contact map
 		setContacts((contacts) =>{
 			const newContacts = new Map(contacts);
-			const thiscontact = ContactCreator(newcontactid,props.name,getImage(),"They/Them");
+			const thiscontact = ContactCreator(newcontactid,props.name,getImage(),props.pronouns);
 			newContacts.set(newcontactid,thiscontact)
 			return newContacts;
 		});
@@ -340,10 +340,11 @@ export const NewChatComponent = (props) => {
 };
 
 export const MessageSearchBar = (props) =>{
+	const {colors,isdark} = useTheme();
 	if(props.barstate.barvisible){
 	return (
 		<View style = {keyboardStyle.outer}>
-		<View style={keyboardStyle.container}> 
+		<View style={{...keyboardStyle.container,backgroundColor:colors.backgroundalt}}> 
 		  <TextInput
 			autoCapitalize="none"
 			autoCorrect={false}
@@ -351,10 +352,10 @@ export const MessageSearchBar = (props) =>{
 			value={props.query}
 			onChangeText={queryText => props.handleSearch(queryText)}
 			placeholder="Search"
-			style={keyboardStyle.input}
+			placeholderTextColor={colors.textalt}
+			style={{...keyboardStyle.input,color:colors.text}}
 		  />
 		  	<TouchableOpacity onPress={()=>{
-				
 				props.barstate.setBarVisible(false)
 				props.handleSearch("");
 				}}>

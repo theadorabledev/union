@@ -206,7 +206,7 @@ function App() {
 	//organize data for context providing
 
 	//signal id creation function
-	const createID = async (name: string, store: SignalProtocolStore) => {
+	const createID = async (contact: Contact, store: SignalProtocolStore) => {
 		const registrationId = KeyHelper.generateRegistrationId()
 		storeSomewhereSafe(store)(`registrationID`, registrationId)
 		//storage.set(`registrationID`, registrationId)
@@ -241,7 +241,8 @@ function App() {
 
 		return  JSON.stringify({
 			registrationId: registrationId,
-			username:name,
+			username:contact.name,
+			pronouns:contact.details,
 			identityPubKey: Buffer.from(identityKeyPair.pubKey).toJSON(),
 			signedPreKey: publicSignedPreKey,
 			oneTimePreKeys: [publicPreKey],
@@ -259,7 +260,7 @@ function App() {
 			if (usercontact == null){
 				return;
 			}
-			const idInfo = await createID(usercontact.name, userStore);
+			const idInfo = await createID(usercontact, userStore);
 			//we have to override the json function to safe the array buffers in a different manner. Hopefully, they still work when loaded again
 			const stringifiedstore = JSON.stringify(userStore,function(k,v){
 			if (k == "pubKey" || k == "privKey"){
