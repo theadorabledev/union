@@ -73,10 +73,11 @@ const MainScreenStyles = {
 
 // A View to Dispay a default message for incoming users
 const NoContactsComponent = () => {
+	const {colors,isDark} = useTheme();
     return (
-	<View>
-	    <Text>It looks like you're all alone.</Text>
-	    <Text>Time to Uni/onize!</Text>
+	<View style={{flex:0.3,alignItems:"center",justifyContent:"center"}}>
+	    <Text style={{...GlobalStyle.textTypes.H2, color:colors.text}}>It looks like you're all alone.</Text>
+	    <Text style={{...GlobalStyle.textTypes.H2, color:colors.text}}>Time to Uni/onize!</Text>
 	</View>
     );
 }
@@ -127,7 +128,7 @@ const MessagesListComponent = (props) => {
     return (
 	<>
 		{
-		(false)
+		(true)
 		?
 		<>
 			<Dropdown

@@ -253,7 +253,7 @@ function App() {
 		try {
 			setTvar("123");
 			console.log("CREATING USER IDENTITY")
-			//await createID(userid, userStore);
+			//await createID(userid, userS	tore);
 			console.log(userid);
 			const usercontact = contacts.get(userid);
 			if (usercontact == null){
@@ -272,7 +272,7 @@ function App() {
 			await SecureStore.setItemAsync('userstore',stringifiedstore);
 
 			console.log("REGISTERING USER");
-			const registerUserResult = await fetch("http://"+serverip+":443/registerKeyBundle/911-911-1912", {
+			const registerUserResult = await fetch("http://"+serverip+":443/registerKeyBundle/"+userid.replace(/-/g,"").substring(0,24), {
 			method: "POST",
 			body: idInfo,
 			headers: {
@@ -283,7 +283,7 @@ function App() {
 			console.log(registerUserResult);
 
 			console.log("RETRIEVING INFO FOR USER")
-			const serverBundles = await fetch("http://"+serverip+":443/getFullKeyBundle/911-911-1912");
+			const serverBundles = await fetch("http://"+serverip+":443/getFullKeyBundle/alek");
 			const bundles = await serverBundles.json();
 			console.log(bundles);
 			
