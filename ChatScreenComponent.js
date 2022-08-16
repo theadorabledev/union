@@ -359,26 +359,28 @@ const KeyboardComponent = (props) => {
 		Keyboard.dismiss();
 	}
 	const onPressChoices = () => {
-		createPoll(textTitle, textChoices);
+		let choicesTemp: Array<IChoice> =[];
+		let optionsArr = textChoices.split(",");
+		optionsArr.forEach(formatHelper);
+		createPoll(textTitle, choicesTemp);
 		setTextChoices("");
 		setTextTitle("");
 		Keyboard.dismiss();
+		//helper function for formatting
+		function formatHelper(index, value, array){
+			choicesTemp.push({ id: index, choice: value, votes: 0 });
+		}
 	}
 	//function to take text data and format it into title and options
-	function createPoll(pollTitle:String, pollOptions:String){
+	function createPoll(pollTitle:String, choicesTemp: Array<IChoice>){
 		//upload data to server
 		//sends title, data array, and total votes set to 0
 		//for now will directly change for testing
 		setTotalVotes(0);
 		setPollTitle(pollTitle);
-		setChoices([]);
-		let optionsArr = pollOptions.split(",");
-		optionsArr.forEach(formatHelper);
+		setChoices(choicesTemp);
 	}
-	//helper function for formatting
-	function formatHelper(index, value, array){
-		Choices.push({ id: index, choice: value, votes: 0 });
-	}
+	
 
     return (
 		<View style ={keyboardStyle.outer}>
