@@ -14,7 +14,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 
 import {SettingsButton,PhoneButton,ProfileButton,ContextMenu,MessageSearchBar} from './Common.js';
 import {ChatContext,ContactContext,SignalContext,MessageCreator,vote } from './Context';
-import {GlobalStyle,useTheme,keyboardStyle} from './Styles.js';
+import {GlobalStyle,useTheme} from './Styles.js';
 
 //poll stuff
 import Modal from "react-native-modal";
