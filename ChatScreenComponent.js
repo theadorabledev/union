@@ -12,9 +12,9 @@ import { HeaderBackButton } from '@react-navigation/elements';
 
 import Ionicons from '@expo/vector-icons/Ionicons';
 
-import {SettingsButton,PhoneButton,ProfileButton,ContextMenu} from './Common.js';
-import {ChatContext,ContactContext,MessageCreator,vote } from './Context';
-import {GlobalStyle} from './Styles.js';
+import {SettingsButton,PhoneButton,ProfileButton,ContextMenu,MessageSearchBar} from './Common.js';
+import {ChatContext,ContactContext,SignalContext,MessageCreator,vote } from './Context';
+import {GlobalStyle,useTheme,keyboardStyle} from './Styles.js';
 
 //poll stuff
 import Modal from "react-native-modal";
@@ -121,33 +121,13 @@ const MessageBubble = (props) => {
 }
 }
 
-const MessageSearchBar = (props) =>{
-	if(props.barstate.barvisible){
-	return (
-		<View style = {keyboardStyle.outer}>
-		<View style={keyboardStyle.container}> 
-		  <TextInput
-			autoCapitalize="none"
-			autoCorrect={false}
-			clearButtonMode="always"
-			value={props.query}
-			onChangeText={queryText => props.handleSearch(queryText)}
-			placeholder="Search"
-			style={keyboardStyle.input}
-		  />
-		  	<TouchableOpacity onPress={()=>{
-				
-				props.barstate.setBarVisible(false)
-				props.handleSearch("");
-				}}>
-				<Ionicons name='close-circle' size={24} color={GlobalStyle.highlightcolor} style={keyboardStyle.icon}/>
-			</TouchableOpacity>
-		</View>
-		</View>
-	  );
-	}else{
-		return <View></View>
-	}
+const NoMessages = () => {
+	const {colors,isDark} = useTheme();
+    return (
+	<View style={{flex:0.3,alignItems:"center",justifyContent:"center"}}>
+	    <Text style={{...GlobalStyle.textTypes.H2, color:colors.text, textAlign:"center"}}>You haven't set a message to this person.</Text>
+	</View>
+    );
 }
 
 // Container for the messages, updated with state variable, displays "No messages" if chat message array is empty.
@@ -180,7 +160,7 @@ const MessageBoxComponent = (props) => {
 		setFilterData((data)=>{
 			return newfilterdata;
 		});
-	},[filtertext])
+	},[filtertext,chats])
 
 
 
@@ -200,7 +180,7 @@ const MessageBoxComponent = (props) => {
 				empty 
 				?
 					<ScrollView>
-						<Text>No messages</Text>
+						<NoMessages/>
 					</ScrollView>
 				:
 					<FlatList
@@ -331,6 +311,8 @@ const KeyboardComponent = (props) => {
 	const {contacts,setContacts,userid} = useContext(ContactContext)
 	const [text,setText] = useState('');
 	const [isModalVisible, setModalVisible] = useState(false); //modal show
+	const {userStore,createUserIdentity,serverip} = useContext(SignalContext);
+	const {colors,isDark} = useTheme();
 	const toggleModal = () => {
 		setModalVisible(!isModalVisible);
 	  };
@@ -373,13 +355,20 @@ const KeyboardComponent = (props) => {
 				const thischat = newChats.get(props.chatId)
 				const message = MessageCreator(trimtext,userid,props.chatId)
 				thischat.messages.push(message)
-				thischat.contactids.forEach((currentValue, index, arr)=>
+				thischat.contactids.forEach(async(currentValue, index, arr)=>
 				{
 					if (arr[index]!=userid)
 					{
 						message.recieverId=arr[index]
 						try{
-						ws.send(JSON.stringify(message))
+							const serverBundles = await fetch("http://"+serverip+":443/storeMessage/"+message.recieverId,
+							{
+								method: "POST",
+								body: JSON.stringify(message),
+								headers: {
+									'Content-Type': 'application/json;charset=utf-8'
+								}
+							});
 						}catch(e){
 							console.log(e);
 						}
@@ -482,8 +471,9 @@ const KeyboardComponent = (props) => {
 
 			<View style={keyboardStyle.container}> 
 			<TextInput
-				style={keyboardStyle.input}
+				style={{...keyboardStyle.input,color:colors.text}}
 				placeholder='Press here…'
+				placeholderTextColor={colors.textalt}
 				onChangeText={newText=>setText(newText)}
 				value={text}
 				multiline
@@ -507,10 +497,13 @@ const ChatScreenComponent = ({route, navigation}) => {
 	{text:"Search", handler:()=> {setBarVisible(true)}},
 	{text:"Add to friends", handler:()=> {alert("Add contact to friends list")}},
     ]
+	const {colors, isDark} = useTheme();
 	const {chatId,chatpic,settingsNavigate} = route.params;
     React.useLayoutEffect(() => {
 		navigation.setOptions({
 			title: titlename,
+			headerStyle:{backgroundColor:colors.backgroundalt},
+			headerTintColor:colors.text,
 			headerRight: () => (
 				// Settings Button
 				<View style={{
@@ -538,9 +531,9 @@ const ChatScreenComponent = ({route, navigation}) => {
 				</View>
 			),
 		});
-    }, [navigation]);
+    }, [navigation,colors]);
     return (
-		<View style={{flex:1,flexDirection: "column"}}>
+		<View style={{flex:1,flexDirection: "column",backgroundColor:colors.background}}>
 			<MessageBoxComponent chatId={chatId} barstate={{barvisible,setBarVisible}}/>
 			<KeyboardComponent chatId={chatId}/>
 		</View>

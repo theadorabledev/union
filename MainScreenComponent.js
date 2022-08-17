@@ -14,7 +14,7 @@ import uuid from 'react-native-uuid';
 
 import {SettingsButton, ProfileButton,SettingProfileButton, ChatComponent} from './Common.js';
 
-import {GlobalStyle} from './Styles.js';
+import {GlobalStyle,useTheme} from './Styles.js';
 
 
 
@@ -73,10 +73,11 @@ const MainScreenStyles = {
 
 // A View to Dispay a default message for incoming users
 const NoContactsComponent = () => {
+	const {colors,isDark} = useTheme();
     return (
-	<View>
-	    <Text>It looks like you're all alone.</Text>
-	    <Text>Time to Uni/onize!</Text>
+	<View style={{flex:0.3,alignItems:"center",justifyContent:"center"}}>
+	    <Text style={{...GlobalStyle.textTypes.H2, color:colors.text}}>It looks like you're all alone.</Text>
+	    <Text style={{...GlobalStyle.textTypes.H2, color:colors.text}}>Time to Uni/onize!</Text>
 	</View>
     );
 }
@@ -93,7 +94,7 @@ const MessagesListComponent = (props) => {
 	const [showmodal,setShowModal] = useState(false);
 	const [selectedchatid,setSelectedChatId] = useState("");
 	const [showdebugmenu,setShowDebugMenu] = useState(false);
-	
+	const {colors,isdark} = useTheme();
 	const chatarray = [...chats.entries()].sort((a,b)=>{
 		const a_messagearray = a[1].messages;
 		const b_messagearray = b[1].messages;
@@ -132,6 +133,8 @@ const MessagesListComponent = (props) => {
 		<>
 			<Dropdown
 			label={display}
+			containerStyle={colors.background}
+			textColor={colors.text}
 			data={contactArray}
 			onChangeText= {
 				(value,index,data)=>{
@@ -141,7 +144,7 @@ const MessagesListComponent = (props) => {
 				}
 			}
 			/>
-			<TextInput style={{height:40}} onChangeText={newDebugId=>setDebugId(newDebugId)} onSubmitEditing={()=>{
+			<TextInput style={{height:40,color:colors.text}} onChangeText={newDebugId=>setDebugId(newDebugId)} onSubmitEditing={()=>{
 				setUserId(debugid);
 				setContacts((contacts)=>{
 					const newcontacts = new Map(contacts);
@@ -233,22 +236,27 @@ export const NewChatButton = (props) => {
 // Displays the main screen, all the chats the user is engaged in
 const MainScreenComponent = ({navigation}) => {
 	const {contacts,setContacts,userid} = useContext(ContactContext)
-    useEffect(() => {
-	navigation.setOptions({
-	    // Navigate you to the settings page
-	    headerRight: () => (
-		<SettingsButton onPress={() => navigation.navigate('MainSettings')}/>
-	    ),
-	    // Display user icon and take you to chat settings page
-	    headerLeft: () => (
-			<SettingProfileButton/>
-	    ),
-	});
-    }, [navigation]);
+	const {colors, isDark} = useTheme();
+
+
+	React.useLayoutEffect(() => {
+		navigation.setOptions({
+			title: "Start a New Group Chat",
+			headerStyle:{backgroundColor:colors.backgroundalt},
+			headerTintColor:colors.text,
+			headerRight: () => (
+				<SettingsButton onPress={() => navigation.navigate('MainSettings')}/>
+			),
+				// Display user icon and take you to chat settings page
+			headerLeft: () => (
+				<SettingProfileButton/>
+			),
+		});
+		}, [navigation,colors]);
     
     return (
 	<>
-	    <View>
+	    <View style={{flex:1,backgroundColor:colors.background}}>
 		<MessagesListComponent/>
 	    </View>
 	    <NewChatButton/>

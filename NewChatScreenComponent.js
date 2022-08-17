@@ -4,43 +4,40 @@ import { FlatList, View, Text, ScrollView, Button, Image, TouchableOpacity, Touc
 import NavigationBar from 'react-native-navbar';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
-import {ChatComponent,NewChatComponent,ContactInfoComponent,ChatCreator} from './Common.js';
+import {ChatComponent,NewChatComponent,ContactInfoComponent,ChatCreator,MessageSearchBar} from './Common.js';
 
 //import Contacts from 'react-native-contacts';
 import * as Contacts from "expo-contacts";
 
 import uuid from 'react-native-uuid';
-import { ChatContext,ContactContext } from './Context';
-import { GlobalStyle } from './Styles.js';
+import { ChatContext,ContactContext, SignalContext } from './Context';
+import { GlobalStyle, useTheme } from './Styles.js';
 
 // Gets the contacts with phone numbers and displays them in a screen, loads only visible ones for performance
 
 
 
 const NewChatScreenComponent = ({navigation}) => {
+	const {colors,isdark} = useTheme();
+	const {userStore,createUserIdentity,serverip} = useContext(SignalContext);
+	const [barvisible,setBarVisible] = useState(true);
+	const [filtertext,setFilterText] = useState("ale");
     React.useLayoutEffect(() => {
 	navigation.setOptions({
-	    title: "Start a New Chat"
+	    title: "Start a New Chat",
+		headerStyle:{backgroundColor:colors.backgroundalt},
+		headerTintColor:colors.text,
 	});
-    }, [navigation]);
+    }, [navigation,colors]);
     const [contacts, setContacts] = useState([]);
     // Get contacts data
     useEffect(() => {
 	(async () => {
-	    const { status } = await Contacts.requestPermissionsAsync();
-	    if (status === "granted") {
-		const { data } = await Contacts.getContactsAsync({
-		    fields: [Contacts.PHONE_NUMBERS],
-			fields:[Contacts.Fields.id],
-			fields: [Contacts.Fields.Image],
-		});
-		if (data.length > 0) {
-		    setContacts(data);
-		    console.log(data[0]);
-		}
-	    }
+	    const serverBundles = await fetch("http://"+serverip+":443/getFullKeyBundle/"+filtertext);
+		const bundles = await serverBundles.json();
+		setContacts(bundles)
 	})();
-    }, []);
+    }, [filtertext]);
     // Gets the key from each item
     const keyExtractor = (item, idx) => {
 	return item?.id?.toString() || idx.toString();
@@ -49,32 +46,39 @@ const NewChatScreenComponent = ({navigation}) => {
     const renderItem = ({ item, index }) => {
 	// Wrapper for ChatComponent that appears as a possilbe contact in the NewChatScreen
 	return <NewChatComponent
-		name={item.name}
-		image={item.image}
+		name={item.username}
+		id={item.address}
+		pronouns={item.pronouns?item.pronouns:"They/Them"}
+		image={GlobalStyle.defaultprofile}
 		messages={[]}
 	    />;
     };
     return (
-	<FlatList
-	    data={contacts}
-	    renderItem={renderItem}
-	    keyExtractor={keyExtractor}
-		ListHeaderComponent={<Button title="Create Group Chat"onPress={()=>{navigation.navigate('NewGroupChatScreen')}}/>}
-	/>
+		<View style={{backgroundColor:colors.background,flex:1}}>
+			<FlatList
+				data={contacts}
+				renderItem={renderItem}
+				keyExtractor={keyExtractor}
+				ListHeaderComponent={<Button title="Create Group Chat" onPress={()=>{navigation.navigate('NewGroupChatScreen')}}/>}
+				ListFooterComponent={<MessageSearchBar handleSearch={setFilterText} query={filtertext} barstate={{barvisible,setBarVisible}}/>}
+			/>
+	</View>
     );
 }
 
 const NewGroupChatScreenComponent = ({navigation}) => {
     React.useLayoutEffect(() => {
 	navigation.setOptions({
-	    title: "Start a New Group Chat"
+	    title: "Start a New Group Chat",
+		headerStyle:{backgroundColor:colors.backgroundalt},
+		headerTintColor:colors.text,
 	});
-    }, [navigation]);
+    }, [navigation,colors]);
 	
     const {chats,setChats} = useContext(ChatContext);
 	const {contacts,setContacts,userid} = useContext(ContactContext);
 	const [selectedcontacts,setSelectedContacts] = useState([userid]);
-
+	const {colors,isdark} = useTheme();
 	const contactdata = Array.from(contacts.values()).filter(function(value){
 		return value.id != userid;
 	})
@@ -95,21 +99,23 @@ const NewGroupChatScreenComponent = ({navigation}) => {
 	    />;
     };
     return (
-	<FlatList
-	    data={contactdata}
-	    renderItem={renderItem}
-	    keyExtractor={keyExtractor}
-		ListFooterComponent={<Button title="Create Chat"onPress={()=>{
-			setChats((chats)=>{
-				const newchats = new Map(chats);
-				const newchatid = uuid.v4()
-				const newchat = ChatCreator(newchatid,selectedcontacts,[],"",GlobalStyle.defaultprofile,"")
-				newchats.set(newchatid,newchat);
-				return newchats;
-			})
-			navigation.navigate('Home');
-		}}/>}
-	/>
+		<View style={{backgroundColor:colors.background,flex:1}}>
+			<FlatList
+				data={contactdata}
+				renderItem={renderItem}
+				keyExtractor={keyExtractor}
+				ListHeaderComponent={<Button title="Create Chat"onPress={()=>{
+					setChats((chats)=>{
+						const newchats = new Map(chats);
+						const newchatid = uuid.v4().replace(/-/g,"").substring(0,24)
+						const newchat = ChatCreator(newchatid,selectedcontacts,[],"",GlobalStyle.defaultprofile,"")
+						newchats.set(newchatid,newchat);
+						return newchats;
+					})
+					navigation.navigate('Home');
+				}}/>}
+			/>
+	</View>
     );
 }
 

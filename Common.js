@@ -14,7 +14,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { EvilIcons } from '@expo/vector-icons';
 import {FontAwesome} from '@expo/vector-icons';
 
-import {GlobalStyle} from './Styles.js';
+import {GlobalStyle,useTheme,keyboardStyle} from './Styles.js';
 import {ChatContext,ContactContext,SignalContext,PasswordContext} from './Context.ts';
 
 // Home button to navigate to MainScreenComponent
@@ -28,18 +28,20 @@ export const HomeButton = ({onPress}) => {
 
 // User icon
 export const UserButton = ({onPress}) => {
+	const {colors,isdark} = useTheme();
     return(
 	<TouchableOpacity onPress={()=>onPress()} >
-	    <FontAwesome name="user" size={GlobalStyle.userProfileSize} color="black" />
+	    <FontAwesome name="user" size={GlobalStyle.userProfileSize} color={colors.text} />
 	</TouchableOpacity>
     );
 }
 
 // Right Arrow
 export const RightArrow = ({ onPress }) => {
+	const {colors,isdark} = useTheme();
 	return (
 	  <TouchableOpacity onPress={() => onPress()} >
-		<EvilIcons name="chevron-right" size={GlobalStyle.iconSize} color="black" />
+		<EvilIcons name="chevron-right" size={GlobalStyle.iconSize} color={colors.text} />
 	  </TouchableOpacity>
 	);
 }
@@ -100,14 +102,16 @@ export const ContextMenu =(props)=> {
     const [visible, setVisible] = useState(false);
     const hideMenu = () => setVisible(false);
     const showMenu = () => setVisible(true);
+	const {colors,isDark} = useTheme();
     const menuOptions = props.options.map((a,i) => {
-	return <MenuItem key={i} onPress={()=>{a.handler();hideMenu();}}>{a.text}</MenuItem>
+	return <MenuItem textStyle={{color:colors.text}}key={i} onPress={()=>{a.handler();hideMenu();}}>{a.text}</MenuItem>
     });
 
     return (
-	<View>
+	<View >
 	    <Menu
 		visible={visible}
+		style={{backgroundColor:colors.background}}
 		anchor={<Ionicons name={props.ionicon} size={GlobalStyle.iconSize} onPress={showMenu} color={GlobalStyle.highlightcolor} />}
 		onRequestClose={hideMenu}
 	    >
@@ -205,6 +209,7 @@ export const ChatComponent = (props) => {
 	const chat = chats.get(props.chatId)
 	const chatname = getChatName(chat)
 	const chatpic = getChatPicture(chat)
+	const {colors, isDark} = useTheme();
 	//provides navigation options to contact settings if DM, or chat settings if GC.
 	const settingsNavigate =() => {
 		if(chat.contactids.length != 2){
@@ -237,8 +242,8 @@ export const ChatComponent = (props) => {
 			}
 			return (
 			<>
-				<Text>{chat.messages[chat.messages.length-1].message}</Text>
-				<Text>{formatdate()}</Text>
+				<Text style={{color:colors.text}}>{chat.messages[chat.messages.length-1].message}</Text>
+				<Text style={{color:colors.text}}>{formatdate()}</Text>
 			</>
 			);
 		}
@@ -263,7 +268,7 @@ export const ChatComponent = (props) => {
 			<View style={ChatComponentStyles.chatComp}>
 				<ProfileButton profileSize={GlobalStyle.contactProfileSize} profileSource={chatpic} onPress={settingsNavigate}/>
 				<View style={ChatComponentStyles.miniChat}>
-					<Text style={ChatComponentStyles.userName}>{chatname}</Text>
+					<Text style={{...ChatComponentStyles.userName,color:colors.text}}>{chatname}</Text>
 					{lastMessage()}
 				</View>
 			</View>
@@ -285,6 +290,7 @@ export function ChatCreator(id,contactids,messages,name,picture,details){
 //pass props.username, props.uri 
 export const NewChatComponent = (props) => {
     const navigation = useNavigation();
+	const {colors,isdark} = useTheme();
 	const {chats,setChats,ws,setWs} = useContext(ChatContext)
 	const {contacts,setContacts,userid,setUserId} = useContext(ContactContext)
 	//display either device's contact's image if present, or default icon if not present.
@@ -299,16 +305,16 @@ export const NewChatComponent = (props) => {
 	function newContactChat(){
 		console.log("Create Contact");
 		//create new contact id
-		const newcontactid = uuid.v4();
+		const newcontactid = props.id
 		//add user to contact map
 		setContacts((contacts) =>{
 			const newContacts = new Map(contacts);
-			const thiscontact = ContactCreator(newcontactid,props.name,getImage(),"They/Them");
+			const thiscontact = ContactCreator(newcontactid,props.name,getImage(),props.pronouns);
 			newContacts.set(newcontactid,thiscontact)
 			return newContacts;
 		});
 		//generate new chat
-		const newchatid = uuid.v4();
+		const newchatid = uuid.v4().replace(/-/g,"").substring(0,24);
 		//this should send information to the server to generate the actual chat and make sure the uuid's match between users, but one thing at a time.
 		const getnewchat =ChatCreator(newchatid,[userid,newcontactid],[],"",GlobalStyle.defaultprofile,"");
 		setChats((chats) => {
@@ -323,18 +329,48 @@ export const NewChatComponent = (props) => {
 	<TouchableHighlight 
 		onPress={newContactChat}
 			    underlayColor = {GlobalStyle.highlightcolor}>
-	    <View style={ChatComponentStyles.chatComp}>
+	    <View style={{...ChatComponentStyles.chatComp,backgroundColor:colors.background}}>
 			<ProfileButton profileSize={GlobalStyle.contactProfileSize} profileSource={getImage()}/>
 			<View style={ChatComponentStyles.miniChat}>
-				<Text style={ChatComponentStyles.userName}>{props.name}</Text>
+				<Text style={{...ChatComponentStyles.userName,color:colors.text}}>{props.name}</Text>
 			</View>
 	    </View>
 	</TouchableHighlight>
     );
 };
 
+export const MessageSearchBar = (props) =>{
+	const {colors,isdark} = useTheme();
+	if(props.barstate.barvisible){
+	return (
+		<View style = {keyboardStyle.outer}>
+		<View style={{...keyboardStyle.container,backgroundColor:colors.backgroundalt}}> 
+		  <TextInput
+			autoCapitalize="none"
+			autoCorrect={false}
+			clearButtonMode="always"
+			value={props.query}
+			onChangeText={queryText => props.handleSearch(queryText)}
+			placeholder="Search"
+			placeholderTextColor={colors.textalt}
+			style={{...keyboardStyle.input,color:colors.text}}
+		  />
+		  	<TouchableOpacity onPress={()=>{
+				props.barstate.setBarVisible(false)
+				props.handleSearch("");
+				}}>
+				<Ionicons name='close-circle' size={24} color={GlobalStyle.highlightcolor} style={keyboardStyle.icon}/>
+			</TouchableOpacity>
+		</View>
+		</View>
+	  );
+	}else{
+		return <View></View>
+	}
+}
 
 export const ContactInfoComponent = (props) => {
+	const {colors,isdark} = useTheme();
 	const isSelected = ()=>{
 		if(props.selectedcontacts.includes(props.id)){
 			return {backgroundColor:GlobalStyle.highlightcolor}
@@ -345,6 +381,7 @@ export const ContactInfoComponent = (props) => {
     return (
 	<TouchableHighlight 
 			underlayColor = {GlobalStyle.highlightcolor}
+			style={{backgroundColor:colors.background}}
 			onPress={()=>{
 				props.setSelectedContacts((contacts)=>{
 					const newcontacts = [...contacts];
@@ -361,7 +398,7 @@ export const ContactInfoComponent = (props) => {
 	    <View style={[ChatComponentStyles.chatComp,isSelected()]}>
 			<ProfileButton profileSize={GlobalStyle.contactProfileSize} profileSource={props.picture}/>
 			<View style={ChatComponentStyles.miniChat}>
-				<Text style={ChatComponentStyles.userName}>{props.name}</Text>
+				<Text style={{...ChatComponentStyles.userName,color:colors.text}}>{props.name}</Text>
 			</View>
 	    </View>
 	</TouchableHighlight>

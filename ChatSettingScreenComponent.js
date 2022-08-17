@@ -8,7 +8,7 @@ import { HeaderBackButton } from '@react-navigation/elements';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as ImagePicker from 'expo-image-picker';
 import uuid from 'react-native-uuid';
-import {GlobalStyle} from './Styles.js';
+import {GlobalStyle,useTheme} from './Styles.js';
 import {ContactContext,ChatContext} from './Context';
 import { SignalContext } from './Context';
 
@@ -77,6 +77,7 @@ props:
 */
 
 const ImagePickerComponent = (props) => {
+	const {colors,isDark} = useTheme()
 	const pickImage = async () => {
 		let result = await ImagePicker.launchImageLibraryAsync(
 		{
@@ -93,7 +94,7 @@ const ImagePickerComponent = (props) => {
 
 	return(
 		<View style={{
-			backgroundColor:"white",
+			backgroundColor:colors.background,
 			padding:5,
 			borderRadius:74
 		}}>
@@ -125,6 +126,7 @@ const UpdateSettingsScreen = (props) => {
 	const [image, setImage] = useState(null);
 	const [settingsfieldone,setSettingsFieldOne] = useState("")
 	const [settingsfieldtwo,setSettingsFieldTwo] = useState("")
+	const {colors,isDark} = useTheme()
 	if(props.canedit){
 		edittext = "Set"
 	}	
@@ -141,7 +143,7 @@ const UpdateSettingsScreen = (props) => {
 			{props.canedit?	
 			<ImagePickerComponent image={image} setImage={setImage} profileSource ={props.element.picture}/> 
 			:<View style={{
-				backgroundColor:"white",
+				backgroundColor:colors.background,
 				padding:5,
 				borderRadius:74
 			}}>
@@ -151,25 +153,27 @@ const UpdateSettingsScreen = (props) => {
 		<View style={{height:200, width:"80%",minHeight:200,justifyContent: 'space-evenly',alignItems:"center"}}>
 			<Text style={stylesUser.label}>{props.fields[0].formatname}</Text>
 			<TextInput editable={props.canedit}
-			style={stylesUser.input} 
+			style={{...stylesUser.input,backgroundColor:colors.background,color:colors.text}} 
 			placeholder={props.element.name}
+			placeholderTextColor={colors.textalt}
 			onChangeText={newFieldOne=>setSettingsFieldOne(newFieldOne)}
 			/>
 			<Text style={stylesUser.label}>{props.fields[1].formatname}</Text>
 			<TextInput editable={props.canedit}
-			style={stylesUser.input}
+			style={{...stylesUser.input,backgroundColor:colors.background,color:colors.text}} 
 			placeholder={props.element.details}
+			placeholderTextColor={colors.textalt}
 			onChangeText={newFieldTwo=>setSettingsFieldTwo(newFieldTwo)}
 			/>
 		</View>
 		<View style={{flex:2,width:"80%",alignItems: "center"}}>
 		
 			{props.canedit?	
-			<TouchableOpacity style={stylesUser.button} onPress={()=>
+			<TouchableOpacity style={{...stylesUser.button,backgroundColor:colors.background}} onPress={()=>
 					props.onPress(settingsfieldone,settingsfieldtwo,image)
 			}>
 			<View>
-			<Text>Update</Text>
+			<Text style={{color:colors.text}}>Update</Text>
 			</View>
 			</TouchableOpacity>
 			:<View></View>}
@@ -181,14 +185,17 @@ const UpdateSettingsScreen = (props) => {
 
 // Returns the settings screen displayed on the main page
 const RegisterUserComponent = ({navigation}) => {
+	const {colors,isdark} = useTheme();
     React.useLayoutEffect(() => {
 	navigation.setOptions({
-	    title: "Create Account"
+	    title: "Create Account",
+		headerStyle:{backgroundColor:colors.backgroundalt},
+		headerTintColor:colors.text,
 	});
-    }, [navigation]);
+    }, [navigation,colors]);
 	//const [account,SetAccount] = useState(id,name,picture,details};
 	const {contacts,setContacts,userid,setUserId} = useContext(ContactContext);
-	const [userinfo,setUserInfo] = useState({id:uuid.v4(),name:"",picture:GlobalStyle.defaultprofile,details:""})
+	const [userinfo,setUserInfo] = useState({id:uuid.v4().replace(/-/g,"").substring(0,24),name:"",picture:GlobalStyle.defaultprofile,details:""})
 	const contactfields = [{name:"username",formatname:"Username"},{name:"pronouns",formatname:"Pronouns"},{name:"profilepic",formatname:""}];
 	const {userStore,createUserIdentity,serverip} = useContext(SignalContext);
 	const onPress = (settingsfieldone,settingsfieldtwo,image) => {
@@ -229,21 +236,28 @@ const RegisterUserComponent = ({navigation}) => {
 
 // Returns the settings screen displayed on the main page
 const ChatSettingScreenComponent = ({route,navigation}) => {
+	const {colors,isDark} = useTheme();
     React.useLayoutEffect(() => {
 		if(ischat){
 			navigation.setOptions({
-				title: "Chat Settings"
+				title: "Chat Settings",
+				headerStyle:{backgroundColor:colors.backgroundalt},
+				headerTintColor:colors.text,
 			});
 		}else if(canedit){
 			navigation.setOptions({
-				title: "Update Account Settings"
+				title: "Update Account Settings",
+				headerStyle:{backgroundColor:colors.backgroundalt},
+				headerTintColor:colors.text,
 			});
 		}else{
 			navigation.setOptions({
-				title: "Contact Details"
+				title: "Contact Details",
+				headerStyle:{backgroundColor:colors.backgroundalt},
+				headerTintColor:colors.text,
 			});
 		}
-    }, [navigation]);
+    }, [navigation,colors]);
 
 	const {contacts,setContacts,userid} = useContext(ContactContext);
 	const {chats,setChats} = useContext(ChatContext);
