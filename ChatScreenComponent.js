@@ -351,6 +351,7 @@ const KeyboardComponent = (props) => {
 		if (trimtext != ""){
 			setChats((chats) =>
 			{
+				console.log("Hey there")
 				const newChats = new Map(chats);
 				const thischat = newChats.get(props.chatId)
 				const message = MessageCreator(trimtext,userid,props.chatId)
@@ -360,6 +361,7 @@ const KeyboardComponent = (props) => {
 					if (arr[index]!=userid)
 					{
 						message.recieverId=arr[index]
+						
 						try{
 							const serverBundles = await fetch("http://"+serverip+":443/storeMessage/"+message.recieverId,
 							{

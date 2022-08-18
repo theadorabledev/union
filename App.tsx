@@ -24,6 +24,7 @@ import { getHeaderTitle } from '@react-navigation/elements';
 import { withNavigation } from 'react-navigation';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import * as SecureStore from 'expo-secure-store';
+import SocketIOClient, { io } from 'socket.io-client'
 //import components to include in the navigation pages
 import MainScreenComponent from './MainScreenComponent';
 import MainSettingScreenComponent from './MainSettingScreenComponent';
@@ -105,8 +106,8 @@ const initialUserId = "47769a91-2d07-4580-8828-5913cf821623";
 //debug id for testing purposes
 const altId = "1d4070bf-7ada-46bd-8b7c-c8b8e0507dec"
 //please don't doxx me.
-const serverip = "167.99.43.209"
-//const serverip = "192.168.0.194"
+//const serverip = "167.99.43.209"
+const serverip = "192.168.0.194"
 //generate websocket connection on app start
 const initialws = new WebSocket('ws://'+serverip+':8000/'+'loading')
 //signal protocol address (currently unused)
@@ -155,6 +156,11 @@ function debugData(){
 }
 
 SplashScreen.preventAutoHideAsync();
+
+const socket = io('http://'+serverip+':3000/');
+
+
+
 
 function App() {
 
@@ -205,7 +211,27 @@ function App() {
 	const {colors, isDark} = useTheme();
 	const colorScheme = useColorScheme();
 	//organize data for context providing
-
+	socket.on('message',(msg)=>{
+		console.log(msg)
+		setChats((chats)=>{
+			const newChats = new Map(chats);
+			const chat = newChats.get(msg.chatId);
+			if (typeof chat == "undefined"){
+				console.log("OH GOD OH FUCK ON NO PLEASE WHY I JUST WANTED A C+")
+			}else{
+				const exists = chat.messages.find((themsg)=>{
+					return themsg.messageId == msg.messageId;
+				})
+				if(typeof exists == "undefined"){
+					chat.messages.push(msg);
+				}
+				newChats.set(chat.id,chat);
+				return newChats;
+			}
+			return chats;
+		})
+		
+	})
 	//signal id creation function
 	const createID = async (contact: Contact, store: SignalProtocolStore) => {
 		const registrationId = KeyHelper.generateRegistrationId()
@@ -253,9 +279,11 @@ function App() {
 	//creates the user identity and saves it to the persistent data
 	const createUserIdentity = async () => {
 		try {
-			setTvar("123");
-			console.log("CREATING USER IDENTITY")
+			console.log("does this change anything");
+			//setTvar("123");
+			console.log("CREATING USER IDENTITY");
 			//await createID(userid, userS	tore);
+			
 			console.log(userid);
 			const usercontact = contacts.get(userid);
 			if (usercontact == null){
@@ -284,7 +312,7 @@ function App() {
 			console.log("Result:");
 			console.log(registerUserResult);
 
-			console.log("RETRIEVING INFO FOR USER")
+			console.log("RETRIEVING INFO FOR USER");
 			const serverBundles = await fetch("http://"+serverip+":443/getFullKeyBundleByID/"+userid);
 			const bundles = await serverBundles.json();
 			console.log(bundles);
@@ -294,9 +322,9 @@ function App() {
 			
 			return "test";
 		} catch (e) {
+			console.log("any errors?")
 			console.log(e);
 		}
-
 	};
 	
 
@@ -440,7 +468,7 @@ function App() {
 	    chats.forEach((chat)=>{
 		chatids.push(chat.id);
 		SecureStore.setItemAsync(chat.id,JSON.stringify(chat,function(key,value){
-		    console.log(key,typeof key,value,typeof value);
+		    //console.log(key,typeof key,value,typeof value);
 		    
 		    return value;
 		}));
@@ -462,7 +490,7 @@ function App() {
 			SecureStore.setItemAsync(contact.id,JSON.stringify(contact));
 			})
 			SecureStore.setItemAsync('contactids',JSON.stringify(contactids));
-			//console.log("saving contactids as",contactids)
+			console.log("saving contactids as",contactids)
 			if (typeof contacts.get(userid) != "undefined"){
 				const cui = async () => {
 					const r = await createUserIdentity();
@@ -519,7 +547,7 @@ function App() {
 		})
     };
 
-
+	
 	
 	//this actually handles the first time run thingy
 	const onLayoutRootView = useCallback(async () => {

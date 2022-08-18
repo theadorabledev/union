@@ -128,7 +128,7 @@ const MessagesListComponent = (props) => {
     return (
 	<>
 		{
-		(false)
+		(true)
 		?
 		<>
 			<Dropdown

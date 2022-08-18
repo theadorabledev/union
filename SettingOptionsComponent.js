@@ -1,6 +1,6 @@
 /* A file to hold components used within the Setting option screen. */
 import React, { useState,useContext } from 'react';
-import { View, Text, TextInput, ScrollView, Button, Image, TouchableOpacity, TouchableHighlight, StyleSheet } from "react-native";
+import { View, Text, TextInput, ScrollView, Button, Image, TouchableOpacity, TouchableHighlight, StyleSheet,Switch } from "react-native";
 import NavigationBar from 'react-native-navbar';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -199,7 +199,24 @@ const stylesCommonComponent = StyleSheet.create({
 		paddingBottom: 20
 	}
 })
-  
+const Toggle = () => {
+    // We're also pulling setScheme here!
+    const {setScheme, isDark} = useTheme();
+
+    const toggleScheme = () => {
+        /*
+        * setScheme will change the state of the context
+        * thus will cause childrens inside the context provider to re-render
+        * with the new color scheme
+        */
+        isDark ? setScheme('light') : setScheme('dark');
+    }
+
+    return (
+        <Switch value={isDark} onValueChange={toggleScheme}/>
+    );
+}
+
 export const Appearance = () => {
 	const { appearance } = options;
 	const {colors,isdark} = useTheme();
@@ -207,11 +224,7 @@ export const Appearance = () => {
 	  <View>
 		<View style={stylesCommonComponent.horizontalAlign}>
 		  <Text style={{color:colors.text}}>{appearance.theme}</Text>
-		  <RightArrow onPress={() => alert('Change app Theme')} />
-		</View>
-		<View style={stylesCommonComponent.horizontalAlign}>
-		  <Text style={{color:colors.text}}>{appearance.chatColor}</Text>
-		  <RightArrow onPress={() => alert('Change Chat Color & Wallpaper')} />
+		  <Toggle/>
 		</View>
 	  </View>
 	)
@@ -237,6 +250,7 @@ export const Notifications = () => {
 	  </View>
 	)
 }
+
 
 export const Privacy = () => {
 	const { privacy } = options;
