@@ -62,6 +62,25 @@ import {
 
 from './Context';
 
+export const useInterval = (callback, delay) => {
+
+    const savedCallback = useRef();
+
+    useEffect(() => {
+	savedCallback.current = callback;
+    }, [callback]);
+
+
+    useEffect(() => {
+	function tick() {
+	    savedCallback.current();
+	}
+	if (delay !== null) {
+	    const id = setInterval(tick, delay);
+	    return () => clearInterval(id);
+	}
+    }, [delay]);
+}
 
 //contact creation function
 function ContactCreator(map:Map<string,Contact>,id:string,name:string,picture:ImageSourcePropType,details:string){
@@ -157,7 +176,7 @@ function debugData(){
 
 SplashScreen.preventAutoHideAsync();
 
-const socket = io('http://'+serverip+':3000/');
+//const socket = io('http://'+serverip+':3000/');
 
 
 
@@ -211,27 +230,27 @@ function App() {
 	const {colors, isDark} = useTheme();
 	const colorScheme = useColorScheme();
 	//organize data for context providing
-	socket.on('message',(msg)=>{
-		console.log(msg)
-		setChats((chats)=>{
-			const newChats = new Map(chats);
-			const chat = newChats.get(msg.chatId);
-			if (typeof chat == "undefined"){
-				console.log("OH GOD OH FUCK ON NO PLEASE WHY I JUST WANTED A C+")
-			}else{
-				const exists = chat.messages.find((themsg)=>{
-					return themsg.messageId == msg.messageId;
-				})
-				if(typeof exists == "undefined"){
-					chat.messages.push(msg);
-				}
-				newChats.set(chat.id,chat);
-				return newChats;
-			}
-			return chats;
-		})
+	// socket.on('message',(msg)=>{
+	// 	console.log(msg)
+	// 	setChats((chats)=>{
+	// 		const newChats = new Map(chats);
+	// 		const chat = newChats.get(msg.chatId);
+	// 		if (typeof chat == "undefined"){
+	// 			console.log("OH GOD OH FUCK ON NO PLEASE WHY I JUST WANTED A C+")
+	// 		}else{
+	// 			const exists = chat.messages.find((themsg)=>{
+	// 				return themsg.messageId == msg.messageId;
+	// 			})
+	// 			if(typeof exists == "undefined"){
+	// 				chat.messages.push(msg);
+	// 			}
+	// 			newChats.set(chat.id,chat);
+	// 			return newChats;
+	// 		}
+	// 		return chats;
+	// 	})
 		
-	})
+	// })
 	//signal id creation function
 	const createID = async (contact: Contact, store: SignalProtocolStore) => {
 		const registrationId = KeyHelper.generateRegistrationId()
@@ -336,6 +355,44 @@ function App() {
 	const passwordState = {ispasswordlock,setLockState,isapplock,setAppLock,password,setPassword}
 
     //console.log("New Web Socket Connection: ",ws);
+
+    useInterval(async () => {
+	try {
+	    console.log(123123123);
+	    console.log("RETRIEVING INFO FOR USER")
+	    const serverip = "167.99.43.209"
+	    const serverBundles = await fetch("http://"+serverip+":443/getMessagesAfter/"+ userid + "/0");
+	    const bundles = await serverBundles.json();
+	    console.log("messages on server");
+	    console.log(bundles);
+	    console.log(bundles.map((i)=>{return i.message.senderId}));
+	    console.log([... new Set(bundles.map((i)=>{return i.message.senderId}))]);
+	    const contact_ids = [... new Set(bundles.map((i)=>{return i.message.senderId}))];
+	    contact_ids.map(async (c_id) => {
+		const cont = await fetch("http://"+serverip+":443/getFullKeyBundleByID/"+ c_id);
+		const c = await cont.json();
+		console.log(c_id);
+		console.log(c.username);
+		console.log(c.pronouns);
+		console.log(JSON.stringify({
+		    'details': c.pronouns,
+		    'username': c.username,
+		    'id': c_id,
+		    'picture':19
+		}));
+		SecureStore.setItemAsync(c_id,JSON.stringify({
+		    'details': c.pronouns,
+		    'username': c.username,
+		    'id': c_id,
+		    'picture':19
+		}));
+	    });
+	    console.log(contacts);
+	} catch (err) {
+	    console.log(err)
+	}
+        // put your interval code here.
+    }, 1000 * 10);
     useEffect(() => {
 	async function prepare(){	
 	try{
