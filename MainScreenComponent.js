@@ -194,7 +194,7 @@ const MessagesListComponent = (props) => {
 							underlayColor = {GlobalStyle.highlightcolor}
 							style={
 								{margin: 20,
-								backgroundColor: "white",
+								backgroundColor:colors.backgroundalt,
 								borderRadius: 20,
 								padding: 35,
 								alignItems: "center",
@@ -208,7 +208,7 @@ const MessagesListComponent = (props) => {
 								elevation: 5
 							}}
 							>
-								<Text>Delete Chat?</Text>
+								<Text style={{color:colors.text}}>Delete Chat?</Text>
 						</TouchableHighlight>
 					
 					</View>
