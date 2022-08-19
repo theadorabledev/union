@@ -455,9 +455,9 @@ const KeyboardComponent = (props) => {
 	     </View> }
 	    </Modal>
 
-	    <View style={keyboardStyle.container}> 
+	    <View style={{...keyboardStyle.container,backgroundColor:colors.backgroundalt}}> 
 		<TextInput
-		    style={{...keyboardStyle.input,color:colors.text}}
+		    style={{...keyboardStyle.input, color:colors.text}}
 		    placeholder='Press here…'
 		    placeholderTextColor={colors.textalt}
 		    onChangeText={newText=>setText(newText)}

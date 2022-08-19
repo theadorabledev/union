@@ -225,6 +225,7 @@ function App() {
     const [ispasswordlock,setLockState] = useState(false); 
     const [isapplock,setAppLock] = useState(false);
     const [password,setPassword] = useState("");
+	const [checkedserver,setCheckedServer] = useState(new Date().toISOString());
     const {colors, isDark} = useTheme();
     const colorScheme = useColorScheme();
 
@@ -370,12 +371,13 @@ function App() {
 	try {
 	    console.log(userid,"retrieving");
 	    //const serverip = "167.99.43.209"
-	    const serverBundles = await fetch("http://"+serverip+":443/getMessagesAfter/"+ userid + "/0");
+		console.log(checkedserver);
+	    const serverBundles = await fetch("http://"+serverip+":443/getMessagesAfter/"+ userid + "/" + checkedserver);
 	    const bundles = await serverBundles.json();
 	   // console.log("messages on server");
-	    console.log(bundles);
+	    //console.log(bundles);
 	    bundles.forEach(element => {
-			console.log(element);
+			//console.log(element);
 		});
 		//console.log(bundles.map((i)=>{return i.message.senderId}));
 	    //console.log([... new Set(bundles.map((i)=>{return i.message.senderId}))]);
@@ -400,6 +402,7 @@ function App() {
 				return newChats;
 			})
 		});
+		setCheckedServer(new Date().toISOString())
 		/*
 	    contact_ids.map(async (c_id) => {
 			const cont = await fetch("http://"+serverip+":443/getFullKeyBundleByID/"+ c_id);
