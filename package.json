@@ -35,7 +35,8 @@
     "react-native-web": "0.17.7",
     "react-navbar-dropdown": "^1.4.3",
     "react-navigation": "^4.4.4",
-    "react-navigation-stack": "react-navigation/stack"
+    "react-navigation-stack": "react-navigation/stack",
+    "socket.io-client": "^4.5.1"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",

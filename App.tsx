@@ -1,18 +1,18 @@
 import 'react-native-gesture-handler'; 
-import React, { useState,useEffect,useContext,useCallback } from 'react';
+import React, { useState,useEffect,useContext,useCallback, useRef } from 'react';
 var Buffer = require("@craftzdog/react-native-buffer").Buffer;
 import { 
-	View, 
-	Text, 
-	TextInput,
-	ScrollView, 
-	Button, 
-	Image,
-	ImageSourcePropType,  
-	TouchableOpacity, 
-	TouchableHighlight, 
-	useColorScheme,
-	AsyncStorage} 
+    View, 
+    Text, 
+    TextInput,
+    ScrollView, 
+    Button, 
+    Image,
+    ImageSourcePropType,  
+    TouchableOpacity, 
+    TouchableHighlight, 
+    useColorScheme,
+    AsyncStorage} 
 
 from "react-native";
 //used for  id generation
@@ -24,6 +24,7 @@ import { getHeaderTitle } from '@react-navigation/elements';
 import { withNavigation } from 'react-navigation';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import * as SecureStore from 'expo-secure-store';
+import SocketIOClient, { io } from 'socket.io-client'
 //import components to include in the navigation pages
 import MainScreenComponent from './MainScreenComponent';
 import MainSettingScreenComponent from './MainSettingScreenComponent';
@@ -50,25 +51,44 @@ import { SignalProtocolStore,arrayBufferToString } from './storage-type';
 
 //import typescript interfaces and contexts
 import {
-	ChatContext,
-	ContactContext,
-	SignalContext,
-	PasswordContext,
-	Chat,
-	Contact,
-	ProcessedChatMessage,
-	MessageCreator} 
+    ChatContext,
+    ContactContext,
+    SignalContext,
+    PasswordContext,
+    Chat,
+    Contact,
+    ProcessedChatMessage,
+    MessageCreator} 
 
 from './Context';
 
+export const useInterval = (callback, delay) => {
+
+    const savedCallback = useRef();
+
+    useEffect(() => {
+	savedCallback.current = callback;
+    }, [callback]);
+
+
+    useEffect(() => {
+	function tick() {
+	    savedCallback.current();
+	}
+	if (delay !== null) {
+	    const id = setInterval(tick, delay);
+	    return () => clearInterval(id);
+	}
+    }, [delay]);
+}
 
 //contact creation function
 function ContactCreator(map:Map<string,Contact>,id:string,name:string,picture:ImageSourcePropType,details:string){
-	map.set(id,{id,name,picture,details})
+    map.set(id,{id,name,picture,details})
 }
 //chat creation function
 function ChatCreator(map:Map<string,Chat>,id:string,contactids:string[],messages:ProcessedChatMessage[],name:string,picture:ImageSourcePropType,details:string){
-	map.set(id,{id,contactids,messages,name,picture,details})
+    map.set(id,{id,contactids,messages,name,picture,details})
 }
 //message creation function
 
@@ -105,8 +125,8 @@ const initialUserId = "47769a91-2d07-4580-8828-5913cf821623";
 //debug id for testing purposes
 const altId = "1d4070bf-7ada-46bd-8b7c-c8b8e0507dec"
 //please don't doxx me.
-const serverip = "167.99.43.209"
-//const serverip = "192.168.0.194"
+//const serverip = "167.99.43.209"
+const serverip = "192.168.0.194"
 //generate websocket connection on app start
 const initialws = new WebSocket('ws://'+serverip+':8000/'+'loading')
 //signal protocol address (currently unused)
@@ -156,6 +176,9 @@ function debugData(){
 
 SplashScreen.preventAutoHideAsync();
 
+const socket = io('http://'+serverip+':2999/');
+
+
 function App() {
 
     function makeKeyId(){
@@ -199,118 +222,218 @@ function App() {
     const [ws,setWs] = useState<WebSocket>(initialws) /* </WebSocket> */
     const [appIsReady, setAppIsReady] = useState(false);
     const [firstTimeRun,setFirstTimeRun] = useState(true); 
-	const [ispasswordlock,setLockState] = useState(false); 
-	const [isapplock,setAppLock] = useState(false);
-	const [password,setPassword] = useState("");
-	const {colors, isDark} = useTheme();
-	const colorScheme = useColorScheme();
-	//organize data for context providing
+    const [ispasswordlock,setLockState] = useState(false); 
+    const [isapplock,setAppLock] = useState(false);
+    const [password,setPassword] = useState("");
+	const [checkedserver,setCheckedServer] = useState(new Date().toISOString());
+    const {colors, isDark} = useTheme();
+    const colorScheme = useColorScheme();
 
-	//signal id creation function
-	const createID = async (contact: Contact, store: SignalProtocolStore) => {
-		const registrationId = KeyHelper.generateRegistrationId()
-		storeSomewhereSafe(store)(`registrationID`, registrationId)
-		//storage.set(`registrationID`, registrationId)
-
-		const identityKeyPair = await KeyHelper.generateIdentityKeyPair()
-		const view = Buffer.from(identityKeyPair.privKey);
-		storeSomewhereSafe(store)('identityKey', identityKeyPair)
-		//storage.set('identityKey', JSON.stringify(identityKeyPair))
-		const baseKeyId = makeKeyId()
-		const preKey = await KeyHelper.generatePreKey(baseKeyId)
-		store.storePreKey(`${baseKeyId}`, preKey.keyPair)
-		
-		//storage.set(`${baseKeyId}`, JSON.stringify(preKey.keyPair))
-
-		const signedPreKeyId = makeKeyId()
-		const signedPreKey = await KeyHelper.generateSignedPreKey(identityKeyPair, signedPreKeyId)
-		store.storeSignedPreKey(signedPreKeyId, signedPreKey.keyPair)
-
-		console.log(store);
-
-		
-		const publicSignedPreKey: SignedPublicPreKeyType = {
-			keyId: signedPreKeyId,
-			publicKey: Buffer.from(signedPreKey.keyPair.pubKey).toJSON(),
-			signature: Buffer.from(signedPreKey.signature).toJSON(),
-		}
-
-		const publicPreKey: PreKeyType = {
-			keyId: preKey.keyId,
-			publicKey: Buffer.from(preKey.keyPair.pubKey).toJSON(),
-		}
-
-		return  JSON.stringify({
-			registrationId: registrationId,
-			username:contact.name,
-			pronouns:contact.details,
-			identityPubKey: Buffer.from(identityKeyPair.pubKey).toJSON(),
-			signedPreKey: publicSignedPreKey,
-			oneTimePreKeys: [publicPreKey],
-		});
+    useEffect(() => {
+	const messageListener = (message) => {
+	    console.log("Listened to a message");
+	    console.log(message);
 	}
+	console.log(userid);
+	socket.emit('getMessages', userid);
+	socket.on('message', messageListener);
+    })
+
+    //Connect to websocket
+    
+    //organize data for context providing
+    // socket.on('message',(msg)=>{
+    // 	console.log(msg)
+    // 	setChats((chats)=>{
+    // 		const newChats = new Map(chats);
+    // 		const chat = newChats.get(msg.chatId);
+    // 		if (typeof chat == "undefined"){
+    // 			console.log("OH GOD OH FUCK ON NO PLEASE WHY I JUST WANTED A C+")
+    // 		}else{
+    // 			const exists = chat.messages.find((themsg)=>{
+    // 				return themsg.messageId == msg.messageId;
+    // 			})
+    // 			if(typeof exists == "undefined"){
+    // 				chat.messages.push(msg);
+    // 			}
+    // 			newChats.set(chat.id,chat);
+    // 			return newChats;
+    // 		}
+    // 		return chats;
+    // 	})
+    
+    // })
+    //signal id creation function
+    const createID = async (contact: Contact, store: SignalProtocolStore) => {
+	const registrationId = KeyHelper.generateRegistrationId()
+	storeSomewhereSafe(store)(`registrationID`, registrationId)
+	//storage.set(`registrationID`, registrationId)
+
+	const identityKeyPair = await KeyHelper.generateIdentityKeyPair()
+	const view = Buffer.from(identityKeyPair.privKey);
+	storeSomewhereSafe(store)('identityKey', identityKeyPair)
+	//storage.set('identityKey', JSON.stringify(identityKeyPair))
+	const baseKeyId = makeKeyId()
+	const preKey = await KeyHelper.generatePreKey(baseKeyId)
+	store.storePreKey(`${baseKeyId}`, preKey.keyPair)
 	
-	//creates the user identity and saves it to the persistent data
-	const createUserIdentity = async () => {
-		try {
-			setTvar("123");
-			console.log("CREATING USER IDENTITY")
-			//await createID(userid, userS	tore);
-			console.log(userid);
-			const usercontact = contacts.get(userid);
-			if (usercontact == null){
-				return;
-			}
-			const idInfo = await createID(usercontact, userStore);
-			//we have to override the json function to safe the array buffers in a different manner. Hopefully, they still work when loaded again
-			const stringifiedstore = JSON.stringify(userStore,function(k,v){
-			if (k == "pubKey" || k == "privKey"){
-				const buf = Buffer.from(v);
-				return Buffer.from(v).toJSON();
-			}
-			return v;
-			});
-			
-			await SecureStore.setItemAsync('userstore',stringifiedstore);
+	//storage.set(`${baseKeyId}`, JSON.stringify(preKey.keyPair))
 
-			console.log("REGISTERING USER");
-			const registerUserResult = await fetch("http://"+serverip+":443/registerKeyBundle/"+userid, {
-			method: "POST",
-			body: idInfo,
-			headers: {
-				'Content-Type': 'application/json;charset=utf-8'
-			}
-			});
-			console.log("Result:");
-			console.log(registerUserResult);
+	const signedPreKeyId = makeKeyId()
+	const signedPreKey = await KeyHelper.generateSignedPreKey(identityKeyPair, signedPreKeyId)
+	store.storeSignedPreKey(signedPreKeyId, signedPreKey.keyPair)
 
-			console.log("RETRIEVING INFO FOR USER")
-			const serverBundles = await fetch("http://"+serverip+":443/getFullKeyBundleByID/"+userid);
-			const bundles = await serverBundles.json();
-			console.log(bundles);
-			
-			console.log(idInfo);
+	console.log(store);
 
-			
-			return "test";
-		} catch (e) {
-			console.log(e);
+	
+	const publicSignedPreKey: SignedPublicPreKeyType = {
+	    keyId: signedPreKeyId,
+	    publicKey: Buffer.from(signedPreKey.keyPair.pubKey).toJSON(),
+	    signature: Buffer.from(signedPreKey.signature).toJSON(),
+	}
+
+	const publicPreKey: PreKeyType = {
+	    keyId: preKey.keyId,
+	    publicKey: Buffer.from(preKey.keyPair.pubKey).toJSON(),
+	}
+
+	return  JSON.stringify({
+	    registrationId: registrationId,
+	    username:contact.name,
+	    pronouns:contact.details,
+	    identityPubKey: Buffer.from(identityKeyPair.pubKey).toJSON(),
+	    signedPreKey: publicSignedPreKey,
+	    oneTimePreKeys: [publicPreKey],
+	});
+    }
+    
+    //creates the user identity and saves it to the persistent data
+    const createUserIdentity = async () => {
+	try {
+	    console.log("does this change anything");
+	    //setTvar("123");
+	    console.log("CREATING USER IDENTITY");
+	    //await createID(userid, userS	tore);
+	    
+	    console.log(userid);
+	    const usercontact = contacts.get(userid);
+	    if (usercontact == null){
+		return;
+	    }
+	    const idInfo = await createID(usercontact, userStore);
+	    //we have to override the json function to safe the array buffers in a different manner. Hopefully, they still work when loaded again
+	    const stringifiedstore = JSON.stringify(userStore,function(k,v){
+		if (k == "pubKey" || k == "privKey"){
+		    const buf = Buffer.from(v);
+		    return Buffer.from(v).toJSON();
 		}
+		return v;
+	    });
+	    
+	    await SecureStore.setItemAsync('userstore',stringifiedstore);
 
-	};
-	
+	    console.log("REGISTERING USER");
+	    const registerUserResult = await fetch("http://"+serverip+":443/registerKeyBundle/"+userid, {
+		method: "POST",
+		body: idInfo,
+		headers: {
+		    'Content-Type': 'application/json;charset=utf-8'
+		}
+	    });
+	    console.log("Result:");
+	    console.log(registerUserResult);
 
+	    console.log("RETRIEVING INFO FOR USER");
+	    const serverBundles = await fetch("http://"+serverip+":443/getFullKeyBundleByID/"+userid);
+	    const bundles = await serverBundles.json();
+	    console.log(bundles);
+	    
+	    console.log(idInfo);
+
+	    
+	    return "test";
+	} catch (e) {
+	    console.log("any errors?")
+	    console.log(e);
+	}
+    };
+    
 
     const chatState = {chats,setChats,ws,setWs,processedmessages,setProcessedMessages};
     const contactState = {contacts,setContacts,userid,setUserId,resetContactData:delData};
     const signalState = {userStore,createUserIdentity,serverip}
 
-	const passwordState = {ispasswordlock,setLockState,isapplock,setAppLock,password,setPassword}
+    const passwordState = {ispasswordlock,setLockState,isapplock,setAppLock,password,setPassword}
 
     //console.log("New Web Socket Connection: ",ws);
+    
+    useInterval(async () => {
+	try {
+	    console.log(userid,"retrieving");
+	    //const serverip = "167.99.43.209"
+		console.log(checkedserver);
+	    const serverBundles = await fetch("http://"+serverip+":443/getMessagesAfter/"+ userid + "/" + checkedserver);
+	    const bundles = await serverBundles.json();
+	   // console.log("messages on server");
+	    //console.log(bundles);
+	    bundles.forEach(element => {
+			//console.log(element);
+		});
+		//console.log(bundles.map((i)=>{return i.message.senderId}));
+	    //console.log([... new Set(bundles.map((i)=>{return i.message.senderId}))]);
+		//console.log(serverBundles.toString());
+	    //const contact_ids = [... new Set(bundles.map((i)=>{return i.message.senderId}))]; 
+		bundles.forEach(bundle =>{
+			console.log(bundle);
+			const chatid = bundle.message.chatId;
+			const message = bundle.message;
+			setChats((chats)=>{
+				const newChats = new Map(chats);
+				const chat = newChats.get(chatid);
+				
+				if (typeof chat =="undefined"){
+					const newchat:Chat = {id:chatid,contactids:[userid,message.senderId],messages:[],name:"",picture:GlobalStyle.defaultprofile,details:""};
+					newchat.messages.push(message);
+					newChats.set(chatid,newchat);
+				}else{
+					chat.messages.push(message);
+					newChats.set(chatid,chat);
+				}
+				return newChats;
+			})
+		});
+		setCheckedServer(new Date().toISOString())
+		/*
+	    contact_ids.map(async (c_id) => {
+			const cont = await fetch("http://"+serverip+":443/getFullKeyBundleByID/"+ c_id);
+			const c = await cont.json();
+			console.log(c_id);
+			console.log(c.username);
+			console.log(c.pronouns);
+			console.log(JSON.stringify({
+				'details': c.pronouns,
+				'username': c.username,
+				'id': c_id,
+				'picture':19
+			}));
+			SecureStore.setItemAsync(c_id,JSON.stringify({
+				'details': c.pronouns,
+				'username': c.username,
+				'id': c_id,
+				'picture':19
+			}));
+	    });
+		*/
+	    console.log(contacts);
+	} catch (err) {
+	    console.log(err)
+	}
+        // put your interval code here.
+    }, 1000 * 10);
+	
     useEffect(() => {
 	async function prepare(){	
-	try{
+	    try{
 		const userid = await SecureStore.getItemAsync('userid')
 		if(userid!=null && userid != ""){
 		    setUserId(userid);
@@ -325,113 +448,113 @@ function App() {
 
 		const pass = await SecureStore.getItemAsync('password');
 		if(pass!=null){
-			setLockState(true);
-			setAppLock(true)
-			setPassword(pass);
+		    setLockState(true);
+		    setAppLock(true)
+		    setPassword(pass);
 		}else{
-			setLockState(false);
+		    setLockState(false);
 		}
 		const chatidjson = await SecureStore.getItemAsync('chatids')
 		if(chatidjson != null){
-			const chatids:string[] = JSON.parse(chatidjson);
-			//console.log('chatidsload',chatids);
-			for (const chatid of chatids){
-				const chatjson = await SecureStore.getItemAsync(chatid);
-				//console.log('chatjson',chatjson)
-				if(chatjson != null){
-					setChats((chats)=>{
-						const newChats = new Map(chats);
-						newChats.set(chatid,JSON.parse(chatjson));
-						return newChats;
-					})
-				}
+		    const chatids:string[] = JSON.parse(chatidjson);
+		    //console.log('chatidsload',chatids);
+		    for (const chatid of chatids){
+			const chatjson = await SecureStore.getItemAsync(chatid);
+			//console.log('chatjson',chatjson)
+			if(chatjson != null){
+			    setChats((chats)=>{
+				const newChats = new Map(chats);
+				newChats.set(chatid,JSON.parse(chatjson));
+				return newChats;
+			    })
 			}
+		    }
 		}
 
 		const contactidjson = await SecureStore.getItemAsync('contactids');
 		if(contactidjson != null){
-			const contactids:string[] = JSON.parse(contactidjson);
-			//console.log('contactidsload',contactids);
-			for (const contactid of contactids){
-				const contactjson = await SecureStore.getItemAsync(contactid)
-				if(contactjson != null){
-					setContacts((contacts)=>{
-						const newContacts = new Map(contacts);
-						newContacts.set(contactid,JSON.parse(contactjson));
-						return newContacts;
-					})
-				}
+		    const contactids:string[] = JSON.parse(contactidjson);
+		    //console.log('contactidsload',contactids);
+		    for (const contactid of contactids){
+			const contactjson = await SecureStore.getItemAsync(contactid)
+			if(contactjson != null){
+			    setContacts((contacts)=>{
+				const newContacts = new Map(contacts);
+				newContacts.set(contactid,JSON.parse(contactjson));
+				return newContacts;
+			    })
 			}
+		    }
 		}
 
 		const userstorejson = await SecureStore.getItemAsync('userstore');
 		//console.log(userstorejson);
 		if(userstorejson!=null){
-			//console.log(userstorejson);
-			const newuserstore = JSON.parse(userstorejson,(key,value)=>{
-				//console.log(key,value);
-				if (key == "pubKey" || key == "privKey"){
-					//console.log(value);
-					const arraybuf = Buffer.from(value).buffer;
-					//console.log(value.data)
-					return arraybuf;
-				}
-				return value;
-			})
-			//console.log(newuserstore);
-			setUserStore(newuserstore);
+		    //console.log(userstorejson);
+		    const newuserstore = JSON.parse(userstorejson,(key,value)=>{
+			//console.log(key,value);
+			if (key == "pubKey" || key == "privKey"){
+			    //console.log(value);
+			    const arraybuf = Buffer.from(value).buffer;
+			    //console.log(value.data)
+			    return arraybuf;
+			}
+			return value;
+		    })
+		    //console.log(newuserstore);
+		    setUserStore(newuserstore);
 		}
-	}catch(e){
+	    }catch(e){
 		console.warn(e);
-	}finally{
+	    }finally{
 		console.log("Finishing")
 		setAppIsReady(true);
-	}
+	    }
 	}
 	prepare();
     },[])
 
     useEffect(() => {
-		if (appIsReady) {
-			try{
-				console.log(firstTimeRun);
-				console.log(tvar);
-				if(firstTimeRun){
-				const cui = async () => {
-					console.log("RUN ON USER CREATION");
-					//const r = await createUserIdentity();
-					//console.log(r);
-				};
-				cui();
-				console.log("First!");
-				console.log(tvar);
-				}
-			} catch (err) {
-				console.log(err)
-			}
+	if (appIsReady) {
+	    try{
+		console.log(firstTimeRun);
+		console.log(tvar);
+		if(firstTimeRun){
+		    const cui = async () => {
+			console.log("RUN ON USER CREATION");
+			//const r = await createUserIdentity();
+			//console.log(r);
+		    };
+		    cui();
+		    console.log("First!");
+		    console.log(tvar);
 		}
+	    } catch (err) {
+		console.log(err)
+	    }
+	}
     }, [])
 
 
-	ws.onmessage = (e) => {
-		//parse json string
-		let msgData = JSON.parse(e.data);
-		console.log("Recieved: ", msgData);
-		//get chatid
-		let chatId:string = msgData.chatId
-		console.log(chatId)
-		//push message to chat map & update state
-		setChats((chats) =>{
-			const newChats = new Map(chats);
-			const thischat = newChats.get(chatId);
-			if (typeof thischat != undefined){
-				const tschat = thischat as Chat;
-				tschat.messages.push(msgData)
-				newChats.set(chatId,tschat)
-			}	
-			return newChats;
-		})
-	};
+    ws.onmessage = (e) => {
+	//parse json string
+	let msgData = JSON.parse(e.data);
+	console.log("Recieved: ", msgData);
+	//get chatid
+	let chatId:string = msgData.chatId
+	console.log(chatId)
+	//push message to chat map & update state
+	setChats((chats) =>{
+	    const newChats = new Map(chats);
+	    const thischat = newChats.get(chatId);
+	    if (typeof thischat != undefined){
+		const tschat = thischat as Chat;
+		tschat.messages.push(msgData)
+		newChats.set(chatId,tschat)
+	    }	
+	    return newChats;
+	})
+    };
 
     
     useEffect(()=>{
@@ -440,7 +563,7 @@ function App() {
 	    chats.forEach((chat)=>{
 		chatids.push(chat.id);
 		SecureStore.setItemAsync(chat.id,JSON.stringify(chat,function(key,value){
-		    console.log(key,typeof key,value,typeof value);
+		    //console.log(key,typeof key,value,typeof value);
 		    
 		    return value;
 		}));
@@ -455,22 +578,22 @@ function App() {
 
 
     useEffect(()=>{
-		if (appIsReady) {
-			const contactids:string[] = [];
-			contacts.forEach((contact)=>{
-			contactids.push(contact.id);
-			SecureStore.setItemAsync(contact.id,JSON.stringify(contact));
-			})
-			SecureStore.setItemAsync('contactids',JSON.stringify(contactids));
-			//console.log("saving contactids as",contactids)
-			if (typeof contacts.get(userid) != "undefined"){
-				const cui = async () => {
-					const r = await createUserIdentity();
-				}
-				cui();
-				setFirstTimeRun(false);
-			}
+	if (appIsReady) {
+	    const contactids:string[] = [];
+	    contacts.forEach((contact)=>{
+		contactids.push(contact.id);
+		SecureStore.setItemAsync(contact.id,JSON.stringify(contact));
+	    })
+	    SecureStore.setItemAsync('contactids',JSON.stringify(contactids));
+	    console.log("saving contactids as",contactids)
+	    if (typeof contacts.get(userid) != "undefined"){
+		const cui = async () => {
+		    const r = await createUserIdentity();
 		}
+		cui();
+		setFirstTimeRun(false);
+	    }
+	}
     }
 	      ,[contacts])
 
@@ -500,122 +623,122 @@ function App() {
 
     //on recieve message from server
     ws.onmessage = (e) => {
-		//parse json string
-		let msgData = JSON.parse(e.data);
-		console.log("Recieved: ", msgData);
-		//get chatid
-		let chatId:string = msgData.chatId
-		console.log(chatId)
-		//push message to chat map & update state
-		setChats((chats) =>{
-			const newChats = new Map(chats);
-			const thischat = newChats.get(chatId);
-			if (typeof thischat != undefined){
-			const tschat = thischat as Chat;
-			tschat.messages.push(msgData)
-			newChats.set(chatId,tschat)
-			}	
-			return newChats;
-		})
+	//parse json string
+	let msgData = JSON.parse(e.data);
+	console.log("Recieved: ", msgData);
+	//get chatid
+	let chatId:string = msgData.chatId
+	console.log(chatId)
+	//push message to chat map & update state
+	setChats((chats) =>{
+	    const newChats = new Map(chats);
+	    const thischat = newChats.get(chatId);
+	    if (typeof thischat != undefined){
+		const tschat = thischat as Chat;
+		tschat.messages.push(msgData)
+		newChats.set(chatId,tschat)
+	    }	
+	    return newChats;
+	})
     };
 
-
-	
-	//this actually handles the first time run thingy
-	const onLayoutRootView = useCallback(async () => {
-		if (appIsReady) {
-		  if (typeof contacts.get(userid) != "undefined"){
-			setFirstTimeRun(false);
-		  }
-		  console.log("calling hideasync")
-		  await SplashScreen.hideAsync();
-		}
-	  }, [appIsReady]);
-
-	if (!appIsReady) {
-		return null;
+    
+    
+    //this actually handles the first time run thingy
+    const onLayoutRootView = useCallback(async () => {
+	if (appIsReady) {
+	    if (typeof contacts.get(userid) != "undefined"){
+		setFirstTimeRun(false);
+	    }
+	    console.log("calling hideasync")
+	    await SplashScreen.hideAsync();
 	}
+    }, [appIsReady]);
 
-	const colortest = () => {
-		if (colorScheme == "dark"){
-			return GlobalStyle.darkColors
-		}else{
-			return GlobalStyle.lightColors
-		}
+    if (!appIsReady) {
+	return null;
+    }
+
+    const colortest = () => {
+	if (colorScheme == "dark"){
+	    return GlobalStyle.darkColors
+	}else{
+	    return GlobalStyle.lightColors
 	}
+    }
 
     //context providers allow pages to access all relevant information
     return (
-		<ThemeProvider>
-			<View style={{flex:1,backgroundColor:colortest().background}} onLayout={onLayoutRootView}>
-				<NavigationContainer>
-				<ChatContext.Provider value={chatState}>
-					<SignalContext.Provider value={signalState}>
-						<ContactContext.Provider value={contactState}>
-							<PasswordContext.Provider value={passwordState}>
-								<StackNav.Navigator>
-									{ (firstTimeRun)?
+	<ThemeProvider>
+	    <View style={{flex:1,backgroundColor:colortest().background}} onLayout={onLayoutRootView}>
+		<NavigationContainer>
+		    <ChatContext.Provider value={chatState}>
+			<SignalContext.Provider value={signalState}>
+			    <ContactContext.Provider value={contactState}>
+				<PasswordContext.Provider value={passwordState}>
+				    <StackNav.Navigator>
+					{ (firstTimeRun)?
 
-									<><StackNav.Screen 
-										name="UserRegister"
-										component={RegisterUserComponent}
-										/>
-									</>
-									:
-									<>
-										{ (isapplock)?
+					  <><StackNav.Screen 
+						name="UserRegister"
+						component={RegisterUserComponent}
+					    />
+					  </>
+					  :
+					  <>
+					      { (isapplock)?
 
-										<><StackNav.Screen 
-											name="PasswordUnlock"
-											component={PasswordUnlockScreen}
-											/>
-										</>
-										:
-										<>
-										<StackNav.Screen 
-											name="Home"
-											component={MainScreenComponent} 
-											options={({ route }) => ({ title: (contacts.get(userid) as Contact).name})}
-										/>
-										<StackNav.Screen 
-											name="MainSettings"
-											component={MainSettingScreenComponent}
-										/>
-										<StackNav.Screen 
-											name="ChatScreen"
-											component={ChatScreenComponent}
-											options={({ route }) => ({ title: "Typescript placeholder" })}
-										/>
-										<StackNav.Screen 
-											name="ChatSettings"
-											component={ChatSettingScreenComponent}
-										/>
-										<StackNav.Screen 
-											name="NewChatScreen"
-											component={NewChatScreenComponent}
-										/>
+						<><StackNav.Screen 
+						      name="PasswordUnlock"
+						      component={PasswordUnlockScreen}
+						  />
+						</>
+						:
+						<>
+						    <StackNav.Screen 
+							name="Home"
+							component={MainScreenComponent} 
+							options={({ route }) => ({ title: (contacts.get(userid) as Contact).name})}
+						    />
+						    <StackNav.Screen 
+							name="MainSettings"
+							component={MainSettingScreenComponent}
+						    />
+						    <StackNav.Screen 
+							name="ChatScreen"
+							component={ChatScreenComponent}
+							options={({ route }) => ({ title: "Typescript placeholder" })}
+						    />
+						    <StackNav.Screen 
+							name="ChatSettings"
+							component={ChatSettingScreenComponent}
+						    />
+						    <StackNav.Screen 
+							name="NewChatScreen"
+							component={NewChatScreenComponent}
+						    />
 
-										<StackNav.Screen 
-											name="NewGroupChatScreen"
-											component={NewGroupChatScreenComponent}
-										/>
+						    <StackNav.Screen 
+							name="NewGroupChatScreen"
+							component={NewGroupChatScreenComponent}
+						    />
 
-										<StackNav.Screen 
-											name="SettingOptions"
-											component={SettingOptionsComponent}
-										/>
-										</>
-										}
-									</>
-									}
-								</StackNav.Navigator>
-							</PasswordContext.Provider>
-						</ContactContext.Provider>
-					</SignalContext.Provider>
-				</ChatContext.Provider>
-				</NavigationContainer>
+						    <StackNav.Screen 
+							name="SettingOptions"
+							component={SettingOptionsComponent}
+						    />
+						</>
+					      }
+					  </>
+					}
+				    </StackNav.Navigator>
+				</PasswordContext.Provider>
+			    </ContactContext.Provider>
+			</SignalContext.Provider>
+		    </ChatContext.Provider>
+		</NavigationContainer>
 
-			</View>
+	    </View>
 	</ThemeProvider>
     );
 }

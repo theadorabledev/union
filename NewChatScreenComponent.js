@@ -32,11 +32,13 @@ const NewChatScreenComponent = ({navigation}) => {
     const [contacts, setContacts] = useState([]);
     // Get contacts data
     useEffect(() => {
-	(async () => {
-	    const serverBundles = await fetch("http://"+serverip+":443/getFullKeyBundle/"+filtertext);
-		const bundles = await serverBundles.json();
-		setContacts(bundles)
-	})();
+	if (filtertext.length > 0){
+		(async () => {
+			const serverBundles = await fetch("http://"+serverip+":443/getFullKeyBundle/"+filtertext);
+			const bundles = await serverBundles.json();
+			setContacts(bundles)
+		})();
+	}
     }, [filtertext]);
     // Gets the key from each item
     const keyExtractor = (item, idx) => {
@@ -55,12 +57,12 @@ const NewChatScreenComponent = ({navigation}) => {
     };
     return (
 		<View style={{backgroundColor:colors.background,flex:1}}>
+			<MessageSearchBar handleSearch={setFilterText} query={filtertext} barstate={{barvisible,setBarVisible}}/>
 			<FlatList
 				data={contacts}
 				renderItem={renderItem}
 				keyExtractor={keyExtractor}
 				ListHeaderComponent={<Button title="Create Group Chat" onPress={()=>{navigation.navigate('NewGroupChatScreen')}}/>}
-				ListFooterComponent={<MessageSearchBar handleSearch={setFilterText} query={filtertext} barstate={{barvisible,setBarVisible}}/>}
 			/>
 	</View>
     );

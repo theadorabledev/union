@@ -29,249 +29,237 @@ import { set } from 'date-fns';
 
 
 //Styles for the chats
-const ChatStyles = StyleSheet.create(
-	{
-		message: 
-		{
-			flexDirection: 'row',
-			marginVertical: moderateScale(7,2)
-    	},
-		send: 
-		{
-			marginLeft: 20,
-		},
-		recieve: 
-		{
-			alignSelf: 'flex-end',
-			marginRight: 20
-		},
-		cloud: 
-		{
-			maxWidth: moderateScale(250,2),
-			paddingHorizontal: moderateScale(10,2),
-			paddingTop: moderateScale(5,2),
-			paddingBottom: moderateScale(7,2),
-			borderRadius: 20
-		},
-		text: 
-		{
-			paddingTop: 3,
-			fontSize: 17,
-			lineHeight: 22
-		}
-	}
-)
+const ChatStyles = StyleSheet.create({
+    message: {
+	flexDirection: 'row',
+	marginVertical: moderateScale(7,2)
+    },
+    send: {
+	marginLeft: 20,
+    },
+    recieve: {
+	alignSelf: 'flex-end',
+	marginRight: 20
+    },
+    cloud: {
+	maxWidth: moderateScale(250,2),
+	paddingHorizontal: moderateScale(10,2),
+	paddingTop: moderateScale(5,2),
+	paddingBottom: moderateScale(7,2),
+	borderRadius: 20
+    },
+    text: {
+	paddingTop: 3,
+	fontSize: 17,
+	lineHeight: 22
+    }
+})
 
 
 // Message bubble which displays the text of a message
 const MessageBubble = (props) => {
-	const {contacts,setContacts,userid} = useContext(ContactContext)
-	const previousindex = props.data.findIndex(function(currentValue){return currentValue == props.item})-1;
-	let showname = true;
-	if (previousindex > -1){
-		if (props.item.senderId == props.data[previousindex].senderId){
-			showname = false
-		}
+    const {contacts,setContacts,userid} = useContext(ContactContext)
+    const previousindex = props.data.findIndex(function(currentValue){return currentValue == props.item})-1;
+    let showname = true;
+    if (previousindex > -1){
+	if (props.item.senderId == props.data[previousindex].senderId){
+	    showname = false
 	}
-	let username = contacts.get(props.item.senderId).name;
-	const issend = (props.item.senderId ==userid)
-	{	
-
+    }
+    let username = contacts.get(props.item.senderId).name;
+    const issend = (props.item.senderId == userid)
     return(
-		<View style=
-		{[
+	<View style=
+	      {[
 		  ChatStyles.message,
 		  issend ? ChatStyles.send : ChatStyles.recieve
-		]}>
-			<View style=
-			{[
-				ChatStyles.cloud,
-				{backgroundColor: issend ? GlobalStyle.highlightcolor : GlobalStyle.pinklightcolor}
-			]}>
-				{
-					showname
-					?
-						<Text style=
-						{[
-							ChatStyles.text,
-							{color: issend ? 'white': 'white'}
-						]}>
-							{username}
-						</Text>
-					:
-						null
-				}
+	      ]}>
+	    <View style=
+		  {[
+		      ChatStyles.cloud,
+		      {backgroundColor: issend ? GlobalStyle.highlightcolor : GlobalStyle.pinklightcolor}
+		  ]}>
+		{
+		    showname
+			?
+			<Text style=
+			      {[
+				  ChatStyles.text,
+				  {color: issend ? 'white': 'white'}
+			      ]}>
+			    {username}
+			</Text>
+		    :
+		    null
+		}
 
-				{
-					props.item.message
-					?
-						<Text style=
-						{[
-							ChatStyles.text,
-							{color: issend ? 'white': 'white'}
-						]}>
-							{props.item.message}
-						</Text>
-					:
-						null
-				}
-	    	</View>
-		</View>
+		{
+		    props.item.message
+			?
+			<Text style=
+			      {[
+				  ChatStyles.text,
+				  {color: issend ? 'white': 'white'}
+			      ]}>
+			    {props.item.message}
+			</Text>
+		    :
+		    null
+		}
+	    </View>
+	</View>
     )
-}
 }
 
 const NoMessages = () => {
-	const {colors,isDark} = useTheme();
+    const {colors,isDark} = useTheme();
     return (
-	<View style={{flex:0.3,alignItems:"center",justifyContent:"center"}}>
-	    <Text style={{...GlobalStyle.textTypes.H2, color:colors.text, textAlign:"center"}}>You haven't set a message to this person.</Text>
-	</View>
+	<View style={{
+		  flex:0.3,
+		  alignItems:"center",
+		  justifyContent:"center"
+	      }} >
+	    <Text style={{
+		      ...GlobalStyle.textTypes.H2,
+		      color:colors.text,
+		      textAlign:"center"
+		  }} >
+		You haven't set a message to this person.
+	    </Text>
+        </View> 
     );
 }
 
 // Container for the messages, updated with state variable, displays "No messages" if chat message array is empty.
 const MessageBoxComponent = (props) => {
-	const [filterdata,setFilterData] = useState([]);
-	const [filtertext,setFilterText] = useState("");
-	const {chats,setChats} = useContext(ChatContext)
-	const {contacts,setContacts,userid} = useContext(ContactContext);
+    const [filterdata,setFilterData] = useState([]);
+    const [filtertext,setFilterText] = useState("");
+    const {chats,setChats} = useContext(ChatContext)
+    const {contacts,setContacts,userid} = useContext(ContactContext);
 
 
-	//get value to determine if chat is currently empty
+    //get value to determine if chat is currently empty
     let empty = (chats.get(props.chatId).messages.length == 0)
-	//get scroll view reference to allow for autoscrolling the scrollview
-	//const scrollViewRef = useRef();
-	//create message bubble components
+    //get scroll view reference to allow for autoscrolling the scrollview
+    //const scrollViewRef = useRef();
+    //create message bubble components
 
-	const data = chats.get(props.chatId).messages;
-	//const filterdata = data.filter((message)=>{
-	//	if(message.message.toLowerCase().includes('h')){
-	//		return true;
-	//	}
-	//})
-	//setFilterData(data);
-	useEffect(()=>{
-		const newfilterdata = data.filter((message)=>{
-			if(message.message.toLowerCase().includes(filtertext)){
-				return true;
-			}
-		})
-		setFilterData((data)=>{
-			return newfilterdata;
-		});
-	},[filtertext,chats])
+    const data = chats.get(props.chatId).messages;
+    //const filterdata = data.filter((message)=>{
+    //	if(message.message.toLowerCase().includes('h')){
+    //		return true;
+    //	}
+    //})
+    //setFilterData(data);
+    useEffect(()=>{
+	const newfilterdata = data.filter((message)=>{
+	    if(message.message.toLowerCase().includes(filtertext)){
+		return true;
+	    }
+	})
+	setFilterData((data)=>{
+	    return newfilterdata;
+	});
+    },[filtertext,chats])
 
 
 
-	const renderItem = ({item}) =>(
-		<MessageBubble
-			send
-			key={item.messageId}
-			item={item}
-			data={data}
-		/>
-		)
+    const renderItem = ({item}) =>(
+	<MessageBubble
+	    send
+	    key={item.messageId}
+	    item={item}
+	    data={data}
+	/>
+    )
 
-	//need fragment for ternary comparison
+    //need fragment for ternary comparison
     return (
-		<>
-			{
-				empty 
-				?
-					<ScrollView>
-						<NoMessages/>
-					</ScrollView>
-				:
-					<FlatList
-						data={filterdata}
-						renderItem={renderItem}
-						keyExtractor={item=>item.messageId}
-						ListHeaderComponent={<MessageSearchBar handleSearch={setFilterText}query={filtertext}barstate ={props.barstate}/>}
-					/>
-			}
-		</>
+	<>
+	    {
+		empty 
+		    ?
+		    <ScrollView>
+			<NoMessages/>
+		    </ScrollView>
+		    :
+		    <FlatList
+			data={filterdata}
+			renderItem={renderItem}
+			keyExtractor={item=>item.messageId}
+			ListHeaderComponent={<MessageSearchBar handleSearch={setFilterText}query={filtertext}barstate ={props.barstate}/>}
+		    />
+	    }
+	</>
     );
 }
 
 // Styles for the keyboard
-const keyboardStyle = StyleSheet.create(
-	{
-		outer:
-		{
-			flexDirection: 'row',
-			margin: 5,
-		},
-		container:
-		{
-			backgroundColor: 'white',
-			flexDirection: 'row',
-			flex: 1,
-			marginRight:10,
-			padding: 10,
-			borderRadius: 50,
-		},
-		input:{
-			flex: 1,
-			marginHorizontal:10,
-		},
-		status:
-		{
-			padding: 10,
-			textAlign: "center"
-		},
-		icon:
-		{
-			marginHorizontal: 5,
-		},
-		pollTheme:
-		{
-			backgroundColor: '#e6f4f7',
-			flexDirection: 'column',
-			borderRadius: 15,
-		},
-		innerModal:
-		{
-			flex:1,
-			flexDirection:'column',
-			backgroundColor: '#def4faa',
-			padding: 3 ,
-			marginBottom: 300 ,
-		},
-		pollTitleTheme:
-		{
-			fontWeight: '500',
-			textAlign: 'left',
-			color: 'black',
-			fontSize: 20
-		},
-		titleContainer:
-		{
-			backgroundColor: '#def4fa',
-			flexDirection: 'row',
-			marginRight:50,
-			padding: 10,
-			borderRadius: 30,
-			margin: 5,
-		},
-		newPollTheme:
-		{
-			backgroundColor: '#edf5f7',
-			flexDirection: 'column',
-			marginRight:30,
-			padding: 10,
-			borderRadius: 30,
-			margin: 4,
-		},
-		pollButtonsTheme:
-		{
-			flexDirection: 'column',
-			alignSelf: 'center',
-			padding: 5,
-			margin: 5,
-		},
-	}
-);
+const keyboardStyle = StyleSheet.create({
+    outer:{
+	flexDirection: 'row',
+	margin: 5,
+    },
+    container:{
+	backgroundColor: 'white',
+	flexDirection: 'row',
+	flex: 1,
+	marginRight:10,
+	padding: 10,
+	borderRadius: 50,
+    },
+    input:{
+	flex: 1,
+	marginHorizontal:10,
+    },
+    status:{
+	padding: 10,
+	textAlign: "center"
+    },
+    icon:{
+	marginHorizontal: 5,
+    },
+    pollTheme:{
+	backgroundColor: '#e6f4f7',
+	flexDirection: 'column',
+	borderRadius: 15,
+    },
+    innerModal:{
+	flex:1,
+	flexDirection:'column',
+	backgroundColor: '#def4faa',
+	padding: 3 ,
+	marginBottom: 300 ,
+    },
+    pollTitleTheme:{
+	fontWeight: '500',
+	textAlign: 'left',
+	color: 'black',
+	fontSize: 20
+    },
+    titleContainer:{
+	backgroundColor: '#def4fa',
+	flexDirection: 'row',
+	marginRight:50,
+	padding: 10,
+	borderRadius: 30,
+	margin: 5,
+    },
+    newPollTheme:{
+	backgroundColor: '#edf5f7',
+	flexDirection: 'column',
+	marginRight:30,
+	padding: 10,
+	borderRadius: 30,
+	margin: 4,
+    },
+    pollButtonsTheme:{
+	flexDirection: 'column',
+	alignSelf: 'center',
+	padding: 5,
+	margin: 5,
+    },
+});
 
 //function to fetch votes
 function getVotes(){
@@ -329,17 +317,17 @@ const KeyboardComponent = (props) => {
 	const [PollTitle, setPollTitle] = useState(getPollTitle());
 	//auto hide/show keyboard 
     useEffect(() => {
-		const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
-			setKeyboardStatus("Keyboard Shown");
-		});
-		const hideSubscription = Keyboard.addListener("keyboardDidHide", () => {
-			setKeyboardStatus("Keyboard Hidden");
-		});
+	const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
+	    setKeyboardStatus("Keyboard Shown");
+	});
+	const hideSubscription = Keyboard.addListener("keyboardDidHide", () => {
+	    setKeyboardStatus("Keyboard Hidden");
+	});
 
-		return () => {
-			showSubscription.remove();
-			hideSubscription.remove();
-		};
+	return () => {
+	    showSubscription.remove();
+	    hideSubscription.remove();
+	};
     }, []);
 	//sends message with use of send button
 	const onPress = () => 
@@ -432,82 +420,78 @@ const KeyboardComponent = (props) => {
 	}
 
     return (
-		<View style ={keyboardStyle.outer}>
-			<Button 
-				title="P" 
-				onPress={toggleModal} 
-				style={keyboardStyle.icon} 
-			/>
-			<Modal
-				isVisible={isModalVisible} 
-				backdropColor={"pink"} 
-				backdropOpacity={.7}
-				onBackdropPress={() => setModalVisible(false)}
-				style= {keyboardStyle.innerModal}
-				//onModalWillShow = {pollFetch()}
-			>
-        		<View style ={keyboardStyle.titleContainer}>
-					<Text style = {keyboardStyle.pollTitleTheme}> {PollTitle} </Text>
-				</View>
-				<View style ={keyboardStyle.pollTheme}>
-					<RNPoll
-						totalVotes={TotalVotes}
-						choices={Choices}
-						hasBeenVoted = {isVoted}
-						onChoicePress={(selectedChoice: IChoice) =>{
-							setTotalVotes(TotalVotes + 1);
-							console.log("SelectedChoice: ", selectedChoice);
-							setVoted(true);
-							pollSend(PollTitle,Choices,TotalVotes);
-						}
-						}
-						appearFrom="bottom"
-  						animationDuration={750}
-						PollContainer={RNAnimated}
-						PollItemContainer={RNAnimated}
-					/>
-				</View>
-					<View style ={keyboardStyle.pollButtonsTheme}>
-					<Button title="Hide Poll" onPress={toggleModal} />
-					</View>
-					<View style ={keyboardStyle.pollButtonsTheme}>
-					<Button title="New Poll" onPress={() => setNewPoll(!isNewPoll)} />
-					</View>
-					 {isNewPoll && 
-					 <View> 
-						<View style ={keyboardStyle.newPollTheme}>
-							<TextInput
-							placeholder='Poll Title...'
-							onChangeText={newText=>setTextTitle(newText)}
-							value={textTitle}
-							/>
-						</View>
-						<View style ={keyboardStyle.newPollTheme}>
-						<TextInput
-							placeholder='Options seperated by commas'
-							onChangeText={newText=>setTextChoices(newText)}
-							value={textChoices}
-							onSubmitEditing = {onPressChoices}
-						/>
-						</View>
-					</View> }
-			</Modal>
+	<View style ={keyboardStyle.outer}>
+	    <Button title="P" onPress={toggleModal} style={keyboardStyle.icon} />
+	    <Modal
+		isVisible={isModalVisible} 
+		backdropColor={"pink"} 
+		backdropOpacity={.7}
+		onBackdropPress={() => setModalVisible(false)}
+		style= {keyboardStyle.innerModal}
+		//onModalWillShow = {function} on show will construct the poll with text data
+	    >
+            <View style ={keyboardStyle.titleContainer}>
+		<Text style = {keyboardStyle.pollTitleTheme}> {PollTitle} </Text>
+	    </View>
+	    <View style ={keyboardStyle.pollTheme}>
+		<RNPoll
+		    totalVotes={TotalVotes}
+		    choices={Choices}
+		    hasBeenVoted = {isVoted}
+		    onChoicePress={(selectedChoice: IChoice) =>{
+			setTotalVotes(TotalVotes + 1);
+			console.log("SelectedChoice: ", selectedChoice)
+			setVoted(true)
+		    }
+				  }
+		    appearFrom="bottom"
+  		    animationDuration={750}
+		    PollContainer={RNAnimated}
+		    PollItemContainer={RNAnimated}
+		/>
+	    </View>
+	    <View style ={keyboardStyle.pollButtonsTheme}>
+		<Button title="Hide Poll" onPress={toggleModal} />
+	    </View>
+	    <View style ={keyboardStyle.pollButtonsTheme}>
+		<Button title="New Poll" onPress={() => setNewPoll(!isNewPoll)} />
+	    </View>
+	    {isNewPoll && 
+	     <View> 
+		 <View style ={keyboardStyle.newPollTheme}>
+		     <TextInput
+			 placeholder='Poll Title...'
+			 onChangeText={newText=>setTextTitle(newText)}
+			 value={textTitle}
+			 //onSubmitEditing = {onPressTitle}
+		     />
+		 </View>
+		 <View style ={keyboardStyle.newPollTheme}>
+		     <TextInput
+			 placeholder='Options seperated by commas'
+			 onChangeText={newText=>setTextChoices(newText)}
+			 value={textChoices}
+			 onSubmitEditing = {onPressChoices}
+		     />
+		 </View>
+	     </View> }
+	    </Modal>
 
-			<View style={keyboardStyle.container}> 
-			<TextInput
-				style={{...keyboardStyle.input,color:colors.text}}
-				placeholder='Press here…'
-				placeholderTextColor={colors.textalt}
-				onChangeText={newText=>setText(newText)}
-				value={text}
-				multiline
-			/>
-			<TouchableOpacity onPress={onPress}>
-				<Ionicons name='paper-plane' size={24} color={GlobalStyle.highlightcolor} style={keyboardStyle.icon}/>
-			</TouchableOpacity>
+	    <View style={{...keyboardStyle.container,backgroundColor:colors.backgroundalt}}> 
+		<TextInput
+		    style={{...keyboardStyle.input, color:colors.text}}
+		    placeholder='Press here…'
+		    placeholderTextColor={colors.textalt}
+		    onChangeText={newText=>setText(newText)}
+		    value={text}
+		    multiline
+		/>
+		<TouchableOpacity onPress={onPress}>
+		    <Ionicons name='paper-plane' size={24} color={GlobalStyle.highlightcolor} style={keyboardStyle.icon}/>
+		</TouchableOpacity>
 
-			</View>
-		</View>
+	    </View>
+	</View>
     );
 }
 
@@ -515,52 +499,52 @@ const KeyboardComponent = (props) => {
 const ChatScreenComponent = ({route, navigation}) => {
 
     const titlename = route.params.username.length > 14 ?  route.params.username.substring(0,13) + "..." : route.params.username
-	const [barvisible,setBarVisible] = useState(false);
+    const [barvisible,setBarVisible] = useState(false);
     const chatOptions = [
 	{text:"Settings", handler:() => {settingsNavigate()}},
 	{text:"Search", handler:()=> {setBarVisible(true)}},
 	{text:"Add to friends", handler:()=> {alert("Add contact to friends list")}},
     ]
-	const {colors, isDark} = useTheme();
-	const {chatId,chatpic,settingsNavigate} = route.params;
+    const {colors, isDark} = useTheme();
+    const {chatId,chatpic,settingsNavigate} = route.params;
     React.useLayoutEffect(() => {
-		navigation.setOptions({
-			title: titlename,
-			headerStyle:{backgroundColor:colors.backgroundalt},
-			headerTintColor:colors.text,
-			headerRight: () => (
-				// Settings Button
-				<View style={{
-					flexDirection:'row',
-					justifyContent:'space-evenly',
-					alignItems: 'center',
-					minWidth: 80,
-				}}>
-					<SettingsButton onPress={settingsNavigate}/>
-					<ContextMenu options={chatOptions}ionicon="menu"/>
-				</View>
-			),
-			headerLeft:()=>(
-				// Back Button
-				<View style={{
-					flexDirection:'row',
-					flexWrap: "wrap",
-					justifyContent:'flex-start',
-					alignItems: 'center',
-					minWidth: 30,
-					paddingRight: 5,
-				}}>
-					<HeaderBackButton onPress={()=>{navigation.goBack()}}/>
-					<ProfileButton profileSize={GlobalStyle.userProfileSize} profileSource={chatpic} onPress={()=>{settingsNavigate}}/>
-				</View>
-			),
-		});
+	navigation.setOptions({
+	    title: titlename,
+	    headerStyle:{backgroundColor:colors.backgroundalt},
+	    headerTintColor:colors.text,
+	    headerRight: () => (
+		// Settings Button
+		<View style={{
+			  flexDirection:'row',
+			  justifyContent:'space-evenly',
+			  alignItems: 'center',
+			  minWidth: 80,
+		      }}>
+		    <SettingsButton onPress={settingsNavigate}/>
+		    <ContextMenu options={chatOptions}ionicon="menu"/>
+		</View>
+	    ),
+	    headerLeft:()=>(
+		// Back Button
+		<View style={{
+			  flexDirection:'row',
+			  flexWrap: "wrap",
+			  justifyContent:'flex-start',
+			  alignItems: 'center',
+			  minWidth: 30,
+			  paddingRight: 5,
+		      }}>
+		    <HeaderBackButton onPress={()=>{navigation.goBack()}}/>
+		    <ProfileButton profileSize={GlobalStyle.userProfileSize} profileSource={chatpic} onPress={()=>{settingsNavigate}}/>
+		</View>
+	    ),
+	});
     }, [navigation,colors]);
     return (
-		<View style={{flex:1,flexDirection: "column",backgroundColor:colors.background}}>
-			<MessageBoxComponent chatId={chatId} barstate={{barvisible,setBarVisible}}/>
-			<KeyboardComponent chatId={chatId}/>
-		</View>
+	<View style={{flex:1,flexDirection: "column",backgroundColor:colors.background}}>
+	    <MessageBoxComponent chatId={chatId} barstate={{barvisible,setBarVisible}}/>
+	    <KeyboardComponent chatId={chatId}/>
+	</View>
     );
 }
 
