@@ -125,8 +125,8 @@ const initialUserId = "47769a91-2d07-4580-8828-5913cf821623";
 //debug id for testing purposes
 const altId = "1d4070bf-7ada-46bd-8b7c-c8b8e0507dec"
 //please don't doxx me.
-//const serverip = "167.99.43.209"
-const serverip = "192.168.0.194"
+const serverip = "167.99.43.209"
+//const serverip = "192.168.0.194"
 //generate websocket connection on app start
 const initialws = new WebSocket('ws://'+serverip+':8000/'+'loading')
 //signal protocol address (currently unused)
@@ -225,7 +225,7 @@ function App() {
     const [ispasswordlock,setLockState] = useState(false); 
     const [isapplock,setAppLock] = useState(false);
     const [password,setPassword] = useState("");
-	const [checkedserver,setCheckedServer] = useState(new Date().toISOString());
+	const [checkedserver,setCheckedServer] = useState(new Date());
     const {colors, isDark} = useTheme();
     const colorScheme = useColorScheme();
 
@@ -369,22 +369,19 @@ function App() {
     
     useInterval(async () => {
 	try {
-	    console.log(userid,"retrieving");
+	    console.log(userid,"retrieving",checkedserver);
 	    //const serverip = "167.99.43.209"
-		console.log(checkedserver);
+		
 	    const serverBundles = await fetch("http://"+serverip+":443/getMessagesAfter/"+ userid + "/" + checkedserver);
 	    const bundles = await serverBundles.json();
 	   // console.log("messages on server");
 	    //console.log(bundles);
-	    bundles.forEach(element => {
-			//console.log(element);
-		});
 		//console.log(bundles.map((i)=>{return i.message.senderId}));
 	    //console.log([... new Set(bundles.map((i)=>{return i.message.senderId}))]);
 		//console.log(serverBundles.toString());
 	    //const contact_ids = [... new Set(bundles.map((i)=>{return i.message.senderId}))]; 
 		bundles.forEach(bundle =>{
-			console.log(bundle);
+			console.log("bundle",bundle);
 			const chatid = bundle.message.chatId;
 			const message = bundle.message;
 			setChats((chats)=>{
