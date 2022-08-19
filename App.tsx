@@ -1,5 +1,5 @@
 import 'react-native-gesture-handler'; 
-import React, { useState,useEffect,useContext,useCallback } from 'react';
+import React, { useState,useEffect,useContext,useCallback, useRef } from 'react';
 var Buffer = require("@craftzdog/react-native-buffer").Buffer;
 import { 
     View, 
@@ -176,9 +176,7 @@ function debugData(){
 
 SplashScreen.preventAutoHideAsync();
 
-//const socket = io('http://'+serverip+':3000/');
-
-
+const socket = io('http://'+serverip+':2999/');
 
 
 function App() {
@@ -229,6 +227,19 @@ function App() {
     const [password,setPassword] = useState("");
     const {colors, isDark} = useTheme();
     const colorScheme = useColorScheme();
+
+    useEffect(() => {
+	const messageListener = (message) => {
+	    console.log("Listened to a message");
+	    console.log(message);
+	}
+	console.log(userid);
+	socket.emit('getMessages', userid);
+	socket.on('message', messageListener);
+    })
+
+    //Connect to websocket
+    
     //organize data for context providing
     // socket.on('message',(msg)=>{
     // 	console.log(msg)
@@ -347,7 +358,6 @@ function App() {
     };
     
 
-
     const chatState = {chats,setChats,ws,setWs,processedmessages,setProcessedMessages};
     const contactState = {contacts,setContacts,userid,setUserId,resetContactData:delData};
     const signalState = {userStore,createUserIdentity,serverip}
@@ -355,7 +365,7 @@ function App() {
     const passwordState = {ispasswordlock,setLockState,isapplock,setAppLock,password,setPassword}
 
     //console.log("New Web Socket Connection: ",ws);
-
+    /*
     useInterval(async () => {
 	try {
 	    console.log(123123123);
@@ -393,6 +403,7 @@ function App() {
 	}
         // put your interval code here.
     }, 1000 * 10);
+    */
     useEffect(() => {
 	async function prepare(){	
 	    try{
