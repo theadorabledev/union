@@ -276,7 +276,7 @@ const keyboardStyle = StyleSheet.create(
 //function to fetch votes
 function getVotes(){
 	//fetch total votes from server
-	return 0;
+	return 12;
 }
 // //set vote count
 // const TotalVotes = getVotes();
@@ -284,13 +284,13 @@ function getVotes(){
 //function to fetch array data for poll
 function getChoices(){
 	//fetch data , constructing for now
-	// const Choices: Array<IChoice> = [
-	// 	{ id: 1, choice: "Choice 1", votes: 3 },
-	// 	{ id: 2, choice: "Choice 2", votes: 3 },
-	// 	{ id: 3, choice: "Choice 3", votes: 3 },
-	// 	{ id: 4, choice: "Choice 4", votes: 3 },
-	//   ];
-		const Choices:Array<IChoice> = [];
+	const Choices: Array<IChoice> = [
+		{ id: 1, choice: "Pass", votes: 3 },
+		{ id: 2, choice: "Hold", votes: 3 },
+		{ id: 3, choice: "Revise", votes: 3 },
+		{ id: 4, choice: "Uncertain", votes: 3 },
+	  ];
+		// const Choices:Array<IChoice> = [];
 	return Choices
 }
 
@@ -298,7 +298,7 @@ function getChoices(){
 
 function getPollTitle(){
 	//fetch poll title from server
-	return "Poll Title";
+	return "Union Ballot 8/19";
 }
 // const PollTitle = getPollTitle();
 
@@ -320,7 +320,7 @@ const KeyboardComponent = (props) => {
 	const [isVoted, setVoted] = useState(false);
 	//new poll state
 	const [isNewPoll,setNewPoll]= useState(false);
-	//text input for polol title and choices
+	//text input for poll title and choices
 	const [textTitle,setTextTitle] = useState('');
 	const [textChoices,setTextChoices] = useState('');
 	//values for votes,title,data
@@ -410,17 +410,41 @@ const KeyboardComponent = (props) => {
 		setNewPoll(false);
 	}
 	
+	//send poll data to server
+	function pollSend(pollTitle:String, choiceData:Array<IChoice>, TotalVotes:Number){
+		//send data
+		console.log("SelectedChoice: ", pollTitle);
+		console.log("SelectedChoice: ", choiceData);
+		console.log("SelectedChoice: ", TotalVotes);
+	}
+
+	//fetch data from poll
+	function pollFetch(){
+		setTotalVotes(getVotes());
+		setPollTitle(getPollTitle());
+		setChoices(getChoices());
+	}
+
+	//toggle fetch merge function
+	const toggleFetch = () =>{
+		toggleModal
+		//pollFetch();
+	}
 
     return (
 		<View style ={keyboardStyle.outer}>
-			<Button title="P" onPress={toggleModal} style={keyboardStyle.icon} />
+			<Button 
+				title="P" 
+				onPress={toggleModal} 
+				style={keyboardStyle.icon} 
+			/>
 			<Modal
 				isVisible={isModalVisible} 
 				backdropColor={"pink"} 
 				backdropOpacity={.7}
 				onBackdropPress={() => setModalVisible(false)}
 				style= {keyboardStyle.innerModal}
-				//onModalWillShow = {function} on show will construct the poll with text data
+				//onModalWillShow = {pollFetch()}
 			>
         		<View style ={keyboardStyle.titleContainer}>
 					<Text style = {keyboardStyle.pollTitleTheme}> {PollTitle} </Text>
@@ -432,8 +456,9 @@ const KeyboardComponent = (props) => {
 						hasBeenVoted = {isVoted}
 						onChoicePress={(selectedChoice: IChoice) =>{
 							setTotalVotes(TotalVotes + 1);
-							console.log("SelectedChoice: ", selectedChoice)
-							setVoted(true)
+							console.log("SelectedChoice: ", selectedChoice);
+							setVoted(true);
+							pollSend(PollTitle,Choices,TotalVotes);
 						}
 						}
 						appearFrom="bottom"
@@ -455,7 +480,6 @@ const KeyboardComponent = (props) => {
 							placeholder='Poll Title...'
 							onChangeText={newText=>setTextTitle(newText)}
 							value={textTitle}
-							//onSubmitEditing = {onPressTitle}
 							/>
 						</View>
 						<View style ={keyboardStyle.newPollTheme}>
