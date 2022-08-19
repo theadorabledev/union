@@ -118,7 +118,7 @@ const NoMessages = () => {
 		  flex:0.3,
 		  alignItems:"center",
 		  justifyContent:"center"
-	      }} ><!--</View>->
+	      }} >
 	    <Text style={{
 		      ...GlobalStyle.textTypes.H2,
 		      color:colors.text,
@@ -278,7 +278,7 @@ function getChoices(){
     // 	{ id: 3, choice: "Choice 3", votes: 3 },
     // 	{ id: 4, choice: "Choice 4", votes: 3 },
     //   ];
-    const Choices:Array<IChoice> = []; \*</IChoice>*\
+    const Choices:Array<IChoice> = [];
     return Choices
 }
 
@@ -371,8 +371,8 @@ const KeyboardComponent = (props) => {
     
     //format string input to data array
     const onPressChoices = () => {
-	let choicesTemp: Array<IChoice> =[]; \*</IChoice>*\
-	let optionsArr:Array<String> = textChoices.split(","); \*</String>*\
+	let choicesTemp: Array<IChoice> =[];
+	let optionsArr:Array<String> = textChoices.split(",");
 	optionsArr.forEach(formatHelper);
 	createPoll(textTitle, choicesTemp);
 	setTextChoices("");

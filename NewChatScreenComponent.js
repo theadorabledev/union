@@ -32,11 +32,13 @@ const NewChatScreenComponent = ({navigation}) => {
     const [contacts, setContacts] = useState([]);
     // Get contacts data
     useEffect(() => {
-	(async () => {
-	    const serverBundles = await fetch("http://"+serverip+":443/getFullKeyBundle/"+filtertext);
-		const bundles = await serverBundles.json();
-		setContacts(bundles)
-	})();
+	if (filtertext.length > 2){
+		(async () => {
+			const serverBundles = await fetch("http://"+serverip+":443/getFullKeyBundle/"+filtertext);
+			const bundles = await serverBundles.json();
+			setContacts(bundles)
+		})();
+	}
     }, [filtertext]);
     // Gets the key from each item
     const keyExtractor = (item, idx) => {

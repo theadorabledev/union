@@ -365,45 +365,69 @@ function App() {
     const passwordState = {ispasswordlock,setLockState,isapplock,setAppLock,password,setPassword}
 
     //console.log("New Web Socket Connection: ",ws);
-    /*
+    
     useInterval(async () => {
 	try {
-	    console.log(123123123);
-	    console.log("RETRIEVING INFO FOR USER")
-	    const serverip = "167.99.43.209"
+	    console.log(userid,"retrieving");
+	    //const serverip = "167.99.43.209"
 	    const serverBundles = await fetch("http://"+serverip+":443/getMessagesAfter/"+ userid + "/0");
 	    const bundles = await serverBundles.json();
-	    console.log("messages on server");
+	   // console.log("messages on server");
 	    console.log(bundles);
-	    console.log(bundles.map((i)=>{return i.message.senderId}));
-	    console.log([... new Set(bundles.map((i)=>{return i.message.senderId}))]);
-	    const contact_ids = [... new Set(bundles.map((i)=>{return i.message.senderId}))];
+	    bundles.forEach(element => {
+			console.log(element);
+		});
+		//console.log(bundles.map((i)=>{return i.message.senderId}));
+	    //console.log([... new Set(bundles.map((i)=>{return i.message.senderId}))]);
+		//console.log(serverBundles.toString());
+	    //const contact_ids = [... new Set(bundles.map((i)=>{return i.message.senderId}))]; 
+		bundles.forEach(bundle =>{
+			console.log(bundle);
+			const chatid = bundle.message.chatId;
+			const message = bundle.message;
+			setChats((chats)=>{
+				const newChats = new Map(chats);
+				const chat = newChats.get(chatid);
+				
+				if (typeof chat =="undefined"){
+					const newchat:Chat = {id:chatid,contactids:[userid,message.senderId],messages:[],name:"",picture:GlobalStyle.defaultprofile,details:""};
+					newchat.messages.push(message);
+					newChats.set(chatid,newchat);
+				}else{
+					chat.messages.push(message);
+					newChats.set(chatid,chat);
+				}
+				return newChats;
+			})
+		});
+		/*
 	    contact_ids.map(async (c_id) => {
-		const cont = await fetch("http://"+serverip+":443/getFullKeyBundleByID/"+ c_id);
-		const c = await cont.json();
-		console.log(c_id);
-		console.log(c.username);
-		console.log(c.pronouns);
-		console.log(JSON.stringify({
-		    'details': c.pronouns,
-		    'username': c.username,
-		    'id': c_id,
-		    'picture':19
-		}));
-		SecureStore.setItemAsync(c_id,JSON.stringify({
-		    'details': c.pronouns,
-		    'username': c.username,
-		    'id': c_id,
-		    'picture':19
-		}));
+			const cont = await fetch("http://"+serverip+":443/getFullKeyBundleByID/"+ c_id);
+			const c = await cont.json();
+			console.log(c_id);
+			console.log(c.username);
+			console.log(c.pronouns);
+			console.log(JSON.stringify({
+				'details': c.pronouns,
+				'username': c.username,
+				'id': c_id,
+				'picture':19
+			}));
+			SecureStore.setItemAsync(c_id,JSON.stringify({
+				'details': c.pronouns,
+				'username': c.username,
+				'id': c_id,
+				'picture':19
+			}));
 	    });
+		*/
 	    console.log(contacts);
 	} catch (err) {
 	    console.log(err)
 	}
         // put your interval code here.
     }, 1000 * 10);
-    */
+	
     useEffect(() => {
 	async function prepare(){	
 	    try{
