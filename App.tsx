@@ -126,7 +126,8 @@ const initialUserId = "47769a91-2d07-4580-8828-5913cf821623";
 const altId = "1d4070bf-7ada-46bd-8b7c-c8b8e0507dec"
 //please don't doxx me.
 //const serverip = "167.99.43.209"
-const serverip = "192.168.0.194"
+//const serverip = "192.168.0.194"
+const serverip = "167.99.43.209"
 //generate websocket connection on app start
 const initialws = new WebSocket('ws://'+serverip+':8000/'+'loading')
 //signal protocol address (currently unused)
@@ -191,8 +192,6 @@ function App() {
     
     //call id creation function
 
-
-
     function delData(){
 
 	chats.forEach((chat:Chat)=>{
@@ -225,7 +224,7 @@ function App() {
     const [ispasswordlock,setLockState] = useState(false); 
     const [isapplock,setAppLock] = useState(false);
     const [password,setPassword] = useState("");
-	const [checkedserver,setCheckedServer] = useState(new Date().toISOString());
+    const [checkedserver,setCheckedServer] = useState(new Date().toISOString());
     const {colors, isDark} = useTheme();
     const colorScheme = useColorScheme();
 
@@ -235,8 +234,8 @@ function App() {
 	    console.log(message);
 	}
 	console.log(userid);
-	socket.emit('getMessages', userid);
-	socket.on('message', messageListener);
+	// socket.emit('getMessages', userid);
+	// socket.on('message', messageListener);
     })
 
     //Connect to websocket
@@ -371,59 +370,113 @@ function App() {
 	try {
 	    console.log(userid,"retrieving");
 	    //const serverip = "167.99.43.209"
-		console.log(checkedserver);
+	    console.log(checkedserver);
 	    const serverBundles = await fetch("http://"+serverip+":443/getMessagesAfter/"+ userid + "/" + checkedserver);
 	    const bundles = await serverBundles.json();
 	   // console.log("messages on server");
 	    //console.log(bundles);
 	    bundles.forEach(element => {
-			//console.log(element);
-		});
-		//console.log(bundles.map((i)=>{return i.message.senderId}));
-	    //console.log([... new Set(bundles.map((i)=>{return i.message.senderId}))]);
-		//console.log(serverBundles.toString());
-	    //const contact_ids = [... new Set(bundles.map((i)=>{return i.message.senderId}))]; 
-		bundles.forEach(bundle =>{
-			console.log(bundle);
-			const chatid = bundle.message.chatId;
-			const message = bundle.message;
-			setChats((chats)=>{
-				const newChats = new Map(chats);
-				const chat = newChats.get(chatid);
-				
-				if (typeof chat =="undefined"){
-					const newchat:Chat = {id:chatid,contactids:[userid,message.senderId],messages:[],name:"",picture:GlobalStyle.defaultprofile,details:""};
-					newchat.messages.push(message);
-					newChats.set(chatid,newchat);
-				}else{
-					chat.messages.push(message);
-					newChats.set(chatid,chat);
-				}
-				return newChats;
-			})
-		});
-		setCheckedServer(new Date().toISOString())
-		/*
-	    contact_ids.map(async (c_id) => {
-			const cont = await fetch("http://"+serverip+":443/getFullKeyBundleByID/"+ c_id);
-			const c = await cont.json();
-			console.log(c_id);
-			console.log(c.username);
-			console.log(c.pronouns);
-			console.log(JSON.stringify({
-				'details': c.pronouns,
-				'username': c.username,
-				'id': c_id,
-				'picture':19
-			}));
-			SecureStore.setItemAsync(c_id,JSON.stringify({
-				'details': c.pronouns,
-				'username': c.username,
-				'id': c_id,
-				'picture':19
-			}));
+		//console.log(element);
 	    });
-		*/
+	    //console.log(bundles.map((i)=>{return i.message.senderId}));
+	    //console.log([... new Set(bundles.map((i)=>{return i.message.senderId}))]);
+	    //console.log(serverBundles.toString());
+	    const contact_ids = [... new Set(bundles.map((i)=>{return i.message.senderId}))];
+	    const old_contact_ids = [... new Set(contacts.keys())];
+	    const new_contact_ids = contact_ids.filter(x => !old_contact_ids.includes(x));
+	    //ContactCreator(contactMap,altId,"The Fool",GlobalStyle.defaultprofile,"They/Them")
+
+	    //map.set(id,{id,name,picture,details})
+	    console.log("CONTACT IDS");
+	    console.log(contact_ids);
+	    console.log("OLD IDS");
+	    console.log(old_contact_ids)
+	    console.log("OLD CONTACTS");
+	    console.log(contacts);
+	    console.log("new IDS");
+	    console.log(new_contact_ids)
+	    new_contact_ids.map(async (c_id) => {
+		console.log("Adding new contacts");
+		console.log(c_id);
+		try {
+		    console.log("A");
+		    console.log("http://"+serverip+":443/getFullKeyBundleByID/"+ c_id);
+		    const cont = await fetch("http://"+serverip+":443/getFullKeyBundleByID/"+ c_id);
+		    console.log(cont);
+		    const c = await cont.json();
+		    console.log("B");
+		    console.log(c);
+		    console.log(c_id);
+		    console.log(c.username);
+		    console.log(c.pronouns);
+		    console.log(JSON.stringify({
+			'details': c.pronouns,
+			'username': c.username,
+			'id': c_id,
+			'picture':19
+		    }));
+		    console.log(c);
+		    SecureStore.setItemAsync(c_id,JSON.stringify({
+			'details': c.pronouns,
+			'username': c.username,
+			'id': c_id,
+			'picture':19
+		    }));
+		    console.log("that should be that");
+		} catch (err) {
+		    console.log(err);
+		}
+		return c_id
+		
+	    });
+	    bundles.forEach(bundle =>{
+		console.log(bundle);
+		const chatid = bundle.message.chatId;
+		const message = bundle.message;
+		setChats((chats) => {
+		    const newChats = new Map(chats);
+		    const chat = newChats.get(chatid);
+		    
+		    if (typeof chat =="undefined"){
+			const newchat:Chat = {
+			    id:chatid,
+			    contactids:[userid,message.senderId],
+			    messages:[],
+			    name:"",
+			    picture:GlobalStyle.defaultprofile,
+			    details:""
+			};
+			newchat.messages.push(message);
+			newChats.set(chatid,newchat);
+		    }else{
+			chat.messages.push(message);
+			newChats.set(chatid,chat);
+		    }
+		    return newChats;
+		})
+	    });
+	    setCheckedServer(new Date().toISOString())
+	    /*
+	      contact_ids.map(async (c_id) => {
+	      const cont = await fetch("http://"+serverip+":443/getFullKeyBundleByID/"+ c_id);
+	      const c = await cont.json();
+	      console.log(c_id);
+	      console.log(c.username);
+	      console.log(c.pronouns);
+	      console.log(JSON.stringify({
+	      'details': c.pronouns,
+	      'username': c.username,
+	      'id': c_id,
+	      'picture':19
+	      }));
+	      SecureStore.setItemAsync(c_id,JSON.stringify({
+	      'details': c.pronouns,
+	      'username': c.username,
+	      'id': c_id,
+	      'picture':19
+	      }));
+	      });
+	    */
 	    console.log(contacts);
 	} catch (err) {
 	    console.log(err)
