@@ -412,7 +412,7 @@ function App() {
 			    id:chatid,
 			    contactids:[userid,message.senderId],
 			    messages:[],
-			    name: contacts.get(message.senderId).username,
+			    name: "", //contacts.get(message.senderId).username,
 			    picture:GlobalStyle.defaultprofile,
 			    details:""
 			};
