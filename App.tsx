@@ -349,20 +349,11 @@ function App() {
 
 	    const serverBundles = await fetch("http://"+serverip+":443/getMessagesAfter/"+ userid + "/" + checkedserver);
 	    const bundles = await serverBundles.json();
-	   // console.log("messages on server");
-	    //console.log(bundles);
-	    bundles.forEach(element => {
-		//console.log(element);
-	    });
-	    //console.log(bundles.map((i)=>{return i.message.senderId}));
-	    //console.log([... new Set(bundles.map((i)=>{return i.message.senderId}))]);
-	    //console.log(serverBundles.toString());
+
 	    const contact_ids = [... new Set(bundles.map((i)=>{return i.message.senderId}))];
 	    const old_contact_ids = [... new Set(contacts.keys())];
 	    const new_contact_ids = contact_ids.filter(x => !old_contact_ids.includes(x));
-	    //ContactCreator(contactMap,altId,"The Fool",GlobalStyle.defaultprofile,"They/Them")
 
-	    //map.set(id,{id,name,picture,details})
 	    console.log("CONTACT IDS");
 	    console.log(contact_ids);
 	    console.log("OLD IDS");
@@ -392,14 +383,6 @@ function App() {
 			'id': c_id,
 			'picture':19
 		    });
-		    // console.log(JSON.stringify({
-		    // 	'details': c.pronouns,
-		    // 	'username': c.username,
-		    // 	'id': c_id,
-		    // 	'picture':19
-		    // }));
-		    // console.log(c);
-		    // SecureStore.setItemAsync(c_id, contactJSON);
 		    setContacts((contacts)=>{
 			const newContacts = new Map(contacts);
 			newContacts.set(c_id, JSON.parse(contactJSON));
@@ -429,7 +412,7 @@ function App() {
 			    id:chatid,
 			    contactids:[userid,message.senderId],
 			    messages:[],
-			    name: contacts.get(chatid).username,
+			    name: contacts.get(message.senderId).username,
 			    picture:GlobalStyle.defaultprofile,
 			    details:""
 			};
