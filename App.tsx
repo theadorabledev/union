@@ -238,30 +238,6 @@ function App() {
 	// socket.on('message', messageListener);
     })
 
-    //Connect to websocket
-    
-    //organize data for context providing
-    // socket.on('message',(msg)=>{
-    // 	console.log(msg)
-    // 	setChats((chats)=>{
-    // 		const newChats = new Map(chats);
-    // 		const chat = newChats.get(msg.chatId);
-    // 		if (typeof chat == "undefined"){
-    // 			console.log("OH GOD OH FUCK ON NO PLEASE WHY I JUST WANTED A C+")
-    // 		}else{
-    // 			const exists = chat.messages.find((themsg)=>{
-    // 				return themsg.messageId == msg.messageId;
-    // 			})
-    // 			if(typeof exists == "undefined"){
-    // 				chat.messages.push(msg);
-    // 			}
-    // 			newChats.set(chat.id,chat);
-    // 			return newChats;
-    // 		}
-    // 		return chats;
-    // 	})
-    
-    // })
     //signal id creation function
     const createID = async (contact: Contact, store: SignalProtocolStore) => {
 	const registrationId = KeyHelper.generateRegistrationId()
@@ -395,6 +371,7 @@ function App() {
 	    console.log(contacts);
 	    console.log("new IDS");
 	    console.log(new_contact_ids)
+	    // If any new contacts (ie a new person messaged you), add them to local contacts
 	    new_contact_ids.map(async (c_id) => {
 		console.log("Adding new contacts");
 		console.log(c_id);
@@ -409,19 +386,26 @@ function App() {
 		    console.log(c_id);
 		    console.log(c.username);
 		    console.log(c.pronouns);
-		    console.log(JSON.stringify({
+		    const contactJSON = JSON.stringify({
 			'details': c.pronouns,
 			'username': c.username,
 			'id': c_id,
 			'picture':19
-		    }));
-		    console.log(c);
-		    SecureStore.setItemAsync(c_id,JSON.stringify({
-			'details': c.pronouns,
-			'username': c.username,
-			'id': c_id,
-			'picture':19
-		    }));
+		    });
+		    // console.log(JSON.stringify({
+		    // 	'details': c.pronouns,
+		    // 	'username': c.username,
+		    // 	'id': c_id,
+		    // 	'picture':19
+		    // }));
+		    // console.log(c);
+		    // SecureStore.setItemAsync(c_id, contactJSON);
+		    setContacts((contacts)=>{
+			const newContacts = new Map(contacts);
+			newContacts.set(c_id, JSON.parse(contactJSON));
+			return newContacts;
+		    });
+		    
 		    console.log("that should be that");
 		} catch (err) {
 		    console.log(err);
@@ -429,7 +413,9 @@ function App() {
 		return c_id
 		
 	    });
-	    bundles.forEach(bundle =>{
+	    // Add each message to the file
+	    bundles.forEach(bundle => {
+		console.log("Examining new message");
 		console.log(bundle);
 		const chatid = bundle.message.chatId;
 		const message = bundle.message;
@@ -437,18 +423,20 @@ function App() {
 		    const newChats = new Map(chats);
 		    const chat = newChats.get(chatid);
 		    
-		    if (typeof chat =="undefined"){
+		    if (typeof chat == "undefined"){
+			console.log("Adding a new chat");
 			const newchat:Chat = {
 			    id:chatid,
 			    contactids:[userid,message.senderId],
 			    messages:[],
-			    name:"",
+			    name: contacts.get(chatid).username,
 			    picture:GlobalStyle.defaultprofile,
 			    details:""
 			};
 			newchat.messages.push(message);
 			newChats.set(chatid,newchat);
 		    }else{
+			console.log("Already formatted");
 			chat.messages.push(message);
 			newChats.set(chatid,chat);
 		    }
@@ -457,27 +445,6 @@ function App() {
 
 	    });
 	    setCheckedServer(new Date().toISOString())
-	    /*
-	      contact_ids.map(async (c_id) => {
-	      const cont = await fetch("http://"+serverip+":443/getFullKeyBundleByID/"+ c_id);
-	      const c = await cont.json();
-	      console.log(c_id);
-	      console.log(c.username);
-	      console.log(c.pronouns);
-	      console.log(JSON.stringify({
-	      'details': c.pronouns,
-	      'username': c.username,
-	      'id': c_id,
-	      'picture':19
-	      }));
-	      SecureStore.setItemAsync(c_id,JSON.stringify({
-	      'details': c.pronouns,
-	      'username': c.username,
-	      'id': c_id,
-	      'picture':19
-	      }));
-	      });
-	    */
 	    console.log(contacts);
 	} catch (err) {
 	    console.log(err)

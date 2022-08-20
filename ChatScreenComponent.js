@@ -144,7 +144,7 @@ const MessageBoxComponent = (props) => {
     //const scrollViewRef = useRef();
     //create message bubble components
 
-    const data = chats.get(props.chatId).messages;
+    const data = [... new Set(chats.get(props.chatId).messages.map((i) => JSON.stringify(i)))].map((i) => JSON.parse(i));
     //const filterdata = data.filter((message)=>{
     //	if(message.message.toLowerCase().includes('h')){
     //		return true;
@@ -152,7 +152,8 @@ const MessageBoxComponent = (props) => {
     //})
     //setFilterData(data);
     useEffect(()=>{
-	const newfilterdata = data.filter((message)=>{
+	const sortedData = data.sort((a, b) => (a.date > b.date) ? 1 : -1);
+	const newfilterdata = sortedData.filter((message)=>{
 	    if(message.message.toLowerCase().includes(filtertext)){
 		return true;
 	    }
@@ -160,9 +161,11 @@ const MessageBoxComponent = (props) => {
 	setFilterData((data)=>{
 	    return newfilterdata;
 	});
+	console.log("THE DATA");
+	console.log(data);
+	console.log(newfilterdata);
+	
     },[filtertext,chats])
-
-
 
     const renderItem = ({item}) =>(
 	<MessageBubble
