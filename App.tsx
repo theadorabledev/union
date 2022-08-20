@@ -224,7 +224,7 @@ function App() {
     const [ispasswordlock,setLockState] = useState(false); 
     const [isapplock,setAppLock] = useState(false);
     const [password,setPassword] = useState("");
-    const [checkedserver,setCheckedServer] = useState(new Date().toISOString());
+    const [checkedserver,setCheckedServer] = useState(new Date());
     const {colors, isDark} = useTheme();
     const colorScheme = useColorScheme();
 
@@ -368,9 +368,9 @@ function App() {
     
     useInterval(async () => {
 	try {
-	    console.log(userid,"retrieving");
+	    console.log(userid,"retrieving",checkedserver);
 	    //const serverip = "167.99.43.209"
-	    console.log(checkedserver);
+
 	    const serverBundles = await fetch("http://"+serverip+":443/getMessagesAfter/"+ userid + "/" + checkedserver);
 	    const bundles = await serverBundles.json();
 	   // console.log("messages on server");
@@ -454,6 +454,7 @@ function App() {
 		    }
 		    return newChats;
 		})
+
 	    });
 	    setCheckedServer(new Date().toISOString())
 	    /*
